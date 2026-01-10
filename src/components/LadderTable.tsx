@@ -24,12 +24,21 @@ interface LadderEntry {
   nrlPoints: number;
 }
 
+type ViewType = "ladder" | "attack" | "defense";
+
+const VIEW_CONFIG: Record<ViewType, { label: string; description: string; sortKey: string }> = {
+  ladder: { label: "Ladder", description: "Ranked by Win %", sortKey: "winPct" },
+  attack: { label: "Attack", description: "Ranked by Points For", sortKey: "pointsFor" },
+  defense: { label: "Defense", description: "Ranked by Points Against (lower is better)", sortKey: "pointsAgainst" },
+};
+
 export function LadderTable() {
   const { palette } = useTheme();
   const [ladder, setLadder] = useState<LadderEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [season, setSeason] = useState(2025);
   const [round, setRound] = useState<number | undefined>(undefined);
+  const [view, setView] = useState<ViewType>("ladder");
 
   useEffect(() => {
     async function fetchLadder() {
@@ -37,6 +46,7 @@ export function LadderTable() {
       try {
         const params = new URLSearchParams({ season: String(season) });
         if (round) params.set("round", String(round));
+        if (view !== "ladder") params.set("view", view);
 
         const res = await fetch(`/api/ladder?${params}`);
         const data = await res.json();
@@ -48,7 +58,7 @@ export function LadderTable() {
       }
     }
     fetchLadder();
-  }, [season, round]);
+  }, [season, round, view]);
 
   if (loading) {
     return (
@@ -63,13 +73,15 @@ export function LadderTable() {
     );
   }
 
+  const currentViewConfig = VIEW_CONFIG[view];
+
   return (
     <div>
       {/* Controls */}
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h2 className="text-xl font-semibold">
-            {season} NRL Ladder
+            {season} NRL {currentViewConfig.label}
             {round && (
               <span className="ml-2 text-sm font-normal" style={{ color: palette.textMuted }}>
                 After Round {round}
@@ -77,11 +89,33 @@ export function LadderTable() {
             )}
           </h2>
           <p className="text-sm" style={{ color: palette.accent }}>
-            Ranked by Win Percentage
+            {currentViewConfig.description}
           </p>
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
+          {/* View Tabs */}
+          <div
+            className="flex rounded-lg p-1"
+            style={{ background: "rgba(255,255,255,0.05)" }}
+          >
+            {(Object.keys(VIEW_CONFIG) as ViewType[]).map((v) => (
+              <button
+                key={v}
+                onClick={() => setView(v)}
+                className={`rounded-md px-3 py-1.5 text-sm font-medium transition ${
+                  view === v ? "" : "opacity-60 hover:opacity-100"
+                }`}
+                style={{
+                  background: view === v ? palette.accent : "transparent",
+                  color: view === v ? "#000" : palette.text,
+                }}
+              >
+                {VIEW_CONFIG[v].label}
+              </button>
+            ))}
+          </div>
+
           <select
             value={season}
             onChange={(e) => setSeason(Number(e.target.value))}
@@ -135,12 +169,22 @@ export function LadderTable() {
               <th className="px-4 py-3 text-center font-mono">D</th>
               <th
                 className="px-4 py-3 text-right font-mono"
-                style={{ color: palette.accent }}
+                style={{ color: view === "ladder" ? palette.accent : undefined }}
               >
                 Win%
               </th>
-              <th className="hidden px-4 py-3 text-right font-mono sm:table-cell">PF</th>
-              <th className="hidden px-4 py-3 text-right font-mono sm:table-cell">PA</th>
+              <th
+                className="hidden px-4 py-3 text-right font-mono sm:table-cell"
+                style={{ color: view === "attack" ? palette.accent : undefined }}
+              >
+                PF
+              </th>
+              <th
+                className="hidden px-4 py-3 text-right font-mono sm:table-cell"
+                style={{ color: view === "defense" ? palette.accent : undefined }}
+              >
+                PA
+              </th>
               <th className="px-4 py-3 text-right font-mono">+/-</th>
             </tr>
           </thead>
@@ -207,15 +251,21 @@ export function LadderTable() {
                     {entry.draws}
                   </td>
                   <td
-                    className="px-4 py-3 text-right font-mono tabular-nums font-bold"
-                    style={{ color: palette.accent }}
+                    className={`px-4 py-3 text-right font-mono tabular-nums ${view === "ladder" ? "font-bold" : ""}`}
+                    style={{ color: view === "ladder" ? palette.accent : undefined }}
                   >
                     {entry.winPct.toFixed(2)}%
                   </td>
-                  <td className="hidden px-4 py-3 text-right font-mono tabular-nums sm:table-cell">
+                  <td
+                    className={`hidden px-4 py-3 text-right font-mono tabular-nums sm:table-cell ${view === "attack" ? "font-bold" : ""}`}
+                    style={{ color: view === "attack" ? palette.accent : undefined }}
+                  >
                     {entry.pointsFor}
                   </td>
-                  <td className="hidden px-4 py-3 text-right font-mono tabular-nums sm:table-cell">
+                  <td
+                    className={`hidden px-4 py-3 text-right font-mono tabular-nums sm:table-cell ${view === "defense" ? "font-bold" : ""}`}
+                    style={{ color: view === "defense" ? palette.accent : undefined }}
+                  >
                     {entry.pointsAgainst}
                   </td>
                   <td
