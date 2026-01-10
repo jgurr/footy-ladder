@@ -25,7 +25,7 @@ The NRL (National Rugby League) uses a traditional ladder system that awards 2 p
 - Solo developer (Jeff) with Claude Code assistance
 - Vercel free tier hosting
 - Must respect NRL data source terms of use
-- Australian timezone focus (games are AEST/AEDT)
+- All times displayed in user's local timezone (auto-detected, visible in UI)
 
 ---
 
@@ -394,8 +394,13 @@ font-family: 'Inter', -apple-system, sans-serif;
 
 ### Phase 3: Engagement
 - Push notifications for close games
-- Share cards for social media
 - Embed widget for forums
+
+### Phase 4: Social Sharing
+- **Share ladder as image** - Generate shareable image of current ladder
+- **Highlight my team** - Option to visually emphasize your team in the image
+- **Platform-optimized formats** - X (1200x675), Instagram (1080x1080), iMessage/WhatsApp
+- **One-tap sharing** - Native share sheet integration on mobile
 
 ### Not Planned
 - User accounts

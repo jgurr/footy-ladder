@@ -349,6 +349,8 @@ VERCEL_URL=xxx
 | 2026-01-10 | Use SQLite initially | Simpler than Postgres, can migrate later |
 | 2026-01-10 | Target 10-30s freshness | User priority for real-time experience |
 | 2026-01-10 | Store 2025 history | Enables round picker testing and fan nostalgia |
+| 2026-01-10 | Display times in user timezone | Better UX for international fans (Warriors, expats) |
+| 2026-01-10 | **Learning: Include retrospective** | Initially missed this section from template - lesson: don't skip sections even when excited to ship |
 
 ---
 
@@ -357,5 +359,29 @@ VERCEL_URL=xxx
 - [ ] ELO rating system
 - [ ] Strength of schedule calculation
 - [ ] Push notifications for close games
-- [ ] Share cards for social media
+- [ ] **Share ladder as image** - Generate shareable image with optional team highlight
+  - Platform formats: X (1200x675), Instagram (1080x1080), iMessage/WhatsApp
+  - Native share sheet on mobile
 - [ ] PWA with offline support
+
+---
+
+## Sprint Retrospective
+
+**IMPORTANT:** Complete this section at the end of every sprint before marking it complete.
+
+### What Went Well
+-
+
+### What Could Be Improved
+-
+
+### Recommendations for Future Sprints
+*Add actionable improvements to sprint_template.md if they apply broadly*
+-
+
+### Metrics
+- **Duration:** X days
+- **Phases Completed:** X/8
+- **Commits:** X
+- **Key Files Changed:** X
