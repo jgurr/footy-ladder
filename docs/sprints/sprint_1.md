@@ -6,7 +6,10 @@
 
 - [x] **Interview complete** - Used AskUserQuestionTool, got answers to deep questions
 - [x] **Architecture doc written** - Created `docs/architecture.md` with Jamie Mill's framework
-- [ ] **Sprint doc written** - This file
+- [x] **Sprint doc written** - This file
+- [x] **Autonomy mapped** - Each phase marked as autonomous or requires-input
+- [x] **Acceptance criteria defined** - Each phase has testable criteria + eval commands
+- [ ] **Sections validated** - Verified ALL template sections exist
 - [ ] **Sign-off received** - User approved plan before implementation began
 
 ---
@@ -89,8 +92,18 @@ By the end of this sprint, users can:
 
 ## Implementation Phases
 
-### Phase 1.1: Project Setup & Data Research (Day 1)
+> **Phase Structure Requirements:**
+> - Each phase MUST have acceptance criteria (testable conditions for "done")
+> - Each phase MUST be marked as autonomous or requires-input
+> - After completing each phase, fill in the Learnings section before proceeding
 
+---
+
+### Phase 1.1: Project Setup & Data Research
+
+**Autonomy:** [x] Autonomous | [ ] Requires User Input
+
+**Tasks:**
 - [ ] Initialize Next.js 16 with TypeScript
 - [ ] Configure Tailwind CSS with design tokens
 - [ ] Set up SQLite database with better-sqlite3
@@ -99,78 +112,315 @@ By the end of this sprint, users can:
   - NRL.com scraping feasibility
   - Third-party options (SportRadar, etc.)
 - [ ] Document findings in `docs/data-sources.md`
+- [ ] Make recommendation for data source approach
 
-### Phase 1.2: Core Logic & Database (Day 2)
+**Acceptance Criteria:**
+- [ ] `npm run dev` starts without errors
+- [ ] Tailwind classes render correctly
+- [ ] SQLite database file created at `data/footy.db`
+- [ ] `docs/data-sources.md` exists with pros/cons/recommendation
 
+**Eval Commands:**
+```bash
+cd /Users/jeffgurr/Documents/footy-ladder
+npm run dev &                    # Starts on port 3000
+curl -s localhost:3000 | head    # Returns HTML
+ls data/footy.db                 # File exists
+cat docs/data-sources.md | head  # Has content
+```
+
+**Learnings:** *(Fill after phase completion)*
+- What worked:
+- What didn't:
+- Context for next phase:
+
+---
+
+### Phase 1.2: Core Logic & Database
+
+**Autonomy:** [x] Autonomous | [ ] Requires User Input
+
+**Tasks:**
 - [ ] Port calculation logic from nrl-ladder:
   - `calculateWinPercentage()`
   - `sortLadder()` with tiebreakers
   - `detectByeRounds()`
-- [ ] Create database schema:
-  ```sql
-  teams (id, name, location, short_code, colors, logo_url)
-  games (id, round, home_team, away_team, home_score, away_score,
-         venue, kickoff, status, minute)
-  ladder_snapshots (id, round, team_id, played, wins, losses, draws,
-                    pf, pa, win_pct, position)
-  ```
-- [ ] Seed 17 teams with metadata
+- [ ] Create database schema (teams, games, ladder_snapshots)
+- [ ] Seed 17 teams with metadata (names, codes, colors)
 - [ ] Create API routes: `/api/ladder`, `/api/games`, `/api/teams`
 
-### Phase 1.3: 2025 Historical Data (Day 3)
+**Acceptance Criteria:**
+- [ ] `calculateWinPercentage(10, 5, 1)` returns `65.625`
+- [ ] GET `/api/teams` returns 17 teams
+- [ ] GET `/api/ladder` returns sorted array with winPct field
+- [ ] No TypeScript errors in build
 
+**Eval Commands:**
+```bash
+npm run build                                    # No errors
+curl -s localhost:3000/api/teams | jq length     # Returns 17
+curl -s localhost:3000/api/teams | jq '.[0]'     # Has name, shortCode, colors
+curl -s localhost:3000/api/ladder | jq '.[0].winPct'  # Has winPct field
+```
+
+**Learnings:** *(Fill after phase completion)*
+- What worked:
+- What didn't:
+- Context for next phase:
+
+---
+
+### Phase 1.3: 2025 Historical Data
+
+**Autonomy:** [x] Autonomous | [ ] Requires User Input
+
+**Tasks:**
 - [ ] Scrape/source 2025 season results (all 27 rounds)
-- [ ] Import into database
+- [ ] Import game results into database
 - [ ] Generate ladder snapshots for each round
 - [ ] Verify calculations match official final standings
 
-### Phase 1.4: 2026 Schedule (Day 3-4)
+**Acceptance Criteria:**
+- [ ] Database contains 27 rounds of 2025 games
+- [ ] Each round has 8 games (216 total, minus byes)
+- [ ] Final round ladder matches official NRL final standings
+- [ ] Panthers are #1 with highest win % (verify against official)
 
-- [ ] Scrape 2026 NRL season schedule
-- [ ] Extract: home team, away team, venue, kickoff time
-- [ ] Import into database
-- [ ] Create round picker with all scheduled rounds
+**Eval Commands:**
+```bash
+# Count 2025 games
+curl -s "localhost:3000/api/games?season=2025" | jq length
 
-### Phase 1.5: Retro Design System (Day 4-5)
+# Check final round ladder
+curl -s "localhost:3000/api/ladder?season=2025&round=27" | jq '.[0]'
 
+# Verify top team
+curl -s "localhost:3000/api/ladder?season=2025&round=27" | jq '.[0].team.name'
+```
+
+**Learnings:** *(Fill after phase completion)*
+- What worked:
+- What didn't:
+- Context for next phase:
+
+---
+
+### Phase 1.4: 2026 Schedule
+
+**Autonomy:** [x] Autonomous | [ ] Requires User Input
+
+**Tasks:**
+- [ ] Scrape 2026 NRL season schedule from official source
+- [ ] Extract: home team, away team, venue, kickoff time (UTC)
+- [ ] Import into database with SCHEDULED status
+- [ ] Create round picker component with all scheduled rounds
+
+**Acceptance Criteria:**
+- [ ] Database contains 2026 schedule (approx 200+ games)
+- [ ] Each game has homeTeam, awayTeam, venue, kickoff
+- [ ] Kickoff times stored in UTC, displayed in user timezone
+- [ ] Round picker shows rounds 1-27
+
+**Eval Commands:**
+```bash
+# Count 2026 scheduled games
+curl -s "localhost:3000/api/schedule?season=2026" | jq length
+
+# Check a game has required fields
+curl -s "localhost:3000/api/games?season=2026&round=1" | jq '.[0] | keys'
+
+# Verify venue exists
+curl -s "localhost:3000/api/games?season=2026&round=1" | jq '.[0].venue'
+```
+
+**Learnings:** *(Fill after phase completion)*
+- What worked:
+- What didn't:
+- Context for next phase:
+
+---
+
+### Phase 1.5: Retro Design System
+
+**Autonomy:** [ ] Autonomous | [x] Requires User Input
+
+**Why input needed:** Design is subjective. Need user approval on color palette, typography choices, and CRT effect intensity before building all components.
+
+**Tasks:**
 - [ ] Review [Poolsuite.net](https://poolsuite.net) for inspiration
-- [ ] Define color palette (dark base, neon accents, gold)
-- [ ] Set up typography (monospace + serif + sans)
+- [ ] Create design tokens (colors, typography, spacing)
+- [ ] Build proof-of-concept with 2-3 team rows
+- [ ] **CHECKPOINT: Get user approval on design direction**
 - [ ] Create CRT/scanline effects (subtle, toggle-able)
-- [ ] Design team row with gradient backgrounds
-- [ ] Build component library:
+- [ ] Build full component library:
   - `LadderTable`
   - `TeamRow`
   - `RoundPicker`
   - `ViewTabs`
   - `Header`
 
-### Phase 1.6: Live Score Infrastructure (Day 5-6)
+**Acceptance Criteria:**
+- [ ] Design tokens defined in `tailwind.config.ts`
+- [ ] All 17 teams render with correct gradient colors
+- [ ] Monospace font used for numbers, serif for headings
+- [ ] CRT effect visible but not distracting
+- [ ] Mobile responsive (works on 375px width)
+- [ ] User approved design direction
 
-- [ ] Implement data source integration (based on Phase 1.1 research)
+**Eval Commands:**
+```bash
+# Check design tokens exist
+grep -c "neon" tailwind.config.ts    # Has neon colors
+
+# Visual check required - open in browser
+open http://localhost:3000
+
+# Mobile responsive check
+# Use browser devtools to test 375px width
+```
+
+**Learnings:** *(Fill after phase completion)*
+- What worked:
+- What didn't:
+- Context for next phase:
+
+---
+
+### Phase 1.6: Live Score Infrastructure
+
+**Autonomy:** [x] Autonomous | [ ] Requires User Input
+
+**Tasks:**
+- [ ] Implement data source integration (per Phase 1.1 recommendation)
 - [ ] Create cron job for live score polling (30s during games)
-- [ ] Build SSE endpoint for real-time client updates
+- [ ] Build SSE endpoint `/api/live` for real-time client updates
 - [ ] Add "live" indicators to active games
 - [ ] Implement ladder recalculation on score change
 
-### Phase 1.7: Stats Views (Day 6)
+**Acceptance Criteria:**
+- [ ] SSE endpoint streams score updates
+- [ ] Client receives updates without page refresh
+- [ ] Ladder recalculates within 5s of score change
+- [ ] "LIVE" indicator appears on in-progress games
+- [ ] No memory leaks in SSE connection handling
 
-- [ ] Attack view: PF, PF/game, ranked by attack
-- [ ] Defense view: PA, PA/game, ranked by defense
+**Eval Commands:**
+```bash
+# Test SSE endpoint
+curl -N localhost:3000/api/live
+
+# Simulate score update and verify ladder recalc
+# (will need manual testing during actual games)
+
+# Check for TypeScript errors
+npm run build
+```
+
+**Learnings:** *(Fill after phase completion)*
+- What worked:
+- What didn't:
+- Context for next phase:
+
+---
+
+### Phase 1.7: Stats Views
+
+**Autonomy:** [x] Autonomous | [ ] Requires User Input
+
+**Tasks:**
+- [ ] Attack view: PF, PF/game, ranked by offensive output
+- [ ] Defense view: PA, PA/game, ranked by defensive strength
 - [ ] View tabs for switching between Ladder/Attack/Defense
 - [ ] Port For/Against view from original project
 
-### Phase 1.8: Deployment (Day 7)
+**Acceptance Criteria:**
+- [ ] Attack view sorts by PF descending
+- [ ] Defense view sorts by PA ascending (lower = better)
+- [ ] Tab switching doesn't cause page reload
+- [ ] Stats match calculated values from ladder data
 
-- [ ] Create Vercel project
-- [ ] Configure environment variables
-- [ ] Research domain options:
-  - footyladder.com.au
-  - trueladder.com.au
-  - theladder.com.au
-- [ ] Purchase domain
+**Eval Commands:**
+```bash
+# Check attack endpoint
+curl -s "localhost:3000/api/ladder?view=attack" | jq '.[0].pointsFor'
+
+# Check defense endpoint
+curl -s "localhost:3000/api/ladder?view=defense" | jq '.[0].pointsAgainst'
+
+# Verify sorting
+curl -s "localhost:3000/api/ladder?view=attack" | jq '[.[0].pointsFor, .[1].pointsFor] | .[0] >= .[1]'
+```
+
+**Learnings:** *(Fill after phase completion)*
+- What worked:
+- What didn't:
+- Context for next phase:
+
+---
+
+### Phase 1.8: Deployment
+
+**Autonomy:** [ ] Autonomous | [x] Requires User Input
+
+**Why input needed:** Domain name selection and purchase requires user decision and payment.
+
+**Tasks:**
+- [ ] Create Vercel project and link to GitHub repo
+- [ ] Configure environment variables in Vercel
+- [ ] **CHECKPOINT: User decides domain name**
+- [ ] Research domain availability and pricing
+- [ ] **CHECKPOINT: User purchases domain**
 - [ ] Configure DNS with Vercel
 - [ ] Deploy and verify production
+- [ ] Test all functionality on production URL
+
+**Acceptance Criteria:**
+- [ ] Site accessible at custom domain (HTTPS)
+- [ ] All API routes work in production
+- [ ] SSE live updates work in production
+- [ ] Page loads in < 2s on mobile (Lighthouse check)
+- [ ] No console errors in production
+
+**Eval Commands:**
+```bash
+# Test production API
+curl -s https://[domain]/api/teams | jq length
+
+# Lighthouse performance check
+npx lighthouse https://[domain] --only-categories=performance
+
+# Check HTTPS
+curl -I https://[domain] | grep -i strict-transport
+```
+
+**Learnings:** *(Fill after phase completion)*
+- What worked:
+- What didn't:
+- Context for next phase:
+
+---
+
+## User Input Requirements
+
+> Summary of which phases need user input, enabling autonomous overnight runs.
+
+| Phase | Autonomous? | Input Needed | Can Be Deferred? |
+|-------|-------------|--------------|------------------|
+| 1.1 | Yes | - | - |
+| 1.2 | Yes | - | - |
+| 1.3 | Yes | - | - |
+| 1.4 | Yes | - | - |
+| 1.5 | **No** | Design approval | No - blocks component build |
+| 1.6 | Yes | - | - |
+| 1.7 | Yes | - | - |
+| 1.8 | **No** | Domain selection + purchase | No - blocks deployment |
+
+**Recommended Run Strategy:**
+- [x] **Front-loaded input** - Phases 1.1-1.4 can run autonomously overnight
+- [ ] **Checkpoint at 1.5** - Get design approval before continuing
+- [ ] **Checkpoint at 1.8** - Get domain decision before deployment
+
+**Optimal overnight run:** Phases 1.1 → 1.4 (project setup through schedule import)
 
 ---
 
