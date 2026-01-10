@@ -1,0 +1,72 @@
+@import "tailwindcss";
+
+/* Design tokens via CSS theme */
+@theme {
+  /* Base - Dark theme */
+  --color-bg-primary: #0a0a0a;
+  --color-bg-secondary: #1a1a1a;
+  --color-bg-card: #242424;
+
+  /* Accent - Retro neon */
+  --color-neon-green: #39ff14;
+  --color-neon-pink: #ff6b9d;
+  --color-neon-blue: #00d4ff;
+
+  /* Premium */
+  --color-gold: #ffd700;
+
+  /* Semantic */
+  --color-win: #22c55e;
+  --color-loss: #ef4444;
+  --color-draw: #eab308;
+  --color-finals: #3b82f6;
+
+  /* Typography */
+  --font-mono: "JetBrains Mono", "Fira Code", monospace;
+  --font-serif: "Playfair Display", Georgia, serif;
+  --font-sans: Inter, -apple-system, sans-serif;
+}
+
+body {
+  background-color: var(--color-bg-primary);
+  color: #ffffff;
+  font-family: var(--font-sans);
+}
+
+/* CRT scanline effect - subtle */
+.crt-effect {
+  position: relative;
+}
+
+.crt-effect::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.1),
+    rgba(0, 0, 0, 0.1) 1px,
+    transparent 1px,
+    transparent 2px
+  );
+  pointer-events: none;
+  z-index: 10;
+  opacity: 0.3;
+}
+
+/* Neon glow effect */
+.neon-glow {
+  text-shadow: 0 0 10px var(--color-neon-green), 0 0 20px var(--color-neon-green);
+}
+
+.neon-glow-pink {
+  text-shadow: 0 0 10px var(--color-neon-pink), 0 0 20px var(--color-neon-pink);
+}
+
+/* Gold accent */
+.gold-accent {
+  color: var(--color-gold);
+}
