@@ -54,14 +54,14 @@ By the end of this sprint, users can:
 
 #### Data Layer
 - [x] **Database Schema** - Teams, Games, LadderSnapshots, ScrapingLog
-- [ ] **Seed Data** - 17 teams with codes, colors, logos
+- [x] **Seed Data** - 17 teams with codes, colors, logos
 - [ ] **Historical Data** - 2025 season results (scraped)
 - [ ] **2026 Schedule** - Full season schedule with venues/times
 
 #### API Layer
-- [ ] **GET /api/ladder** - Current ladder with optional round param
-- [ ] **GET /api/games** - Games for a round, with live status
-- [ ] **GET /api/teams** - All teams with metadata
+- [x] **GET /api/ladder** - Current ladder with optional round param
+- [x] **GET /api/games** - Games for a round, with live status
+- [x] **GET /api/teams** - All teams with metadata
 - [ ] **GET /api/schedule** - 2026 season schedule
 - [ ] **POST /api/sync** - Trigger manual data refresh (protected)
 
@@ -141,19 +141,19 @@ cat docs/data-sources.md | head  # Has content
 **Autonomy:** [x] Autonomous | [ ] Requires User Input
 
 **Tasks:**
-- [ ] Port calculation logic from nrl-ladder:
+- [x] Port calculation logic from nrl-ladder:
   - `calculateWinPercentage()`
   - `sortLadder()` with tiebreakers
-  - `detectByeRounds()`
-- [ ] Create database schema (teams, games, ladder_snapshots)
-- [ ] Seed 17 teams with metadata (names, codes, colors)
-- [ ] Create API routes: `/api/ladder`, `/api/games`, `/api/teams`
+  - `detectByeRounds()` (via roundsPlayed tracking)
+- [x] Create database schema (teams, games, ladder_snapshots)
+- [x] Seed 17 teams with metadata (names, codes, colors)
+- [x] Create API routes: `/api/ladder`, `/api/games`, `/api/teams`
 
 **Acceptance Criteria:**
-- [ ] `calculateWinPercentage(10, 5, 1)` returns `65.625`
-- [ ] GET `/api/teams` returns 17 teams
-- [ ] GET `/api/ladder` returns sorted array with winPct field
-- [ ] No TypeScript errors in build
+- [x] `calculateWinPercentage(10, 5, 1)` returns `65.625`
+- [x] GET `/api/teams` returns 17 teams
+- [x] GET `/api/ladder` returns sorted array with winPct field
+- [x] No TypeScript errors in build
 
 **Eval Commands:**
 ```bash
@@ -163,10 +163,10 @@ curl -s localhost:3000/api/teams | jq '.[0]'     # Has name, shortCode, colors
 curl -s localhost:3000/api/ladder | jq '.[0].winPct'  # Has winPct field
 ```
 
-**Learnings:** *(Fill after phase completion)*
-- What worked:
-- What didn't:
-- Context for next phase:
+**Learnings:**
+- What worked: Clean separation of concerns - types.ts, calculations.ts, teams.ts, queries.ts, database.ts each have single responsibility. API routes are thin wrappers around query functions.
+- What didn't: N/A - phase went smoothly
+- Context for next phase: Database schema ready for game imports. Need to scrape 2025 data from Rugby League Project and use insertGame() to populate. calculateLadderFromGames() will handle ladder computation.
 
 ---
 
