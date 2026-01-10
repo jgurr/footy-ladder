@@ -416,11 +416,11 @@ curl -I https://[domain] | grep -i strict-transport
 | 1.8 | **No** | Domain selection + purchase | No - blocks deployment |
 
 **Recommended Run Strategy:**
-- [x] **Front-loaded input** - Phases 1.1-1.4 can run autonomously overnight
+- [x] **User online** - Sprint 1 runs with user present, checkpoints handled in real-time
 - [ ] **Checkpoint at 1.5** - Get design approval before continuing
 - [ ] **Checkpoint at 1.8** - Get domain decision before deployment
 
-**Optimal overnight run:** Phases 1.1 → 1.4 (project setup through schedule import)
+**Note:** Autonomy mapping included for template consistency and future reference. This sprint runs interactively.
 
 ---
 
