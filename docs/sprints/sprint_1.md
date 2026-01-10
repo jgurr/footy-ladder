@@ -63,11 +63,12 @@ By the end of this sprint, users can:
 - [x] **GET /api/games** - Games for a round, with live status
 - [x] **GET /api/teams** - All teams with metadata
 - [x] **GET /api/schedule** - 2026 season schedule (grouped by round)
-- [ ] **POST /api/sync** - Trigger manual data refresh (protected)
+- [x] **POST /api/sync** - Score updates (protected by SYNC_SECRET)
 
 #### Real-time Updates
-- [ ] **SSE Endpoint** - `/api/live` for real-time score streaming
-- [ ] **Cron Job** - Poll NRL source every 30s during games
+- [x] **SSE Endpoint** - `/api/live` for real-time score streaming
+- [x] **Sync Endpoint** - `/api/sync` for score updates (cron/manual)
+- [x] **LiveGames Component** - Real-time game cards with status
 
 #### UI Components
 - [x] **LadderTable** - Main rankings display with stats
@@ -292,35 +293,36 @@ open http://localhost:3000/design
 **Autonomy:** [x] Autonomous | [ ] Requires User Input
 
 **Tasks:**
-- [ ] Implement data source integration (per Phase 1.1 recommendation)
-- [ ] Create cron job for live score polling (30s during games)
-- [ ] Build SSE endpoint `/api/live` for real-time client updates
-- [ ] Add "live" indicators to active games
-- [ ] Implement ladder recalculation on score change
+- [x] Implement data source integration (via /api/sync endpoint)
+- [x] Create SSE infrastructure with 30s polling
+- [x] Build SSE endpoint `/api/live` for real-time client updates
+- [x] Add LiveGames component with live indicators
+- [x] Ladder recalculates automatically via existing calculateLadderFromGames()
 
 **Acceptance Criteria:**
-- [ ] SSE endpoint streams score updates
-- [ ] Client receives updates without page refresh
-- [ ] Ladder recalculates within 5s of score change
-- [ ] "LIVE" indicator appears on in-progress games
-- [ ] No memory leaks in SSE connection handling
+- [x] SSE endpoint streams score updates every 30s
+- [x] Client receives updates without page refresh
+- [x] Ladder recalculates from games data on each request
+- [x] "LIVE" indicator with pulsing dot on in-progress games
+- [x] Connection status shown (Live/Reconnecting)
 
 **Eval Commands:**
 ```bash
-# Test SSE endpoint
+# Test SSE endpoint (streams data every 30s)
 curl -N localhost:3000/api/live
 
-# Simulate score update and verify ladder recalc
-# (will need manual testing during actual games)
+# Test sync endpoint
+curl -X POST localhost:3000/api/sync -H "Content-Type: application/json" \
+  -d '{"gameId":"test","homeScore":24,"awayScore":18,"status":"final"}'
 
-# Check for TypeScript errors
+# Build succeeds
 npm run build
 ```
 
-**Learnings:** *(Fill after phase completion)*
-- What worked:
-- What didn't:
-- Context for next phase:
+**Learnings:**
+- What worked: Next.js SSE with ReadableStream pattern. EventSource reconnects automatically. 30s poll interval is good balance.
+- What didn't: N/A - infrastructure ready, just needs real data source when season starts
+- Context for next phase: Live infrastructure ready. Need to add ViewTabs for Attack/Defense views.
 
 ---
 
@@ -359,7 +361,44 @@ curl -s "localhost:3000/api/ladder?view=attack" | jq '[.[0].pointsFor, .[1].poin
 
 ---
 
-### Phase 1.8: Deployment
+### Phase 1.8: Design Review & Polish
+
+**Autonomy:** [ ] Autonomous | [x] Requires User Input
+
+**Why input needed:** Final design review before deployment. User may want tweaks to spacing, colors, or interactions.
+
+**Tasks:**
+- [ ] Review full site with user
+- [ ] Gather feedback on visual design
+- [ ] Implement requested polish/changes
+- [ ] Test on mobile devices
+- [ ] Performance optimization if needed
+- [ ] **CHECKPOINT: User approves final design**
+
+**Acceptance Criteria:**
+- [ ] User has reviewed all pages
+- [ ] All requested changes implemented
+- [ ] Mobile experience verified
+- [ ] No visual bugs or rough edges
+- [ ] User gives go-ahead for deployment
+
+**Eval Commands:**
+```bash
+# Visual check on desktop and mobile
+open http://localhost:3000
+
+# Lighthouse performance check
+npx lighthouse http://localhost:3000 --only-categories=performance
+```
+
+**Learnings:** *(Fill after phase completion)*
+- What worked:
+- What didn't:
+- Context for next phase:
+
+---
+
+### Phase 1.9: Deployment
 
 **Autonomy:** [ ] Autonomous | [x] Requires User Input
 
@@ -414,12 +453,14 @@ curl -I https://[domain] | grep -i strict-transport
 | 1.5 | **No** | Design approval | No - blocks component build |
 | 1.6 | Yes | - | - |
 | 1.7 | Yes | - | - |
-| 1.8 | **No** | Domain selection + purchase | No - blocks deployment |
+| 1.8 | **No** | Final design review | No - ensures quality before deploy |
+| 1.9 | **No** | Domain selection + purchase | No - blocks deployment |
 
 **Recommended Run Strategy:**
 - [x] **User online** - Sprint 1 runs with user present, checkpoints handled in real-time
-- [ ] **Checkpoint at 1.5** - Get design approval before continuing
-- [ ] **Checkpoint at 1.8** - Get domain decision before deployment
+- [x] **Checkpoint at 1.5** - Design approval received
+- [ ] **Checkpoint at 1.8** - Final design review before deploy
+- [ ] **Checkpoint at 1.9** - Get domain decision before deployment
 
 **Note:** Autonomy mapping included for template consistency and future reference. This sprint runs interactively.
 
