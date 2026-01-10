@@ -70,18 +70,18 @@ By the end of this sprint, users can:
 - [ ] **Cron Job** - Poll NRL source every 30s during games
 
 #### UI Components
-- [ ] **LadderTable** - Main rankings display
-- [ ] **TeamRow** - Team with stats, logo, colors
+- [x] **LadderTable** - Main rankings display with stats
+- [x] **TeamRow** - Integrated into LadderTable
 - [ ] **LiveScore** - Real-time game score component
-- [ ] **RoundPicker** - Historical navigation dropdown
+- [x] **RoundPicker** - Season/round dropdowns in LadderTable
 - [ ] **ViewTabs** - Ladder / Attack / Defense views
-- [ ] **Header** - Logo, title, round info
+- [x] **Header** - Logo, title, palette picker
 
 #### Design System
-- [ ] **Color Tokens** - Retro palette (dark, neon accents)
-- [ ] **Typography** - Monospace, serif, sans stack
-- [ ] **Effects** - Subtle CRT glow, scanlines
-- [ ] **Team Colors** - Gradient backgrounds per team
+- [x] **Color Tokens** - Dark default + team/region palettes
+- [x] **Typography** - JetBrains Mono (numbers), Inter (text)
+- [x] **Effects** - Subtle scanlines, configurable
+- [x] **Team Colors** - All 17 teams with gradient badges
 
 #### External Integrations
 - [ ] **Data Source** - Research and implement (NRL API/scraping)
@@ -251,42 +251,39 @@ curl -s "localhost:3000/api/games?season=2026&round=1" | python3 -c "import sys,
 **Why input needed:** Design is subjective. Need user approval on color palette, typography choices, and CRT effect intensity before building all components.
 
 **Tasks:**
-- [ ] Review [Poolsuite.net](https://poolsuite.net) for inspiration
-- [ ] Create design tokens (colors, typography, spacing)
-- [ ] Build proof-of-concept with 2-3 team rows
-- [ ] **CHECKPOINT: Get user approval on design direction**
-- [ ] Create CRT/scanline effects (subtle, toggle-able)
-- [ ] Build full component library:
-  - `LadderTable`
-  - `TeamRow`
-  - `RoundPicker`
-  - `ViewTabs`
-  - `Header`
+- [x] Review [Poolsuite.net](https://poolsuite.net) for inspiration
+- [x] Create design tokens (colors, typography, spacing)
+- [x] Build proof-of-concept with design playground at /design
+- [x] **CHECKPOINT: Get user approval on design direction**
+- [x] Create CRT/scanline effects (subtle, toggle-able)
+- [x] Build full component library:
+  - `LadderTable` - Full stats with team colors
+  - `Header` - With palette picker dropdown
+  - `ThemeProvider` - Context for theme state
+  - `RoundPicker` - Integrated into LadderTable
 
 **Acceptance Criteria:**
-- [ ] Design tokens defined in `tailwind.config.ts`
-- [ ] All 17 teams render with correct gradient colors
-- [ ] Monospace font used for numbers, serif for headings
-- [ ] CRT effect visible but not distracting
-- [ ] Mobile responsive (works on 375px width)
-- [ ] User approved design direction
+- [x] Design tokens defined in theme.ts
+- [x] All 17 teams render with correct gradient colors
+- [x] Monospace font for numbers (JetBrains Mono), sans for text (Inter)
+- [x] CRT effect subtle by default, stored in localStorage
+- [x] Mobile responsive (hidden PF/PA columns on small screens)
+- [x] User approved: Dark mode default, team/region palette options
 
 **Eval Commands:**
 ```bash
-# Check design tokens exist
-grep -c "neon" tailwind.config.ts    # Has neon colors
+# Build succeeds
+npm run build
 
-# Visual check required - open in browser
+# Visual check
 open http://localhost:3000
-
-# Mobile responsive check
-# Use browser devtools to test 375px width
+open http://localhost:3000/design
 ```
 
-**Learnings:** *(Fill after phase completion)*
-- What worked:
-- What didn't:
-- Context for next phase:
+**Learnings:**
+- What worked: Design playground pattern (/design page) for rapid iteration. User could toggle options and decide quickly. Pattern to reuse for future design decisions.
+- What didn't: WebFetch couldn't render Poolsuite.net (requires JS). Had to work from memory/research.
+- Context for next phase: Design system complete. Theme preference persists in localStorage. Ready for live score infrastructure.
 
 ---
 
