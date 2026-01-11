@@ -150,8 +150,8 @@ export function LadderTable() {
   const [view, setView] = useState<ViewType>("ladder");
   const [ladderSort, setLadderSort] = useState<LadderSortKey>("winPct");
   const [ladderSortDir, setLadderSortDir] = useState<SortDirection>("desc");
-  const [forAgainstSort, setForAgainstSort] = useState<ForAgainstSortKey>("paPerGame");
-  const [forAgainstSortDir, setForAgainstSortDir] = useState<SortDirection>("asc");
+  const [forAgainstSort, setForAgainstSort] = useState<ForAgainstSortKey>("pfPerGame");
+  const [forAgainstSortDir, setForAgainstSortDir] = useState<SortDirection>("desc");
   const [selectedTeamId, setSelectedTeamId] = useState<string | null>(null);
   const [teamSchedule, setTeamSchedule] = useState<TeamScheduleData | null>(null);
   const [selectedRound, setSelectedRound] = useState<number | null>(null);
@@ -435,7 +435,7 @@ export function LadderTable() {
 
       {/* View Tabs */}
       <div
-        className="mb-4 flex rounded-lg p-1"
+        className="mb-4 grid grid-cols-5 gap-1 rounded-lg p-1"
         style={{ background: "rgba(255,255,255,0.05)" }}
       >
         {(["ladder", "forAgainst", "scores", "next5", "team"] as ViewType[]).map((v) => (
@@ -448,7 +448,7 @@ export function LadderTable() {
                 setSelectedTeamId(ladder[0].team.id);
               }
             }}
-            className={`flex-1 rounded-md px-4 py-2 text-sm font-medium transition ${
+            className={`rounded-md px-2 py-2 text-xs sm:text-sm font-medium transition text-center leading-tight ${
               view === v ? "" : "opacity-60 hover:opacity-100"
             }`}
             style={{
@@ -456,7 +456,7 @@ export function LadderTable() {
               color: view === v ? "#000" : palette.text,
             }}
           >
-            {v === "ladder" ? "Ladder" : v === "forAgainst" ? "For/Against" : v === "scores" ? "Scores" : v === "next5" ? "Next 5" : "Team"}
+            {v === "ladder" ? "Ladder" : v === "forAgainst" ? <span>For/<br className="sm:hidden"/>Against</span> : v === "scores" ? "Scores" : v === "next5" ? <span>Next 5</span> : "Team"}
           </button>
         ))}
       </div>
@@ -711,10 +711,10 @@ export function LadderTable() {
       {/* Table (for ladder/forAgainst/next5 views) */}
       {view !== "scores" && view !== "team" && (
         <div
-          className="overflow-hidden rounded-lg border"
+          className="overflow-x-auto rounded-lg border"
           style={{ borderColor: palette.border }}
         >
-          <table className="w-full">
+          <table className="w-full min-w-[500px]">
             <thead>
               <tr
                 className="text-xs uppercase tracking-wider"
@@ -736,12 +736,12 @@ export function LadderTable() {
                 )}
                 {view === "forAgainst" && (
                   <>
-                    <th className="px-2 py-3 text-center font-mono">PF</th>
-                    <th className="px-2 py-3 text-center font-mono">PF/GM</th>
-                    <th className="px-2 py-3 text-center font-mono">PA</th>
-                    <th className="px-2 py-3 text-center font-mono">PA/GM</th>
-                    <th className="px-2 py-3 text-center font-mono">PD</th>
-                    <th className="px-2 py-3 text-center font-mono">PD/GM</th>
+                    <th className="px-1 py-3 text-center font-mono">PF</th>
+                    <th className="px-1 py-3 text-center font-mono">PF/GM</th>
+                    <th className="px-1 py-3 text-center font-mono">PA</th>
+                    <th className="px-1 py-3 text-center font-mono">PA/GM</th>
+                    <th className="px-1 py-3 text-center font-mono">PD</th>
+                    <th className="px-1 py-3 text-center font-mono">PD/GM</th>
                   </>
                 )}
                 {view === "next5" &&
@@ -792,7 +792,7 @@ export function LadderTable() {
                         onClick={() => handleTeamClick(entry.team.id)}
                         className="flex items-center gap-2 hover:opacity-80 transition"
                       >
-                        <TeamFlag teamId={entry.team.id} size={16} />
+                        <TeamFlag teamId={entry.team.id} size={14} />
                         <span className="font-medium text-sm">{entry.team.shortCode}</span>
                       </button>
                     </td>
@@ -866,43 +866,39 @@ export function LadderTable() {
                     {view === "forAgainst" && (
                       <>
                         <td
-                          className="px-2 py-2 text-center font-mono text-sm tabular-nums"
+                          className="px-1 py-2 text-center font-mono text-sm tabular-nums"
                           style={{
-                            color: "#22c55e",
                             background: forAgainstSort === "pointsFor" ? "rgba(255,255,255,0.1)" : undefined,
                           }}
                         >
                           {entry.pointsFor}
                         </td>
                         <td
-                          className="px-2 py-2 text-center font-mono text-sm tabular-nums"
+                          className="px-1 py-2 text-center font-mono text-sm tabular-nums"
                           style={{
-                            color: "#22c55e",
                             background: forAgainstSort === "pfPerGame" ? "rgba(255,255,255,0.1)" : undefined,
                           }}
                         >
                           {pfPerGame.toFixed(1)}
                         </td>
                         <td
-                          className="px-2 py-2 text-center font-mono text-sm tabular-nums"
+                          className="px-1 py-2 text-center font-mono text-sm tabular-nums"
                           style={{
-                            color: "#ef4444",
                             background: forAgainstSort === "pointsAgainst" ? "rgba(255,255,255,0.1)" : undefined,
                           }}
                         >
                           {entry.pointsAgainst}
                         </td>
                         <td
-                          className="px-2 py-2 text-center font-mono text-sm tabular-nums"
+                          className="px-1 py-2 text-center font-mono text-sm tabular-nums"
                           style={{
-                            color: "#ef4444",
                             background: forAgainstSort === "paPerGame" ? "rgba(255,255,255,0.1)" : undefined,
                           }}
                         >
                           {paPerGame.toFixed(1)}
                         </td>
                         <td
-                          className="px-2 py-2 text-center font-mono text-sm tabular-nums"
+                          className="px-1 py-2 text-center font-mono text-sm tabular-nums"
                           style={{
                             color:
                               entry.differential > 0
@@ -917,7 +913,7 @@ export function LadderTable() {
                           {entry.differential}
                         </td>
                         <td
-                          className="px-2 py-2 text-center font-mono text-sm tabular-nums"
+                          className="px-1 py-2 text-center font-mono text-sm tabular-nums"
                           style={{
                             color:
                               pdPerGame > 0
@@ -1014,12 +1010,8 @@ export function LadderTable() {
         )}
         {view === "forAgainst" && (
           <>
-            <span>
-              <span style={{ color: "#22c55e" }}>PF</span>=Points For
-            </span>
-            <span>
-              <span style={{ color: "#ef4444" }}>PA</span>=Points Against
-            </span>
+            <span>PF=Points For</span>
+            <span>PA=Points Against</span>
             <span>GM=Per Game</span>
           </>
         )}
