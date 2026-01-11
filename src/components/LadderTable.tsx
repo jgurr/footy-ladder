@@ -144,6 +144,9 @@ export function LadderTable() {
   const [games, setGames] = useState<Game[]>([]);
   const [loading, setLoading] = useState(true);
   const [roundsLoading, setRoundsLoading] = useState(true);
+  const [next5Loading, setNext5Loading] = useState(false);
+  const [gamesLoading, setGamesLoading] = useState(false);
+  const [teamLoading, setTeamLoading] = useState(false);
   const [season, setSeason] = useState(2025);
   const [round, setRound] = useState<number>(27);
   const [availableRounds, setAvailableRounds] = useState<number[]>([]);
@@ -235,6 +238,7 @@ export function LadderTable() {
     if (view !== "next5" || roundsLoading) return;
 
     async function fetchNext5() {
+      setNext5Loading(true);
       try {
         const params = new URLSearchParams({ season: String(season) });
         params.set("round", String(round));
@@ -244,6 +248,8 @@ export function LadderTable() {
         setNext5Data(data);
       } catch (error) {
         console.error("Failed to fetch next 5:", error);
+      } finally {
+        setNext5Loading(false);
       }
     }
     fetchNext5();
@@ -254,6 +260,7 @@ export function LadderTable() {
     if (view !== "scores" || roundsLoading) return;
 
     async function fetchGames() {
+      setGamesLoading(true);
       try {
         const res = await fetch(`/api/games?season=${season}&round=${round}&v=2`);
         const data = await res.json();
@@ -261,6 +268,8 @@ export function LadderTable() {
         setGames(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error("Failed to fetch games:", error);
+      } finally {
+        setGamesLoading(false);
       }
     }
     fetchGames();
@@ -271,6 +280,7 @@ export function LadderTable() {
     if (view !== "team" || !selectedTeamId) return;
 
     async function fetchTeamSchedule() {
+      setTeamLoading(true);
       try {
         const res = await fetch(`/api/schedule/team?season=${season}&teamId=${selectedTeamId}&v=2`);
         const data = await res.json();
@@ -281,6 +291,8 @@ export function LadderTable() {
         }
       } catch (error) {
         console.error("Failed to fetch team schedule:", error);
+      } finally {
+        setTeamLoading(false);
       }
     }
     fetchTeamSchedule();
@@ -510,7 +522,12 @@ export function LadderTable() {
       )}
 
       {/* Scores View */}
-      {view === "scores" && (
+      {view === "scores" && gamesLoading && (
+        <div className="flex h-64 items-center justify-center rounded-lg border" style={{ borderColor: palette.border }}>
+          <div className="font-mono" style={{ color: palette.accent }}>Loading scores...</div>
+        </div>
+      )}
+      {view === "scores" && !gamesLoading && (
         <div className="grid gap-3 sm:grid-cols-2">
           {games.map((game) => {
             const isFinal = game.status === "final";
@@ -584,7 +601,12 @@ export function LadderTable() {
       )}
 
       {/* Team View */}
-      {view === "team" && teamSchedule && (
+      {view === "team" && teamLoading && (
+        <div className="flex h-64 items-center justify-center rounded-lg border" style={{ borderColor: palette.border }}>
+          <div className="font-mono" style={{ color: palette.accent }}>Loading team...</div>
+        </div>
+      )}
+      {view === "team" && !teamLoading && teamSchedule && (
         <div>
           {/* Team Header with Picker */}
           <div className="mb-4 flex items-center gap-4">
@@ -709,8 +731,15 @@ export function LadderTable() {
         </div>
       )}
 
+      {/* Next5 Loading */}
+      {view === "next5" && next5Loading && (
+        <div className="flex h-64 items-center justify-center rounded-lg border" style={{ borderColor: palette.border }}>
+          <div className="font-mono" style={{ color: palette.accent }}>Loading schedule...</div>
+        </div>
+      )}
+
       {/* Table (for ladder/forAgainst/next5 views) */}
-      {view !== "scores" && view !== "team" && (
+      {view !== "scores" && view !== "team" && !(view === "next5" && next5Loading) && (
         <div
           className="overflow-hidden rounded-lg border"
           style={{ borderColor: palette.border }}

@@ -64,7 +64,7 @@ export async function getGamesByRound(season: number, round: number): Promise<Ga
            home_score as "homeScore", away_score as "awayScore", venue, kickoff, status, minute
     FROM games
     WHERE season = ${season} AND round = ${round}
-    ORDER BY kickoff
+    ORDER BY kickoff NULLS FIRST
   `;
   return rows as Game[];
 }
@@ -78,7 +78,7 @@ export async function getGamesBySeason(season: number): Promise<Game[]> {
            home_score as "homeScore", away_score as "awayScore", venue, kickoff, status, minute
     FROM games
     WHERE season = ${season}
-    ORDER BY round, kickoff
+    ORDER BY round, kickoff NULLS FIRST
   `;
   return rows as Game[];
 }
