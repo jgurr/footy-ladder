@@ -186,7 +186,7 @@ export function LadderTable() {
     async function fetchRounds() {
       setRoundsLoading(true);
       try {
-        const res = await fetch(`/api/rounds?season=${season}`);
+        const res = await fetch(`/api/rounds?season=${season}&v=2`);
         const data = await res.json();
         let rounds = (data.rounds as number[]).sort((a, b) => b - a);
 
@@ -218,7 +218,7 @@ export function LadderTable() {
         const params = new URLSearchParams({ season: String(season) });
         params.set("round", String(round));
 
-        const res = await fetch(`/api/ladder?${params}`);
+        const res = await fetch(`/api/ladder?${params}&v=2`);
         const data = await res.json();
         setLadder(data);
       } catch (error) {
@@ -239,7 +239,7 @@ export function LadderTable() {
         const params = new URLSearchParams({ season: String(season) });
         params.set("round", String(round));
 
-        const res = await fetch(`/api/schedule/next5?${params}`);
+        const res = await fetch(`/api/schedule/next5?${params}&v=2`);
         const data = await res.json();
         setNext5Data(data);
       } catch (error) {
@@ -255,7 +255,7 @@ export function LadderTable() {
 
     async function fetchGames() {
       try {
-        const res = await fetch(`/api/games?season=${season}&round=${round}`);
+        const res = await fetch(`/api/games?season=${season}&round=${round}&v=2`);
         const data = await res.json();
         // API returns array directly
         setGames(Array.isArray(data) ? data : []);
@@ -272,7 +272,7 @@ export function LadderTable() {
 
     async function fetchTeamSchedule() {
       try {
-        const res = await fetch(`/api/schedule/team?season=${season}&teamId=${selectedTeamId}`);
+        const res = await fetch(`/api/schedule/team?season=${season}&teamId=${selectedTeamId}&v=2`);
         const data = await res.json();
         setTeamSchedule(data);
         // Set selected round to latest round or current selection
