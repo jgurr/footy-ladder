@@ -30,6 +30,27 @@ const TEAM_NAME_MAP: Record<string, string> = {
   "Wests Tigers": "wst",
 };
 
+// Home venues for each team
+const HOME_VENUES: Record<string, string> = {
+  "Brisbane Broncos": "Suncorp Stadium",
+  "Canberra Raiders": "GIO Stadium",
+  "Canterbury-Bankstown Bulldogs": "Accor Stadium",
+  "Cronulla-Sutherland Sharks": "PointsBet Stadium",
+  "Dolphins": "Suncorp Stadium",
+  "Gold Coast Titans": "Cbus Super Stadium",
+  "Manly-Warringah Sea Eagles": "4 Pines Park",
+  "Melbourne Storm": "AAMI Park",
+  "Newcastle Knights": "McDonald Jones Stadium",
+  "North Queensland Cowboys": "Qld Country Bank Stadium",
+  "New Zealand Warriors": "Go Media Stadium",
+  "Parramatta Eels": "CommBank Stadium",
+  "Penrith Panthers": "BlueBet Stadium",
+  "South Sydney Rabbitohs": "Accor Stadium",
+  "St George Illawarra Dragons": "WIN Stadium",
+  "Sydney Roosters": "Allianz Stadium",
+  "Wests Tigers": "Campbelltown Stadium",
+};
+
 interface ScheduledGame {
   homeTeam: string;
   awayTeam: string;
@@ -444,7 +465,8 @@ export async function seed2026Season(): Promise<void> {
       baseDate.setHours(hour, 0, 0, 0);
 
       const kickoff = baseDate.toISOString();
-      const venue = game.venue || "TBD";
+      // Use specified venue, or fall back to home team's home ground
+      const venue = game.venue || HOME_VENUES[game.homeTeam] || "TBD";
 
       await sql`
         INSERT INTO games (id, season, round, home_team_id, away_team_id, home_score, away_score, venue, kickoff, status, minute)
