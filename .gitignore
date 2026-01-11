@@ -46,3 +46,5 @@ next-env.d.ts
 # Testing
 coverage/
 .nyc_output/
+data/footy.db-shm
+data/footy.db-wal
