@@ -50,9 +50,9 @@ const SEASON_2026: RoundData[] = [
   {
     round: 1,
     games: [
-      // Las Vegas games - Feb 28 (times TBD, using placeholders: ~11am & 1pm PST = 19:00 & 21:00 UTC)
-      { homeTeam: "Canterbury", awayTeam: "St Geo Illa", venue: "Allegiant Stadium", kickoffUTC: "2026-02-28T19:00:00Z" },
-      { homeTeam: "Newcastle", awayTeam: "North Qld", venue: "Allegiant Stadium", kickoffUTC: "2026-02-28T21:00:00Z" },
+      // Las Vegas games - Feb 28 (times TBD)
+      { homeTeam: "Canterbury", awayTeam: "St Geo Illa", venue: "Allegiant Stadium", kickoffUTC: null },
+      { homeTeam: "Newcastle", awayTeam: "North Qld", venue: "Allegiant Stadium", kickoffUTC: null },
       // Australian games - AEDT (UTC+11)
       { homeTeam: "Melbourne", awayTeam: "Parramatta", venue: "AAMI Park", kickoffUTC: "2026-03-05T09:00:00Z" }, // Thu 8pm AEDT
       { homeTeam: "Warriors", awayTeam: "Sydney", venue: "Go Media Stadium", kickoffUTC: "2026-03-06T09:00:00Z" }, // Fri 8pm AEDT

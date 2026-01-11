@@ -30,7 +30,7 @@ export async function initSchema(): Promise<void> {
       home_score INTEGER,
       away_score INTEGER,
       venue TEXT NOT NULL,
-      kickoff TEXT NOT NULL,
+      kickoff TEXT,
       status TEXT DEFAULT 'scheduled' CHECK(status IN ('scheduled', 'live', 'final', 'postponed')),
       minute INTEGER,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -65,6 +65,9 @@ export async function initSchema(): Promise<void> {
   await sql`CREATE INDEX IF NOT EXISTS idx_games_season_round ON games(season, round)`;
   await sql`CREATE INDEX IF NOT EXISTS idx_ladder_season_round ON ladder_snapshots(season, round)`;
   await sql`CREATE INDEX IF NOT EXISTS idx_games_status ON games(status)`;
+
+  // Migration: Allow NULL kickoff times (for TBD games like Las Vegas)
+  await sql`ALTER TABLE games ALTER COLUMN kickoff DROP NOT NULL`;
 }
 
 // Helper to generate unique IDs
