@@ -49,12 +49,19 @@ export async function GET(request: NextRequest) {
       (r) => r <= 27
     );
 
+    // Cache headers: 2025 is immutable, 2026 revalidates hourly
+    const cacheControl = season === 2025
+      ? "public, max-age=31536000, immutable"
+      : "public, max-age=3600, stale-while-revalidate=86400";
+
     return NextResponse.json({
       season,
       currentRound,
       roundNumbers,
       totalByes: getTotalByesForSeason(season),
       fixtures: result,
+    }, {
+      headers: { "Cache-Control": cacheControl },
     });
   } catch (error) {
     console.error("Schedule API error:", error);

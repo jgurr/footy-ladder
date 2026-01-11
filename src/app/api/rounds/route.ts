@@ -29,10 +29,17 @@ export async function GET(request: NextRequest) {
     const rounds = rows.map((r) => r.round);
     const latestFinalRound = finalRows[0]?.round || 1;
 
+    // Cache headers: 2025 is immutable, 2026 revalidates hourly
+    const cacheControl = season === 2025
+      ? "public, max-age=31536000, immutable"
+      : "public, max-age=3600, stale-while-revalidate=86400";
+
     return NextResponse.json({
       season,
       rounds,
       latestRound: latestFinalRound || rounds[0] || 1,
+    }, {
+      headers: { "Cache-Control": cacheControl },
     });
   } catch (error) {
     console.error("Rounds API error:", error);

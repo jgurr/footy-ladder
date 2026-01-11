@@ -32,7 +32,17 @@ export async function GET(request: NextRequest) {
       awayTeam: getTeamById(game.awayTeamId),
     }));
 
-    return NextResponse.json(enrichedGames);
+    // Cache headers: 2025 is immutable, 2026 uses shorter cache for live updates
+    const hasLiveGames = enrichedGames.some((g: any) => g.status === "live");
+    const cacheControl = season === 2025
+      ? "public, max-age=31536000, immutable"
+      : hasLiveGames
+        ? "public, max-age=30, stale-while-revalidate=60"
+        : "public, max-age=3600, stale-while-revalidate=86400";
+
+    return NextResponse.json(enrichedGames, {
+      headers: { "Cache-Control": cacheControl },
+    });
   } catch (error) {
     console.error("Games API error:", error);
     return NextResponse.json(
