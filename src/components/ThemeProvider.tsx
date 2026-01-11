@@ -23,8 +23,8 @@ const ThemeContext = createContext<ThemeContextType | null>(null);
 
 // Default theme for SSR/prerendering
 const defaultTheme: ThemeContextType = {
-  palette: PALETTES.blues,
-  paletteKey: "blues",
+  palette: PALETTES.dark,
+  paletteKey: "dark",
   effectLevel: "subtle",
   setPaletteKey: () => {},
   setEffectLevel: () => {},
@@ -44,7 +44,7 @@ interface ThemeProviderProps {
 }
 
 export function ThemeProvider({ children }: ThemeProviderProps) {
-  const [paletteKey, setPaletteKey] = useState<PaletteKey>("blues");
+  const [paletteKey, setPaletteKey] = useState<PaletteKey>("dark");
   const [effectLevel, setEffectLevel] = useState<EffectLevel>("subtle");
   const [mounted, setMounted] = useState(false);
 
@@ -82,8 +82,8 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     return (
       <div
         style={{
-          background: PALETTES.blues.bg,
-          color: PALETTES.blues.text,
+          background: PALETTES.dark.bg,
+          color: PALETTES.dark.text,
           minHeight: "100vh",
         }}
       >

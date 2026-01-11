@@ -30,6 +30,17 @@ export const TEAM_COLORS: Record<string, { name: string; primary: string; second
 
 // Theme palettes
 export const PALETTES = {
+  dark: {
+    name: "Dark",
+    bg: "#0f0f0f",
+    text: "#e5e5e5",
+    textMuted: "#888888",
+    accent: "#ffffff",
+    highlight: "#00A8E8",
+    positive: "#4ade80",
+    negative: "#f87171",
+    border: "rgba(255,255,255,0.1)",
+  },
   blues: {
     name: "Blues",
     bg: "#0a1628",
@@ -94,7 +105,7 @@ export interface ThemePalette {
  * Get palette by key
  */
 export function getPalette(key: string): ThemePalette {
-  return PALETTES[key as PaletteKey] || PALETTES.blues;
+  return PALETTES[key as PaletteKey] || PALETTES.dark;
 }
 
 // Typography configuration
