@@ -985,7 +985,7 @@ export function LadderTable() {
           <>
             <div className="flex items-center gap-2">
               <span className="h-4 w-1 rounded-sm" style={{ background: "#FDB813" }} />
-              Top 4 (Home Final)
+              Top 4
             </div>
             <div className="flex items-center gap-2">
               <span className="h-4 w-1 rounded-sm" style={{ background: "#00A651" }} />

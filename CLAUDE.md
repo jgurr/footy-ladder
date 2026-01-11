@@ -52,6 +52,10 @@ Inspired by [Poolsuite.net](https://poolsuite.net):
 
 This project shares Claude Code skills with [Bonnie](/Users/jeffgurr/Documents/Bonnie). The original prototype lives at `/Users/jeffgurr/nrl-ladder`.
 
+## Critical Data Rule
+
+**NEVER** take data from the original nrl-ladder project (`/Users/jeffgurr/nrl-ladder`). All game data for footy-ladder was scraped specifically for this project from official sources (Rugby League Project, NRL.com). If you need to restore or reference historical data, use git history from THIS repository only.
+
 ## Current Sprint
 
 See `docs/sprints/` for current sprint documentation.
