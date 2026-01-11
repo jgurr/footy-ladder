@@ -1,15 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import {
-  getGamesByRound,
-  getGamesBySeason,
-  initializeDatabase,
-} from "@/lib/queries";
+import { getGamesByRound, getGamesBySeason } from "@/lib/queries";
 import { getTeamById } from "@/lib/teams";
 
 export async function GET(request: NextRequest) {
   try {
-    // Initialize database on first request
-    await initializeDatabase();
 
     const searchParams = request.nextUrl.searchParams;
     const season = parseInt(searchParams.get("season") || "2026");

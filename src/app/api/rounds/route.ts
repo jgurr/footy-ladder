@@ -1,10 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { sql } from "@vercel/postgres";
-import { initializeDatabase } from "@/lib/queries";
 
 export async function GET(request: NextRequest) {
   try {
-    await initializeDatabase();
 
     const searchParams = request.nextUrl.searchParams;
     const season = parseInt(searchParams.get("season") || "2025");

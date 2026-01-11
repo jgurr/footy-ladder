@@ -3,12 +3,10 @@ import {
   getLadder,
   getNext5ForAllTeams,
   getTotalByesForSeason,
-  initializeDatabase,
 } from "@/lib/queries";
 
 export async function GET(request: NextRequest) {
   try {
-    await initializeDatabase();
 
     const searchParams = request.nextUrl.searchParams;
     const season = parseInt(searchParams.get("season") || "2026");

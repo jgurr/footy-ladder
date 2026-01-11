@@ -1,11 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getLadder, initializeDatabase } from "@/lib/queries";
+import { getLadder } from "@/lib/queries";
 import { sortByAttack, sortByDefense } from "@/lib/calculations";
 
 export async function GET(request: NextRequest) {
   try {
-    // Initialize database on first request
-    await initializeDatabase();
 
     const searchParams = request.nextUrl.searchParams;
     const season = parseInt(searchParams.get("season") || "2026");
