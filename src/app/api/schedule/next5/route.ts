@@ -44,8 +44,8 @@ export async function GET(request: NextRequest) {
       result[teamId] = fixtures;
     }
 
-    // Get round numbers for column headers
-    const roundNumbers = Array.from({ length: 5 }, (_, i) => currentRound + 1 + i).filter(
+    // Get round numbers for column headers (current round + next 4)
+    const roundNumbers = Array.from({ length: 5 }, (_, i) => currentRound + i).filter(
       (r) => r <= 27
     );
 

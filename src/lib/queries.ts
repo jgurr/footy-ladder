@@ -404,7 +404,7 @@ export async function getNext5ForAllTeams(
   >();
 
   for (const team of NRL_TEAMS) {
-    const fixtures = await getUpcomingGamesForTeam(season, team.id, currentRound + 1, 5);
+    const fixtures = await getUpcomingGamesForTeam(season, team.id, currentRound, 5);
     result.set(
       team.id,
       fixtures.map((f) => ({

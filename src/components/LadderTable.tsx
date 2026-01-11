@@ -195,8 +195,8 @@ export function LadderTable() {
         }
 
         setAvailableRounds(rounds);
-        // Set to most recent round
-        setRound(rounds[0]);
+        // Set to most recent round for 2025, round 1 for future seasons
+        setRound(season === 2025 ? rounds[0] : 1);
       } catch (error) {
         console.error("Failed to fetch rounds:", error);
         setAvailableRounds([1]);
