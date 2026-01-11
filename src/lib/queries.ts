@@ -386,6 +386,114 @@ export function saveLadderSnapshot(entries: LadderEntry[]): void {
 }
 
 /**
+ * Get upcoming games for a team (next N rounds from current round)
+ */
+export function getUpcomingGamesForTeam(
+  season: number,
+  teamId: string,
+  fromRound: number,
+  count: number = 5
+): Array<{
+  round: number;
+  opponentId: string | null;
+  isHome: boolean;
+  opponentPosition?: number;
+}> {
+  const db = getDb();
+
+  const results: Array<{
+    round: number;
+    opponentId: string | null;
+    isHome: boolean;
+    opponentPosition?: number;
+  }> = [];
+
+  // Get games for the next N rounds
+  for (let r = fromRound; r < fromRound + count && r <= 27; r++) {
+    const game = db
+      .prepare(
+        `
+      SELECT round, home_team_id, away_team_id
+      FROM games
+      WHERE season = ? AND round = ? AND (home_team_id = ? OR away_team_id = ?)
+    `
+      )
+      .get(season, r, teamId, teamId) as {
+      round: number;
+      home_team_id: string;
+      away_team_id: string;
+    } | undefined;
+
+    if (game) {
+      const isHome = game.home_team_id === teamId;
+      results.push({
+        round: r,
+        opponentId: isHome ? game.away_team_id : game.home_team_id,
+        isHome,
+      });
+    } else {
+      // Bye round
+      results.push({
+        round: r,
+        opponentId: null,
+        isHome: false,
+      });
+    }
+  }
+
+  return results;
+}
+
+/**
+ * Get next 5 fixtures for all teams (for ladder Next 5 view)
+ */
+export function getNext5ForAllTeams(
+  season: number,
+  currentRound: number,
+  ladderPositions: Map<string, number>
+): Map<
+  string,
+  Array<{
+    round: number;
+    opponentId: string | null;
+    isHome: boolean;
+    opponentPosition: number;
+  }>
+> {
+  const result = new Map<
+    string,
+    Array<{
+      round: number;
+      opponentId: string | null;
+      isHome: boolean;
+      opponentPosition: number;
+    }>
+  >();
+
+  for (const team of NRL_TEAMS) {
+    const fixtures = getUpcomingGamesForTeam(season, team.id, currentRound + 1, 5);
+    result.set(
+      team.id,
+      fixtures.map((f) => ({
+        ...f,
+        opponentPosition: f.opponentId ? ladderPositions.get(f.opponentId) || 0 : 0,
+      }))
+    );
+  }
+
+  return result;
+}
+
+/**
+ * Get total byes in a season for a team
+ */
+export function getTotalByesForSeason(season: number): number {
+  // 2026 has 3 byes per team
+  // 2025 varied but was also around 3
+  return 3;
+}
+
+/**
  * Initialize database with teams
  */
 export function initializeDatabase(): void {
