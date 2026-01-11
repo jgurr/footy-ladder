@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
 
     // Get current ladder to know positions
     const ladder = await getLadder(season, round);
-    const currentRound = ladder[0]?.round || 0;
+    const currentRound = round || ladder[0]?.round || 1;
 
     // Build position map
     const positions = new Map<string, number>();

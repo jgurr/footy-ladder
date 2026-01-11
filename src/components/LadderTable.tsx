@@ -150,8 +150,8 @@ export function LadderTable() {
   const [view, setView] = useState<ViewType>("ladder");
   const [ladderSort, setLadderSort] = useState<LadderSortKey>("winPct");
   const [ladderSortDir, setLadderSortDir] = useState<SortDirection>("desc");
-  const [forAgainstSort, setForAgainstSort] = useState<ForAgainstSortKey>("paPerGame");
-  const [forAgainstSortDir, setForAgainstSortDir] = useState<SortDirection>("asc");
+  const [forAgainstSort, setForAgainstSort] = useState<ForAgainstSortKey>("pfPerGame");
+  const [forAgainstSortDir, setForAgainstSortDir] = useState<SortDirection>("desc");
   const [selectedTeamId, setSelectedTeamId] = useState<string | null>(null);
   const [teamSchedule, setTeamSchedule] = useState<TeamScheduleData | null>(null);
   const [selectedRound, setSelectedRound] = useState<number | null>(null);
@@ -737,11 +737,11 @@ export function LadderTable() {
                 {view === "forAgainst" && (
                   <>
                     <th className="px-0.5 py-2 text-center font-mono">PF</th>
-                    <th className="px-0.5 py-2 text-center font-mono">GM</th>
+                    <th className="px-0.5 py-2 text-center font-mono">PF/GM</th>
                     <th className="px-0.5 py-2 text-center font-mono">PA</th>
-                    <th className="px-0.5 py-2 text-center font-mono">GM</th>
+                    <th className="px-0.5 py-2 text-center font-mono">PA/GM</th>
                     <th className="px-0.5 py-2 text-center font-mono">PD</th>
-                    <th className="px-0.5 py-2 text-center font-mono">GM</th>
+                    <th className="px-0.5 py-2 text-center font-mono">PD/GM</th>
                   </>
                 )}
                 {view === "next5" &&

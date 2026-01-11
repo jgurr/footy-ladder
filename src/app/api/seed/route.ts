@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { sql } from "@vercel/postgres";
 import { initializeDatabase, getGamesBySeason } from "@/lib/queries";
 import { seed2025Season } from "@/lib/seed-2025";
 import { seed2026Season } from "@/lib/seed-2026";
@@ -25,6 +26,11 @@ export async function POST(request: NextRequest) {
   try {
     console.log("Initializing database...");
     await initializeDatabase();
+
+    // Clear existing games to prevent duplicates
+    console.log("Clearing existing games...");
+    await sql`DELETE FROM games WHERE season IN (2025, 2026)`;
+    await sql`DELETE FROM ladder_snapshots WHERE season IN (2025, 2026)`;
 
     console.log("Seeding 2025 season data...");
     await seed2025Season();
