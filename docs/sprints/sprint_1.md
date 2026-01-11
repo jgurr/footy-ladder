@@ -18,7 +18,7 @@
 
 **Branch:** `main` (initial development)
 
-**Status:** In Progress
+**Status:** Complete
 
 **Depends on:** None (first sprint)
 
@@ -368,19 +368,19 @@ npm run build
 **Why input needed:** Final design review before deployment. User may want tweaks to spacing, colors, or interactions.
 
 **Tasks:**
-- [ ] Review full site with user
-- [ ] Gather feedback on visual design
-- [ ] Implement requested polish/changes
-- [ ] Test on mobile devices
-- [ ] Performance optimization if needed
-- [ ] **CHECKPOINT: User approves final design**
+- [x] Review full site with user
+- [x] Gather feedback on visual design
+- [x] Implement requested polish/changes
+- [x] Test on mobile devices
+- [x] Performance optimization if needed
+- [x] **CHECKPOINT: User approves final design**
 
 **Acceptance Criteria:**
-- [ ] User has reviewed all pages
-- [ ] All requested changes implemented
-- [ ] Mobile experience verified
-- [ ] No visual bugs or rough edges
-- [ ] User gives go-ahead for deployment
+- [x] User has reviewed all pages
+- [x] All requested changes implemented
+- [x] Mobile experience verified
+- [x] No visual bugs or rough edges
+- [x] User gives go-ahead for deployment
 
 **Eval Commands:**
 ```bash
@@ -391,10 +391,10 @@ open http://localhost:3000
 npx lighthouse http://localhost:3000 --only-categories=performance
 ```
 
-**Learnings:** *(Fill after phase completion)*
-- What worked:
-- What didn't:
-- Context for next phase:
+**Learnings:**
+- What worked: Iterative feedback loop - user flagged issues (duplicates, loading flash, Vegas games) and fixes were applied immediately
+- What didn't: Initial mobile layout had horizontal scroll; fixed with tighter spacing
+- Context for next phase: Design approved, ready for production deployment
 
 ---
 
@@ -405,21 +405,21 @@ npx lighthouse http://localhost:3000 --only-categories=performance
 **Why input needed:** Domain name selection and purchase requires user decision and payment.
 
 **Tasks:**
-- [ ] Create Vercel project and link to GitHub repo
-- [ ] Configure environment variables in Vercel
-- [ ] **CHECKPOINT: User decides domain name**
-- [ ] Research domain availability and pricing
-- [ ] **CHECKPOINT: User purchases domain**
-- [ ] Configure DNS with Vercel
-- [ ] Deploy and verify production
-- [ ] Test all functionality on production URL
+- [x] Create Vercel project and link to GitHub repo
+- [x] Configure environment variables in Vercel
+- [x] **CHECKPOINT: User decides domain name**
+- [x] Research domain availability and pricing
+- [x] **CHECKPOINT: User purchases domain**
+- [x] Configure DNS with Vercel
+- [x] Deploy and verify production
+- [x] Test all functionality on production URL
 
 **Acceptance Criteria:**
-- [ ] Site accessible at custom domain (HTTPS)
-- [ ] All API routes work in production
-- [ ] SSE live updates work in production
-- [ ] Page loads in < 2s on mobile (Lighthouse check)
-- [ ] No console errors in production
+- [x] Site accessible at custom domain (HTTPS)
+- [x] All API routes work in production
+- [x] SSE live updates work in production
+- [x] Page loads in < 2s on mobile (Lighthouse check)
+- [x] No console errors in production
 
 **Eval Commands:**
 ```bash
@@ -433,10 +433,10 @@ npx lighthouse https://[domain] --only-categories=performance
 curl -I https://[domain] | grep -i strict-transport
 ```
 
-**Learnings:** *(Fill after phase completion)*
-- What worked:
-- What didn't:
-- Context for next phase:
+**Learnings:**
+- What worked: Vercel deployment with Postgres integration was seamless
+- What didn't: N/A
+- Context for next phase: Sprint 1 complete. Ready for Sprint 2 features (ELO ratings, share images, etc.)
 
 ---
 
@@ -459,8 +459,8 @@ curl -I https://[domain] | grep -i strict-transport
 **Recommended Run Strategy:**
 - [x] **User online** - Sprint 1 runs with user present, checkpoints handled in real-time
 - [x] **Checkpoint at 1.5** - Design approval received
-- [ ] **Checkpoint at 1.8** - Final design review before deploy
-- [ ] **Checkpoint at 1.9** - Get domain decision before deployment
+- [x] **Checkpoint at 1.8** - Final design review before deploy
+- [x] **Checkpoint at 1.9** - Get domain decision before deployment
 
 **Note:** Autonomy mapping included for template consistency and future reference. This sprint runs interactively.
 
@@ -689,7 +689,7 @@ VERCEL_URL=xxx
 
 ### Metrics
 - **Duration:** 1 day (January 10, 2026)
-- **Phases Completed:** 7/9 (1.8 Design Review and 1.9 Deployment remaining)
+- **Phases Completed:** 9/9
 - **Commits:** 35
 - **Key Files Changed:**
   - `src/components/LadderTable.tsx` - Main UI component with all views
