@@ -9,10 +9,9 @@ out/
 build/
 dist/
 
-# Database
-*.db
+# Database (local only - footy.db is included for deployment)
 *.sqlite
-data/
+data/nrl.db
 
 # Environment
 .env
