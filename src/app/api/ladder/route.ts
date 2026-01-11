@@ -5,7 +5,7 @@ import { sortByAttack, sortByDefense } from "@/lib/calculations";
 export async function GET(request: NextRequest) {
   try {
     // Initialize database on first request
-    initializeDatabase();
+    await initializeDatabase();
 
     const searchParams = request.nextUrl.searchParams;
     const season = parseInt(searchParams.get("season") || "2026");
@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
       : undefined;
     const view = searchParams.get("view") || "ladder";
 
-    let ladder = getLadder(season, round);
+    let ladder = await getLadder(season, round);
 
     // Apply view-specific sorting
     if (view === "attack") {

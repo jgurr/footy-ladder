@@ -1,5 +1,5 @@
-import { getDb, generateId } from "./database";
-import { NRL_TEAMS, getTeamById } from "./teams";
+import { sql, generateId, initSchema } from "./database";
+import { NRL_TEAMS } from "./teams";
 import {
   calculateWinPercentage,
   calculateDifferential,
@@ -9,119 +9,91 @@ import {
 } from "./calculations";
 import type { Team, Game, LadderEntry, GameStatus } from "./types";
 
+let schemaInitialized = false;
+
+/**
+ * Ensure schema and teams are initialized
+ */
+export async function initializeDatabase(): Promise<void> {
+  if (schemaInitialized) return;
+
+  await initSchema();
+  await seedTeams();
+  schemaInitialized = true;
+}
+
 /**
  * Seed the database with NRL teams
  */
-export function seedTeams(): void {
-  const db = getDb();
-
-  const insertTeam = db.prepare(`
-    INSERT OR REPLACE INTO teams (id, name, location, short_code, primary_color, secondary_color, logo_url)
-    VALUES (?, ?, ?, ?, ?, ?, ?)
-  `);
-
-  const insertMany = db.transaction((teams: Team[]) => {
-    for (const team of teams) {
-      insertTeam.run(
-        team.id,
-        team.name,
-        team.location,
-        team.shortCode,
-        team.primaryColor,
-        team.secondaryColor,
-        team.logoUrl || null
-      );
-    }
-  });
-
-  insertMany(NRL_TEAMS);
+export async function seedTeams(): Promise<void> {
+  for (const team of NRL_TEAMS) {
+    await sql`
+      INSERT INTO teams (id, name, location, short_code, primary_color, secondary_color, logo_url)
+      VALUES (${team.id}, ${team.name}, ${team.location}, ${team.shortCode}, ${team.primaryColor}, ${team.secondaryColor}, ${team.logoUrl || null})
+      ON CONFLICT (id) DO UPDATE SET
+        name = EXCLUDED.name,
+        location = EXCLUDED.location,
+        short_code = EXCLUDED.short_code,
+        primary_color = EXCLUDED.primary_color,
+        secondary_color = EXCLUDED.secondary_color,
+        logo_url = EXCLUDED.logo_url
+    `;
+  }
 }
 
 /**
  * Get all teams from database
  */
-export function getAllTeams(): Team[] {
-  const db = getDb();
-  const rows = db
-    .prepare(
-      `
-    SELECT id, name, location, short_code as shortCode,
-           primary_color as primaryColor, secondary_color as secondaryColor,
-           logo_url as logoUrl
+export async function getAllTeams(): Promise<Team[]> {
+  const { rows } = await sql`
+    SELECT id, name, location, short_code as "shortCode",
+           primary_color as "primaryColor", secondary_color as "secondaryColor",
+           logo_url as "logoUrl"
     FROM teams
     ORDER BY name
-  `
-    )
-    .all() as Team[];
-
-  return rows;
+  `;
+  return rows as Team[];
 }
 
 /**
  * Get games for a specific round
  */
-export function getGamesByRound(season: number, round: number): Game[] {
-  const db = getDb();
-  const rows = db
-    .prepare(
-      `
-    SELECT id, season, round, home_team_id as homeTeamId, away_team_id as awayTeamId,
-           home_score as homeScore, away_score as awayScore, venue, kickoff, status, minute
+export async function getGamesByRound(season: number, round: number): Promise<Game[]> {
+  const { rows } = await sql`
+    SELECT id, season, round, home_team_id as "homeTeamId", away_team_id as "awayTeamId",
+           home_score as "homeScore", away_score as "awayScore", venue, kickoff, status, minute
     FROM games
-    WHERE season = ? AND round = ?
+    WHERE season = ${season} AND round = ${round}
     ORDER BY kickoff
-  `
-    )
-    .all(season, round) as Game[];
-
-  return rows;
+  `;
+  return rows as Game[];
 }
 
 /**
  * Get all games for a season
  */
-export function getGamesBySeason(season: number): Game[] {
-  const db = getDb();
-  const rows = db
-    .prepare(
-      `
-    SELECT id, season, round, home_team_id as homeTeamId, away_team_id as awayTeamId,
-           home_score as homeScore, away_score as awayScore, venue, kickoff, status, minute
+export async function getGamesBySeason(season: number): Promise<Game[]> {
+  const { rows } = await sql`
+    SELECT id, season, round, home_team_id as "homeTeamId", away_team_id as "awayTeamId",
+           home_score as "homeScore", away_score as "awayScore", venue, kickoff, status, minute
     FROM games
-    WHERE season = ?
+    WHERE season = ${season}
     ORDER BY round, kickoff
-  `
-    )
-    .all(season) as Game[];
-
-  return rows;
+  `;
+  return rows as Game[];
 }
 
 /**
  * Insert a game
  */
-export function insertGame(game: Omit<Game, "id">): string {
-  const db = getDb();
+export async function insertGame(game: Omit<Game, "id">): Promise<string> {
   const id = generateId();
 
-  db.prepare(
-    `
+  await sql`
     INSERT INTO games (id, season, round, home_team_id, away_team_id, home_score, away_score, venue, kickoff, status, minute)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `
-  ).run(
-    id,
-    game.season,
-    game.round,
-    game.homeTeamId,
-    game.awayTeamId,
-    game.homeScore,
-    game.awayScore,
-    game.venue,
-    game.kickoff,
-    game.status,
-    game.minute || null
-  );
+    VALUES (${id}, ${game.season}, ${game.round}, ${game.homeTeamId}, ${game.awayTeamId},
+            ${game.homeScore}, ${game.awayScore}, ${game.venue}, ${game.kickoff}, ${game.status}, ${game.minute || null})
+  `;
 
   return id;
 }
@@ -129,49 +101,34 @@ export function insertGame(game: Omit<Game, "id">): string {
 /**
  * Update game score
  */
-export function updateGameScore(
+export async function updateGameScore(
   gameId: string,
   homeScore: number,
   awayScore: number,
   status: GameStatus,
   minute?: number
-): void {
-  const db = getDb();
-
-  db.prepare(
-    `
+): Promise<void> {
+  await sql`
     UPDATE games
-    SET home_score = ?, away_score = ?, status = ?, minute = ?, updated_at = CURRENT_TIMESTAMP
-    WHERE id = ?
-  `
-  ).run(homeScore, awayScore, status, minute || null, gameId);
+    SET home_score = ${homeScore}, away_score = ${awayScore}, status = ${status},
+        minute = ${minute || null}, updated_at = CURRENT_TIMESTAMP
+    WHERE id = ${gameId}
+  `;
 }
 
 /**
  * Calculate ladder from games for a specific round
  */
-export function calculateLadderFromGames(
+export async function calculateLadderFromGames(
   season: number,
   upToRound: number
-): LadderEntry[] {
-  const db = getDb();
-
+): Promise<LadderEntry[]> {
   // Get all completed games up to the specified round
-  const games = db
-    .prepare(
-      `
+  const { rows: games } = await sql`
     SELECT home_team_id, away_team_id, home_score, away_score, round
     FROM games
-    WHERE season = ? AND round <= ? AND status = 'final'
-  `
-    )
-    .all(season, upToRound) as {
-    home_team_id: string;
-    away_team_id: string;
-    home_score: number;
-    away_score: number;
-    round: number;
-  }[];
+    WHERE season = ${season} AND round <= ${upToRound} AND status = 'final'
+  `;
 
   // Initialize stats for all teams
   const stats = new Map<
@@ -283,41 +240,33 @@ export function calculateLadderFromGames(
 /**
  * Get or calculate ladder for a specific round
  */
-export function getLadder(season: number, round?: number): LadderEntry[] {
-  const db = getDb();
-
+export async function getLadder(season: number, round?: number): Promise<LadderEntry[]> {
   // If no round specified, find the latest round with completed games
+  let currentRound: number;
   if (!round) {
-    const latestRound = db
-      .prepare(
-        `
-      SELECT MAX(round) as maxRound
+    const { rows } = await sql`
+      SELECT MAX(round) as "maxRound"
       FROM games
-      WHERE season = ? AND status = 'final'
-    `
-      )
-      .get(season) as { maxRound: number | null };
-
-    round = latestRound?.maxRound || 1;
+      WHERE season = ${season} AND status = 'final'
+    `;
+    currentRound = rows[0]?.maxRound || 1;
+  } else {
+    currentRound = round;
   }
 
   // Check if we have a snapshot for this round
-  const snapshot = db
-    .prepare(
-      `
-    SELECT ls.*, t.name, t.location, t.short_code as shortCode,
-           t.primary_color as primaryColor, t.secondary_color as secondaryColor,
-           t.logo_url as logoUrl
+  const { rows: snapshot } = await sql`
+    SELECT ls.*, t.name, t.location, t.short_code as "shortCode",
+           t.primary_color as "primaryColor", t.secondary_color as "secondaryColor",
+           t.logo_url as "logoUrl"
     FROM ladder_snapshots ls
     JOIN teams t ON ls.team_id = t.id
-    WHERE ls.season = ? AND ls.round = ?
+    WHERE ls.season = ${season} AND ls.round = ${currentRound}
     ORDER BY ls.position
-  `
-    )
-    .all(season, round) as any[];
+  `;
 
   if (snapshot.length > 0) {
-    return snapshot.map((row) => ({
+    return snapshot.map((row: any) => ({
       team: {
         id: row.team_id,
         name: row.name,
@@ -344,63 +293,53 @@ export function getLadder(season: number, round?: number): LadderEntry[] {
   }
 
   // No snapshot, calculate from games
-  return calculateLadderFromGames(season, round);
+  return calculateLadderFromGames(season, currentRound);
 }
 
 /**
  * Save ladder snapshot
  */
-export function saveLadderSnapshot(entries: LadderEntry[]): void {
-  const db = getDb();
-
-  const insert = db.prepare(`
-    INSERT OR REPLACE INTO ladder_snapshots
-    (id, season, round, team_id, played, wins, losses, draws,
-     points_for, points_against, differential, win_pct, nrl_points, position, byes_taken)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `);
-
-  const insertMany = db.transaction((entries: LadderEntry[]) => {
-    for (const entry of entries) {
-      insert.run(
-        generateId(),
-        entry.season,
-        entry.round,
-        entry.team.id,
-        entry.played,
-        entry.wins,
-        entry.losses,
-        entry.draws,
-        entry.pointsFor,
-        entry.pointsAgainst,
-        entry.differential,
-        entry.winPct,
-        entry.nrlPoints,
-        entry.position,
-        entry.byesTaken
-      );
-    }
-  });
-
-  insertMany(entries);
+export async function saveLadderSnapshot(entries: LadderEntry[]): Promise<void> {
+  for (const entry of entries) {
+    const id = generateId();
+    await sql`
+      INSERT INTO ladder_snapshots
+      (id, season, round, team_id, played, wins, losses, draws,
+       points_for, points_against, differential, win_pct, nrl_points, position, byes_taken)
+      VALUES (${id}, ${entry.season}, ${entry.round}, ${entry.team.id}, ${entry.played},
+              ${entry.wins}, ${entry.losses}, ${entry.draws}, ${entry.pointsFor},
+              ${entry.pointsAgainst}, ${entry.differential}, ${entry.winPct},
+              ${entry.nrlPoints}, ${entry.position}, ${entry.byesTaken})
+      ON CONFLICT (season, round, team_id) DO UPDATE SET
+        played = EXCLUDED.played,
+        wins = EXCLUDED.wins,
+        losses = EXCLUDED.losses,
+        draws = EXCLUDED.draws,
+        points_for = EXCLUDED.points_for,
+        points_against = EXCLUDED.points_against,
+        differential = EXCLUDED.differential,
+        win_pct = EXCLUDED.win_pct,
+        nrl_points = EXCLUDED.nrl_points,
+        position = EXCLUDED.position,
+        byes_taken = EXCLUDED.byes_taken
+    `;
+  }
 }
 
 /**
  * Get upcoming games for a team (next N rounds from current round)
  */
-export function getUpcomingGamesForTeam(
+export async function getUpcomingGamesForTeam(
   season: number,
   teamId: string,
   fromRound: number,
   count: number = 5
-): Array<{
+): Promise<Array<{
   round: number;
   opponentId: string | null;
   isHome: boolean;
   opponentPosition?: number;
-}> {
-  const db = getDb();
-
+}>> {
   const results: Array<{
     round: number;
     opponentId: string | null;
@@ -410,21 +349,15 @@ export function getUpcomingGamesForTeam(
 
   // Get games for the next N rounds
   for (let r = fromRound; r < fromRound + count && r <= 27; r++) {
-    const game = db
-      .prepare(
-        `
+    const { rows } = await sql`
       SELECT round, home_team_id, away_team_id
       FROM games
-      WHERE season = ? AND round = ? AND (home_team_id = ? OR away_team_id = ?)
-    `
-      )
-      .get(season, r, teamId, teamId) as {
-      round: number;
-      home_team_id: string;
-      away_team_id: string;
-    } | undefined;
+      WHERE season = ${season} AND round = ${r} AND (home_team_id = ${teamId} OR away_team_id = ${teamId})
+      LIMIT 1
+    `;
 
-    if (game) {
+    if (rows.length > 0) {
+      const game = rows[0];
       const isHome = game.home_team_id === teamId;
       results.push({
         round: r,
@@ -447,11 +380,11 @@ export function getUpcomingGamesForTeam(
 /**
  * Get next 5 fixtures for all teams (for ladder Next 5 view)
  */
-export function getNext5ForAllTeams(
+export async function getNext5ForAllTeams(
   season: number,
   currentRound: number,
   ladderPositions: Map<string, number>
-): Map<
+): Promise<Map<
   string,
   Array<{
     round: number;
@@ -459,7 +392,7 @@ export function getNext5ForAllTeams(
     isHome: boolean;
     opponentPosition: number;
   }>
-> {
+>> {
   const result = new Map<
     string,
     Array<{
@@ -471,7 +404,7 @@ export function getNext5ForAllTeams(
   >();
 
   for (const team of NRL_TEAMS) {
-    const fixtures = getUpcomingGamesForTeam(season, team.id, currentRound + 1, 5);
+    const fixtures = await getUpcomingGamesForTeam(season, team.id, currentRound + 1, 5);
     result.set(
       team.id,
       fixtures.map((f) => ({
@@ -491,12 +424,4 @@ export function getTotalByesForSeason(season: number): number {
   // 2026 has 3 byes per team
   // 2025 varied but was also around 3
   return 3;
-}
-
-/**
- * Initialize database with teams
- */
-export function initializeDatabase(): void {
-  const db = getDb(); // This creates tables if they don't exist
-  seedTeams();
 }

@@ -5,12 +5,12 @@ import { getTeamById } from "@/lib/teams";
 export async function GET(request: NextRequest) {
   try {
     // Initialize database on first request
-    initializeDatabase();
+    await initializeDatabase();
 
     const searchParams = request.nextUrl.searchParams;
     const season = parseInt(searchParams.get("season") || "2026");
 
-    const games = getGamesBySeason(season);
+    const games = await getGamesBySeason(season);
 
     // Only return scheduled games (not yet played)
     const scheduledGames = games.filter((game) => game.status === "scheduled");

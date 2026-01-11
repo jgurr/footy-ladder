@@ -20,15 +20,15 @@ export async function GET(request: NextRequest) {
     : undefined;
 
   // Initialize database
-  initializeDatabase();
+  await initializeDatabase();
 
   // Create a readable stream for SSE
   const encoder = new TextEncoder();
 
   const stream = new ReadableStream({
-    start(controller) {
+    async start(controller) {
       // Send initial data immediately
-      const sendUpdate = () => {
+      const sendUpdate = async () => {
         try {
           // Get current round's games (if round not specified, find current live round)
           let currentRound = round;
@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
           if (!currentRound) {
             // Find the round with live games, or the latest round
             for (let r = 1; r <= 27; r++) {
-              const games = getGamesByRound(season, r);
+              const games = await getGamesByRound(season, r);
               const hasLive = games.some((g) => g.status === "live");
               if (hasLive) {
                 currentRound = r;
@@ -47,7 +47,7 @@ export async function GET(request: NextRequest) {
             if (!currentRound) currentRound = 1;
           }
 
-          const games = getGamesByRound(season, currentRound);
+          const games = await getGamesByRound(season, currentRound);
 
           // Enrich with team data
           const enrichedGames = games.map((game) => ({
@@ -78,10 +78,12 @@ export async function GET(request: NextRequest) {
       };
 
       // Send initial update
-      sendUpdate();
+      await sendUpdate();
 
       // Poll every 30 seconds for updates
-      const interval = setInterval(sendUpdate, 30000);
+      const interval = setInterval(() => {
+        sendUpdate().catch(console.error);
+      }, 30000);
 
       // Send heartbeat every 15 seconds to keep connection alive
       const heartbeat = setInterval(() => {

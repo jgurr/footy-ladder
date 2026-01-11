@@ -6,7 +6,7 @@
  * Actual kickoff times will be updated as they become available.
  */
 
-import { getDb, generateId } from "./database";
+import { sql, generateId } from "./database";
 import type { GameStatus } from "./types";
 
 // Map team names from source to our team IDs
@@ -416,63 +416,46 @@ const SEASON_2026: RoundData[] = [
 /**
  * Import all 2026 season games into the database
  */
-export function seed2026Season(): void {
-  const db = getDb();
-
-  const insertGame = db.prepare(`
-    INSERT OR REPLACE INTO games
-    (id, season, round, home_team_id, away_team_id, home_score, away_score, venue, kickoff, status, minute)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `);
-
+export async function seed2026Season(): Promise<void> {
   let totalGames = 0;
 
-  const insertMany = db.transaction((rounds: RoundData[]) => {
-    for (const roundData of rounds) {
-      for (let i = 0; i < roundData.games.length; i++) {
-        const game = roundData.games[i];
-        const homeTeamId = TEAM_NAME_MAP[game.homeTeam];
-        const awayTeamId = TEAM_NAME_MAP[game.awayTeam];
+  for (const roundData of SEASON_2026) {
+    for (let i = 0; i < roundData.games.length; i++) {
+      const game = roundData.games[i];
+      const homeTeamId = TEAM_NAME_MAP[game.homeTeam];
+      const awayTeamId = TEAM_NAME_MAP[game.awayTeam];
 
-        if (!homeTeamId || !awayTeamId) {
-          console.error(`Unknown team: ${game.homeTeam} or ${game.awayTeam}`);
-          continue;
-        }
-
-        const id = generateId();
-        const status: GameStatus = "scheduled";
-
-        // Calculate approximate kickoff time based on game index
-        // Games typically spread across Thu-Sun
-        const dayOffset = Math.floor(i / 2); // Spread over 4 days
-        const baseDate = new Date(roundData.startDate);
-        baseDate.setDate(baseDate.getDate() + dayOffset);
-
-        // Default kickoff times: 19:00 for even index, 20:00 for odd
-        const hour = i % 2 === 0 ? 19 : 20;
-        baseDate.setHours(hour, 0, 0, 0);
-
-        const kickoff = baseDate.toISOString();
-
-        insertGame.run(
-          id,
-          2026,
-          roundData.round,
-          homeTeamId,
-          awayTeamId,
-          null, // No score yet - scheduled
-          null,
-          game.venue || "TBD",
-          kickoff,
-          status,
-          null
-        );
-        totalGames++;
+      if (!homeTeamId || !awayTeamId) {
+        console.error(`Unknown team: ${game.homeTeam} or ${game.awayTeam}`);
+        continue;
       }
-    }
-  });
 
-  insertMany(SEASON_2026);
+      const id = generateId();
+      const status: GameStatus = "scheduled";
+
+      // Calculate approximate kickoff time based on game index
+      // Games typically spread across Thu-Sun
+      const dayOffset = Math.floor(i / 2); // Spread over 4 days
+      const baseDate = new Date(roundData.startDate);
+      baseDate.setDate(baseDate.getDate() + dayOffset);
+
+      // Default kickoff times: 19:00 for even index, 20:00 for odd
+      const hour = i % 2 === 0 ? 19 : 20;
+      baseDate.setHours(hour, 0, 0, 0);
+
+      const kickoff = baseDate.toISOString();
+      const venue = game.venue || "TBD";
+
+      await sql`
+        INSERT INTO games (id, season, round, home_team_id, away_team_id, home_score, away_score, venue, kickoff, status, minute)
+        VALUES (${id}, 2026, ${roundData.round}, ${homeTeamId}, ${awayTeamId},
+                NULL, NULL, ${venue}, ${kickoff}, ${status}, NULL)
+        ON CONFLICT (id) DO NOTHING
+      `;
+      totalGames++;
+    }
+  }
+
   console.log(`Imported ${totalGames} games across ${SEASON_2026.length} rounds for 2026 NRL season`);
 }
 

@@ -1,41 +1,30 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getDb } from "@/lib/database";
+import { sql } from "@vercel/postgres";
 import { initializeDatabase } from "@/lib/queries";
 
 export async function GET(request: NextRequest) {
   try {
-    initializeDatabase();
+    await initializeDatabase();
 
     const searchParams = request.nextUrl.searchParams;
     const season = parseInt(searchParams.get("season") || "2025");
 
-    const db = getDb();
-
     // Get distinct rounds that have games (any status)
-    // For 2026, show all scheduled rounds; for past seasons, show completed rounds
-    const rows = db
-      .prepare(
-        `
-        SELECT DISTINCT round
-        FROM games
-        WHERE season = ?
-        ORDER BY round DESC
-      `
-      )
-      .all(season) as { round: number }[];
+    const { rows } = await sql`
+      SELECT DISTINCT round
+      FROM games
+      WHERE season = ${season}
+      ORDER BY round DESC
+    `;
 
     // Also get the latest round with final games for default selection
-    const finalRows = db
-      .prepare(
-        `
-        SELECT DISTINCT round
-        FROM games
-        WHERE season = ? AND status = 'final'
-        ORDER BY round DESC
-        LIMIT 1
-      `
-      )
-      .all(season) as { round: number }[];
+    const { rows: finalRows } = await sql`
+      SELECT DISTINCT round
+      FROM games
+      WHERE season = ${season} AND status = 'final'
+      ORDER BY round DESC
+      LIMIT 1
+    `;
 
     const rounds = rows.map((r) => r.round);
     const latestFinalRound = finalRows[0]?.round || 1;

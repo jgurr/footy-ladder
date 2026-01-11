@@ -9,7 +9,7 @@ import { getTeamById } from "@/lib/teams";
 export async function GET(request: NextRequest) {
   try {
     // Initialize database on first request
-    initializeDatabase();
+    await initializeDatabase();
 
     const searchParams = request.nextUrl.searchParams;
     const season = parseInt(searchParams.get("season") || "2026");
@@ -20,9 +20,9 @@ export async function GET(request: NextRequest) {
     let games;
 
     if (round) {
-      games = getGamesByRound(season, round);
+      games = await getGamesByRound(season, round);
     } else {
-      games = getGamesBySeason(season);
+      games = await getGamesBySeason(season);
     }
 
     // Enrich games with team data

@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    initializeDatabase();
+    await initializeDatabase();
 
     const body = await request.json();
 
@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
     if (body.games && Array.isArray(body.games)) {
       const results = [];
       for (const game of body.games) {
-        updateGameScore(
+        await updateGameScore(
           game.gameId,
           game.homeScore,
           game.awayScore,
@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
 
     // Handle single update
     if (body.gameId) {
-      updateGameScore(
+      await updateGameScore(
         body.gameId,
         body.homeScore,
         body.awayScore,
@@ -104,8 +104,8 @@ export async function GET(request: NextRequest) {
     : 1;
 
   try {
-    initializeDatabase();
-    const games = getGamesByRound(season, round);
+    await initializeDatabase();
+    const games = await getGamesByRound(season, round);
 
     return NextResponse.json({
       season,

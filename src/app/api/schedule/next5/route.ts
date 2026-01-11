@@ -8,7 +8,7 @@ import {
 
 export async function GET(request: NextRequest) {
   try {
-    initializeDatabase();
+    await initializeDatabase();
 
     const searchParams = request.nextUrl.searchParams;
     const season = parseInt(searchParams.get("season") || "2026");
@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
       : undefined;
 
     // Get current ladder to know positions
-    const ladder = getLadder(season, round);
+    const ladder = await getLadder(season, round);
     const currentRound = ladder[0]?.round || 0;
 
     // Build position map
@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Get next 5 fixtures for all teams
-    const next5Map = getNext5ForAllTeams(season, currentRound, positions);
+    const next5Map = await getNext5ForAllTeams(season, currentRound, positions);
 
     // Format response
     const result: Record<

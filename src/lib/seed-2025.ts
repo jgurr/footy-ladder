@@ -3,7 +3,7 @@
  * Source: Rugby League Project (rugbyleagueproject.org)
  */
 
-import { getDb, generateId } from "./database";
+import { sql, generateId } from "./database";
 import type { GameStatus } from "./types";
 
 // Map team names from source to our team IDs
@@ -385,52 +385,34 @@ const SEASON_2025: RoundData[] = [
 /**
  * Import all 2025 season games into the database
  */
-export function seed2025Season(): void {
-  const db = getDb();
+export async function seed2025Season(): Promise<void> {
+  let totalGames = 0;
 
-  const insertGame = db.prepare(`
-    INSERT OR REPLACE INTO games
-    (id, season, round, home_team_id, away_team_id, home_score, away_score, venue, kickoff, status, minute)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `);
+  for (const roundData of SEASON_2025) {
+    for (const game of roundData.games) {
+      const homeTeamId = TEAM_NAME_MAP[game.homeTeam];
+      const awayTeamId = TEAM_NAME_MAP[game.awayTeam];
 
-  const insertMany = db.transaction((rounds: RoundData[]) => {
-    for (const roundData of rounds) {
-      for (const game of roundData.games) {
-        const homeTeamId = TEAM_NAME_MAP[game.homeTeam];
-        const awayTeamId = TEAM_NAME_MAP[game.awayTeam];
-
-        if (!homeTeamId || !awayTeamId) {
-          console.error(
-            `Unknown team: ${game.homeTeam} or ${game.awayTeam}`
-          );
-          continue;
-        }
-
-        const id = generateId();
-        const status: GameStatus = "final";
-        // Use a placeholder date - actual dates not critical for historical data
-        const kickoff = `2025-03-${String(roundData.round).padStart(2, "0")}T19:00:00Z`;
-
-        insertGame.run(
-          id,
-          2025,
-          roundData.round,
-          homeTeamId,
-          awayTeamId,
-          game.homeScore,
-          game.awayScore,
-          "TBD", // Venue not scraped
-          kickoff,
-          status,
-          null
-        );
+      if (!homeTeamId || !awayTeamId) {
+        console.error(`Unknown team: ${game.homeTeam} or ${game.awayTeam}`);
+        continue;
       }
-    }
-  });
 
-  insertMany(SEASON_2025);
-  console.log(`Imported ${SEASON_2025.length} rounds of 2025 NRL games`);
+      const id = generateId();
+      const status: GameStatus = "final";
+      const kickoff = `2025-03-${String(roundData.round).padStart(2, "0")}T19:00:00Z`;
+
+      await sql`
+        INSERT INTO games (id, season, round, home_team_id, away_team_id, home_score, away_score, venue, kickoff, status, minute)
+        VALUES (${id}, 2025, ${roundData.round}, ${homeTeamId}, ${awayTeamId},
+                ${game.homeScore}, ${game.awayScore}, 'TBD', ${kickoff}, ${status}, NULL)
+        ON CONFLICT (id) DO NOTHING
+      `;
+      totalGames++;
+    }
+  }
+
+  console.log(`Imported ${totalGames} games for 2025 NRL season`);
 }
 
 // Export for API use
