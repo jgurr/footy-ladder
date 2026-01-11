@@ -365,7 +365,8 @@ export function LadderTable() {
   const currentRound = round;
 
   // Format kickoff time in local timezone
-  const formatKickoff = (kickoff: string) => {
+  const formatKickoff = (kickoff: string | null) => {
+    if (!kickoff) return "TBD";
     const date = new Date(kickoff);
     // Format in user's local timezone
     return date.toLocaleString(undefined, {
