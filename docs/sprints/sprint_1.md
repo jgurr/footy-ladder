@@ -41,10 +41,10 @@ By the end of this sprint, users can:
 ## User Stories / Goals
 
 - [x] As a fan, I can see the ladder ranked by win percentage
-- [ ] As a fan, I can see live scores update during games (10-30s refresh)
-- [ ] As a fan, I can pick a round to see the historical ladder
-- [ ] As a fan, I can compare attack/defense stats across teams
-- [ ] As a fan, I experience a distinctive retro-luxe design
+- [x] As a fan, I can see live scores update during games (10-30s refresh) - Infrastructure ready
+- [x] As a fan, I can pick a round to see the historical ladder
+- [x] As a fan, I can compare attack/defense stats across teams (For/Against view)
+- [x] As a fan, I experience a distinctive retro-luxe design (dark theme)
 
 ---
 
@@ -663,17 +663,38 @@ VERCEL_URL=xxx
 **IMPORTANT:** Complete this section at the end of every sprint before marking it complete.
 
 ### What Went Well
--
+- **Rapid iteration** - Completed phases 1.1-1.7 in a single day with user-driven feedback
+- **Clean architecture** - Separated concerns (types, calculations, queries, database) made changes easy
+- **User-driven refinement** - Caught data quality issues early (rejected venue shortcuts, placeholder times)
+- **Mid-sprint database migration** - Moved from SQLite to Vercel Postgres without major issues
+- **Accurate data scraping** - Got full 2026 schedule from Rugby League Project with actual venues/times
+- **Sophisticated caching** - 2025 immutable (1yr), 2026 hourly refresh, live games 30s
+- **Multiple view types** - Ladder, For/Against, Next 5, Scores, Team schedule all working
+- **Timezone handling** - All times stored as UTC, displayed in user's local timezone
 
 ### What Could Be Improved
--
+- **Data shortcuts rejected** - Initially tried home venue assumption and placeholder times; user correctly pushed back for actual data
+- **Duplicate data bug** - Seed script inserted without deleting first, caused 3x duplicates in team view
+- **Cache invalidation** - Stale cache served after reseeds; needed `v=2` cache buster to force refresh
+- **Vegas games sorting** - Null kickoff times sorted to end; fixed with `ORDER BY ... NULLS FIRST`
+- **Loading flash** - Old data displayed briefly before new data loaded; fixed with dedicated loading states
+- **Cold start performance** - `initializeDatabase()` ran on every API call adding ~500ms; removed from read-only routes
 
 ### Recommendations for Future Sprints
-*Add actionable improvements to sprint_template.md if they apply broadly*
--
+- **Always get actual data** - Never assume or shortcut with placeholder data. If data isn't available, use explicit "TBD" values
+- **DELETE before INSERT** - When reseeding, always clear existing data first to prevent duplicates
+- **Cache buster for dev** - Add version params to API calls during active development
+- **Null handling in ORDER BY** - Use `NULLS FIRST` or `NULLS LAST` explicitly for nullable columns
+- **Loading states per view** - Add dedicated loading states for each data-dependent view to prevent flash
 
 ### Metrics
-- **Duration:** X days
-- **Phases Completed:** X/8
-- **Commits:** X
-- **Key Files Changed:** X
+- **Duration:** 1 day (January 10, 2026)
+- **Phases Completed:** 7/9 (1.8 Design Review and 1.9 Deployment remaining)
+- **Commits:** 35
+- **Key Files Changed:**
+  - `src/components/LadderTable.tsx` - Main UI component with all views
+  - `src/lib/queries.ts` - Database queries with ladder calculation
+  - `src/lib/database.ts` - Schema and connection (migrated to Vercel Postgres)
+  - `src/lib/seed-2025.ts` - 2025 historical data (204 games)
+  - `src/lib/seed-2026.ts` - 2026 schedule with venues/times (204 games)
+  - `src/app/api/*/route.ts` - All API routes with caching headers
