@@ -28,11 +28,11 @@ import type { GameStatus } from "@/lib/types";
  * Protected by SYNC_SECRET environment variable
  */
 export async function POST(request: NextRequest) {
-  // Check authorization
+  // Check authorization - SYNC_SECRET must be set and match
   const authHeader = request.headers.get("authorization");
   const syncSecret = process.env.SYNC_SECRET;
 
-  if (syncSecret && authHeader !== `Bearer ${syncSecret}`) {
+  if (!syncSecret || authHeader !== `Bearer ${syncSecret}`) {
     return NextResponse.json(
       { error: "Unauthorized" },
       { status: 401 }
