@@ -9,9 +9,14 @@ let db: Database.Database | null = null;
 
 export function getDb(): Database.Database {
   if (!db) {
-    db = new Database(DB_PATH);
-    db.pragma("journal_mode = WAL");
-    initSchema(db);
+    const isVercel = !!process.env.VERCEL;
+    db = new Database(DB_PATH, { readonly: isVercel });
+
+    if (!isVercel) {
+      // WAL mode and schema init only work with write access
+      db.pragma("journal_mode = WAL");
+      initSchema(db);
+    }
   }
   return db;
 }
