@@ -54,7 +54,35 @@ interface Game {
   kickoff: string;
 }
 
-type ViewType = "ladder" | "forAgainst" | "next5" | "scores";
+interface TeamScheduleGame {
+  id: string;
+  round: number;
+  homeTeamId: string;
+  homeTeamCode: string;
+  awayTeamId: string;
+  awayTeamCode: string;
+  homeScore: number | null;
+  awayScore: number | null;
+  venue: string;
+  kickoff: string;
+  status: string;
+  isHome: boolean;
+  opponentId: string;
+  opponentCode: string;
+  teamScore: number | null;
+  opponentScore: number | null;
+  result: "W" | "L" | "D" | null;
+}
+
+interface TeamScheduleData {
+  season: number;
+  teamId: string;
+  team: { id: string; name: string; shortCode: string; primaryColor: string; secondaryColor: string };
+  games: TeamScheduleGame[];
+  latestRound: number;
+}
+
+type ViewType = "ladder" | "forAgainst" | "next5" | "scores" | "team";
 type LadderSortKey = "winPct" | "wins" | "losses" | "draws" | "differential";
 type ForAgainstSortKey = "pointsFor" | "pfPerGame" | "pointsAgainst" | "paPerGame" | "differential" | "pdPerGame";
 type SortDirection = "asc" | "desc";
@@ -122,8 +150,11 @@ export function LadderTable() {
   const [view, setView] = useState<ViewType>("ladder");
   const [ladderSort, setLadderSort] = useState<LadderSortKey>("winPct");
   const [ladderSortDir, setLadderSortDir] = useState<SortDirection>("desc");
-  const [forAgainstSort, setForAgainstSort] = useState<ForAgainstSortKey>("pfPerGame");
-  const [forAgainstSortDir, setForAgainstSortDir] = useState<SortDirection>("desc");
+  const [forAgainstSort, setForAgainstSort] = useState<ForAgainstSortKey>("paPerGame");
+  const [forAgainstSortDir, setForAgainstSortDir] = useState<SortDirection>("asc");
+  const [selectedTeamId, setSelectedTeamId] = useState<string | null>(null);
+  const [teamSchedule, setTeamSchedule] = useState<TeamScheduleData | null>(null);
+  const [selectedRound, setSelectedRound] = useState<number | null>(null);
 
   // Check if we're in default sort (shows top 4/8 markers)
   // Only Ladder view with Win% desc shows playoff markers
@@ -234,6 +265,33 @@ export function LadderTable() {
     }
     fetchGames();
   }, [view, season, round, roundsLoading]);
+
+  // Fetch team schedule when in team view
+  useEffect(() => {
+    if (view !== "team" || !selectedTeamId) return;
+
+    async function fetchTeamSchedule() {
+      try {
+        const res = await fetch(`/api/schedule/team?season=${season}&teamId=${selectedTeamId}`);
+        const data = await res.json();
+        setTeamSchedule(data);
+        // Set selected round to latest round or current selection
+        if (!selectedRound) {
+          setSelectedRound(data.latestRound || round);
+        }
+      } catch (error) {
+        console.error("Failed to fetch team schedule:", error);
+      }
+    }
+    fetchTeamSchedule();
+  }, [view, season, selectedTeamId, selectedRound, round]);
+
+  // Handle team click - navigate to team view
+  const handleTeamClick = (teamId: string) => {
+    setSelectedTeamId(teamId);
+    setSelectedRound(null); // Reset to auto-select latest
+    setView("team");
+  };
 
   // Sort ladder based on current view and sort key
   const sortedLadder = useMemo(() => {
@@ -380,10 +438,16 @@ export function LadderTable() {
         className="mb-4 flex rounded-lg p-1"
         style={{ background: "rgba(255,255,255,0.05)" }}
       >
-        {(["ladder", "forAgainst", "scores", "next5"] as ViewType[]).map((v) => (
+        {(["ladder", "forAgainst", "scores", "next5", "team"] as ViewType[]).map((v) => (
           <button
             key={v}
-            onClick={() => setView(v)}
+            onClick={() => {
+              setView(v);
+              // If switching to team view without a team selected, pick first team
+              if (v === "team" && !selectedTeamId && ladder.length > 0) {
+                setSelectedTeamId(ladder[0].team.id);
+              }
+            }}
             className={`flex-1 rounded-md px-4 py-2 text-sm font-medium transition ${
               view === v ? "" : "opacity-60 hover:opacity-100"
             }`}
@@ -392,7 +456,7 @@ export function LadderTable() {
               color: view === v ? "#000" : palette.text,
             }}
           >
-            {v === "ladder" ? "Ladder" : v === "forAgainst" ? "For/Against" : v === "scores" ? "Scores" : "Next 5"}
+            {v === "ladder" ? "Ladder" : v === "forAgainst" ? "For/Against" : v === "scores" ? "Scores" : v === "next5" ? "Next 5" : "Team"}
           </button>
         ))}
       </div>
@@ -460,12 +524,15 @@ export function LadderTable() {
               >
                 {/* Home Team */}
                 <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => handleTeamClick(game.homeTeam.id)}
+                    className="flex items-center gap-2 hover:opacity-80 transition"
+                  >
                     <TeamFlag teamId={game.homeTeam.id} size={20} />
                     <span className={`font-medium ${homeWon ? "" : "opacity-70"}`}>
                       {game.homeTeam.shortCode}
                     </span>
-                  </div>
+                  </button>
                   <span
                     className={`font-mono text-xl font-bold ${homeWon ? "" : "opacity-70"}`}
                     style={{ color: homeWon ? "#22c55e" : undefined }}
@@ -476,12 +543,15 @@ export function LadderTable() {
 
                 {/* Away Team */}
                 <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => handleTeamClick(game.awayTeam.id)}
+                    className="flex items-center gap-2 hover:opacity-80 transition"
+                  >
                     <TeamFlag teamId={game.awayTeam.id} size={20} />
                     <span className={`font-medium ${awayWon ? "" : "opacity-70"}`}>
                       {game.awayTeam.shortCode}
                     </span>
-                  </div>
+                  </button>
                   <span
                     className={`font-mono text-xl font-bold ${awayWon ? "" : "opacity-70"}`}
                     style={{ color: awayWon ? "#22c55e" : undefined }}
@@ -512,8 +582,134 @@ export function LadderTable() {
         </div>
       )}
 
-      {/* Table (for non-scores views) */}
-      {view !== "scores" && (
+      {/* Team View */}
+      {view === "team" && teamSchedule && (
+        <div>
+          {/* Team Header with Picker */}
+          <div className="mb-4 flex items-center gap-4">
+            <div className="flex items-center gap-3">
+              <TeamFlag teamId={teamSchedule.team.id} size={32} />
+              <select
+                value={selectedTeamId || ""}
+                onChange={(e) => {
+                  setSelectedTeamId(e.target.value);
+                  setSelectedRound(null);
+                }}
+                className="rounded-lg px-3 py-2 text-lg font-bold"
+                style={{
+                  background: "rgba(255,255,255,0.08)",
+                  border: `1px solid ${palette.border}`,
+                  color: palette.text,
+                }}
+              >
+                {ladder
+                  .sort((a, b) => a.team.name.localeCompare(b.team.name))
+                  .map((entry) => (
+                    <option key={entry.team.id} value={entry.team.id}>
+                      {entry.team.name}
+                    </option>
+                  ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Schedule List */}
+          <div className="space-y-2">
+            {teamSchedule.games.map((game) => {
+              const isCurrentRound = game.round === teamSchedule.latestRound;
+              const isFinal = game.status === "final";
+
+              return (
+                <div
+                  key={game.id}
+                  className="rounded-lg border p-3 transition"
+                  style={{
+                    borderColor: isCurrentRound ? palette.accent : palette.border,
+                    background: isCurrentRound ? "rgba(255,255,255,0.05)" : undefined,
+                    boxShadow: isCurrentRound ? `0 0 0 2px ${palette.accent}` : undefined,
+                  }}
+                >
+                  <div className="flex items-center justify-between">
+                    {/* Left: Round + Opponent */}
+                    <div className="flex items-center gap-3">
+                      <span
+                        className="rounded px-2 py-1 text-xs font-mono font-bold"
+                        style={{
+                          background: isCurrentRound ? palette.accent : "rgba(255,255,255,0.1)",
+                          color: isCurrentRound ? "#000" : palette.text,
+                        }}
+                      >
+                        R{game.round}
+                      </span>
+                      <span
+                        className="text-xs font-medium"
+                        style={{ color: game.isHome ? "#22c55e" : "#ef4444" }}
+                      >
+                        {game.isHome ? "vs" : "@"}
+                      </span>
+                      <button
+                        onClick={() => handleTeamClick(game.opponentId)}
+                        className="flex items-center gap-2 hover:opacity-80 transition"
+                      >
+                        <TeamFlag teamId={game.opponentId} size={20} />
+                        <span className="font-medium">{game.opponentCode}</span>
+                      </button>
+                    </div>
+
+                    {/* Right: Score or Time */}
+                    <div className="text-right">
+                      {isFinal ? (
+                        <div className="flex items-center gap-2">
+                          <span
+                            className="rounded px-2 py-0.5 text-xs font-bold"
+                            style={{
+                              background:
+                                game.result === "W"
+                                  ? "#22c55e"
+                                  : game.result === "L"
+                                  ? "#ef4444"
+                                  : "#f59e0b",
+                              color: "#000",
+                            }}
+                          >
+                            {game.result}
+                          </span>
+                          <span className="font-mono font-bold">
+                            {game.teamScore} - {game.opponentScore}
+                          </span>
+                        </div>
+                      ) : (
+                        <span className="text-xs" style={{ color: palette.textMuted }}>
+                          {formatKickoff(game.kickoff)}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Venue */}
+                  <div
+                    className="mt-1 text-xs"
+                    style={{ color: palette.textMuted }}
+                  >
+                    {game.venue}
+                  </div>
+                </div>
+              );
+            })}
+            {teamSchedule.games.length === 0 && (
+              <div
+                className="rounded-lg border p-8 text-center"
+                style={{ borderColor: palette.border, color: palette.textMuted }}
+              >
+                No games scheduled
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Table (for ladder/forAgainst/next5 views) */}
+      {view !== "scores" && view !== "team" && (
         <div
           className="overflow-hidden rounded-lg border"
           style={{ borderColor: palette.border }}
@@ -592,10 +788,13 @@ export function LadderTable() {
 
                     {/* Team */}
                     <td className="px-2 py-2">
-                      <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => handleTeamClick(entry.team.id)}
+                        className="flex items-center gap-2 hover:opacity-80 transition"
+                      >
                         <TeamFlag teamId={entry.team.id} size={16} />
                         <span className="font-medium text-sm">{entry.team.shortCode}</span>
-                      </div>
+                      </button>
                     </td>
 
                     {/* Ladder View Columns */}
@@ -839,6 +1038,25 @@ export function LadderTable() {
         {view === "scores" && (
           <>
             <span>Times shown in your local timezone</span>
+          </>
+        )}
+        {view === "team" && (
+          <>
+            <span>
+              <span style={{ color: "#22c55e" }}>vs</span>=Home
+            </span>
+            <span>
+              <span style={{ color: "#ef4444" }}>@</span>=Away
+            </span>
+            <span>
+              <span className="rounded px-1" style={{ background: "#22c55e", color: "#000" }}>W</span>=Win
+            </span>
+            <span>
+              <span className="rounded px-1" style={{ background: "#ef4444", color: "#000" }}>L</span>=Loss
+            </span>
+            <span>
+              <span className="rounded px-1" style={{ background: "#f59e0b", color: "#000" }}>D</span>=Draw
+            </span>
           </>
         )}
       </div>

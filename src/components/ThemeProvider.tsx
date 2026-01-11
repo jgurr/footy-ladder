@@ -5,18 +5,17 @@ import {
   ThemePalette,
   getPalette,
   getThemeCSSVars,
-  REGION_PALETTES,
+  PALETTES,
   EffectLevel,
   EFFECTS,
+  PaletteKey,
 } from "@/lib/theme";
 
 interface ThemeContextType {
   palette: ThemePalette;
-  paletteType: "region" | "team";
-  paletteKey: string;
+  paletteKey: PaletteKey;
   effectLevel: EffectLevel;
-  setPaletteType: (type: "region" | "team") => void;
-  setPaletteKey: (key: string) => void;
+  setPaletteKey: (key: PaletteKey) => void;
   setEffectLevel: (level: EffectLevel) => void;
 }
 
@@ -24,11 +23,9 @@ const ThemeContext = createContext<ThemeContextType | null>(null);
 
 // Default theme for SSR/prerendering
 const defaultTheme: ThemeContextType = {
-  palette: REGION_PALETTES.dark,
-  paletteType: "region",
-  paletteKey: "dark",
+  palette: PALETTES.blues,
+  paletteKey: "blues",
   effectLevel: "subtle",
-  setPaletteType: () => {},
   setPaletteKey: () => {},
   setEffectLevel: () => {},
 };
@@ -47,19 +44,16 @@ interface ThemeProviderProps {
 }
 
 export function ThemeProvider({ children }: ThemeProviderProps) {
-  const [paletteType, setPaletteType] = useState<"region" | "team">("region");
-  const [paletteKey, setPaletteKey] = useState("dark");
+  const [paletteKey, setPaletteKey] = useState<PaletteKey>("blues");
   const [effectLevel, setEffectLevel] = useState<EffectLevel>("subtle");
   const [mounted, setMounted] = useState(false);
 
   // Load preferences from localStorage on mount
   useEffect(() => {
-    const savedType = localStorage.getItem("footy-palette-type") as "region" | "team" | null;
-    const savedKey = localStorage.getItem("footy-palette-key");
+    const savedKey = localStorage.getItem("footy-palette-key") as PaletteKey | null;
     const savedEffects = localStorage.getItem("footy-effects") as EffectLevel | null;
 
-    if (savedType) setPaletteType(savedType);
-    if (savedKey) setPaletteKey(savedKey);
+    if (savedKey && PALETTES[savedKey]) setPaletteKey(savedKey);
     if (savedEffects) setEffectLevel(savedEffects);
     setMounted(true);
   }, []);
@@ -67,12 +61,11 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
   // Save preferences to localStorage
   useEffect(() => {
     if (!mounted) return;
-    localStorage.setItem("footy-palette-type", paletteType);
     localStorage.setItem("footy-palette-key", paletteKey);
     localStorage.setItem("footy-effects", effectLevel);
-  }, [paletteType, paletteKey, effectLevel, mounted]);
+  }, [paletteKey, effectLevel, mounted]);
 
-  const palette = getPalette(paletteType, paletteKey);
+  const palette = getPalette(paletteKey);
   const effects = EFFECTS[effectLevel];
 
   // Apply CSS variables to document
@@ -89,8 +82,8 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     return (
       <div
         style={{
-          background: REGION_PALETTES.dark.bg,
-          color: REGION_PALETTES.dark.text,
+          background: PALETTES.blues.bg,
+          color: PALETTES.blues.text,
           minHeight: "100vh",
         }}
       >
@@ -103,10 +96,8 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     <ThemeContext.Provider
       value={{
         palette,
-        paletteType,
         paletteKey,
         effectLevel,
-        setPaletteType,
         setPaletteKey,
         setEffectLevel,
       }}

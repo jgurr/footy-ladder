@@ -2,13 +2,12 @@
  * Footy Ladder Theme System
  *
  * Design decisions:
- * - Default: Dark mode with neon green accents
  * - Typography: Mono for numbers, sans for text
  * - Effects: Subtle scanlines (optional)
- * - Personalization: Team colors, State of Origin, or national colors
+ * - Themes: Blues, Maroons, Kiwis, Aussies
  */
 
-// All 17 NRL teams with official colors
+// All 17 NRL teams with official colors (kept for team flags)
 export const TEAM_COLORS: Record<string, { name: string; primary: string; secondary: string }> = {
   bri: { name: "Broncos", primary: "#6B2C35", secondary: "#FDB813" },
   can: { name: "Raiders", primary: "#00A651", secondary: "#FFFFFF" },
@@ -29,21 +28,10 @@ export const TEAM_COLORS: Record<string, { name: string; primary: string; second
   wst: { name: "Tigers", primary: "#F57F20", secondary: "#000000" },
 };
 
-// Region/national palettes
-export const REGION_PALETTES = {
-  dark: {
-    name: "Dark Mode",
-    bg: "#0a0a0a",
-    text: "#e0e0e0",
-    textMuted: "#888888",
-    accent: "#39ff14",
-    highlight: "#ffd700",
-    positive: "#39ff14",
-    negative: "#ff6b6b",
-    border: "rgba(255,255,255,0.1)",
-  },
-  nsw: {
-    name: "NSW Blues",
+// Theme palettes
+export const PALETTES = {
+  blues: {
+    name: "Blues",
     bg: "#0a1628",
     text: "#e0e8f0",
     textMuted: "#8898a8",
@@ -53,8 +41,8 @@ export const REGION_PALETTES = {
     negative: "#ff6b6b",
     border: "rgba(0,168,232,0.2)",
   },
-  qld: {
-    name: "QLD Maroons",
+  maroons: {
+    name: "Maroons",
     bg: "#1a0a0a",
     text: "#f0e0e0",
     textMuted: "#a88888",
@@ -64,8 +52,8 @@ export const REGION_PALETTES = {
     negative: "#ff6b6b",
     border: "rgba(107,44,53,0.3)",
   },
-  nz: {
-    name: "New Zealand",
+  kiwis: {
+    name: "Kiwis",
     bg: "#0a0a0a",
     text: "#e0e0e0",
     textMuted: "#888888",
@@ -75,8 +63,8 @@ export const REGION_PALETTES = {
     negative: "#C8102E",
     border: "rgba(255,255,255,0.1)",
   },
-  australia: {
-    name: "Australia",
+  aussies: {
+    name: "Aussies",
     bg: "#0a1a0a",
     text: "#e0f0e0",
     textMuted: "#88a888",
@@ -88,8 +76,7 @@ export const REGION_PALETTES = {
   },
 } as const;
 
-export type RegionPaletteKey = keyof typeof REGION_PALETTES;
-export type TeamId = keyof typeof TEAM_COLORS;
+export type PaletteKey = keyof typeof PALETTES;
 
 export interface ThemePalette {
   name: string;
@@ -104,36 +91,10 @@ export interface ThemePalette {
 }
 
 /**
- * Get a complete palette from a team ID
+ * Get palette by key
  */
-export function getTeamPalette(teamId: string): ThemePalette {
-  const team = TEAM_COLORS[teamId];
-  if (!team) return REGION_PALETTES.dark;
-
-  return {
-    name: team.name,
-    bg: "#0a0a0a",
-    text: "#e0e0e0",
-    textMuted: "#888888",
-    accent: team.primary,
-    highlight: team.secondary,
-    positive: team.primary,
-    negative: "#ff6b6b",
-    border: `${team.primary}33`,
-  };
-}
-
-/**
- * Get palette based on user preference
- */
-export function getPalette(
-  type: "region" | "team",
-  key: string
-): ThemePalette {
-  if (type === "team") {
-    return getTeamPalette(key);
-  }
-  return REGION_PALETTES[key as RegionPaletteKey] || REGION_PALETTES.dark;
+export function getPalette(key: string): ThemePalette {
+  return PALETTES[key as PaletteKey] || PALETTES.blues;
 }
 
 // Typography configuration

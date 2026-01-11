@@ -9,246 +9,162 @@ interface TeamFlagProps {
 }
 
 /**
- * 8-bit style team flag icons based on 2026 NRL home jerseys
- * Each flag uses a 7x5 pixel grid for the retro look
+ * Team flag icons based on traditional NRL jersey patterns
  */
 export function TeamFlag({ teamId, size = 24, className = "" }: TeamFlagProps) {
   const width = size * 1.4;
   const height = size;
-  // 7 columns x 5 rows grid - each pixel is 4x4 units in viewBox 28x20
-  const px = 4;
 
   const flags: Record<string, React.ReactElement> = {
-    // Brisbane Broncos - Maroon base with 2 gold bars (2000 premiership style)
+    // Brisbane Broncos - Maroon and gold (solid with gold chest band)
     bri: (
       <svg width={width} height={height} viewBox="0 0 28 20" className={className}>
         <rect width="28" height="20" fill="#6B2C35" />
-        {/* Two gold horizontal bars */}
-        <rect y={px * 1} width="28" height={px} fill="#FDB813" />
-        <rect y={px * 3} width="28" height={px} fill="#FDB813" />
-        {/* White shoulder pixels */}
-        <rect x={0} y={0} width={px} height={px} fill="#FFFFFF" />
-        <rect x={px * 6} y={0} width={px} height={px} fill="#FFFFFF" />
+        <rect y="6" width="28" height="8" fill="#FDB813" />
       </svg>
     ),
 
-    // Canberra Raiders - Lime green and white diagonal (traditional)
+    // Canberra Raiders - Lime green (solid green with white side)
     can: (
       <svg width={width} height={height} viewBox="0 0 28 20" className={className}>
-        <rect width="28" height="20" fill="#00B140" />
-        {/* White diagonal stripe - pixel stairs */}
-        <rect x={0} y={0} width={px * 2} height={px} fill="#FFFFFF" />
-        <rect x={px * 1} y={px} width={px * 2} height={px} fill="#FFFFFF" />
-        <rect x={px * 2} y={px * 2} width={px * 2} height={px} fill="#FFFFFF" />
-        <rect x={px * 3} y={px * 3} width={px * 2} height={px} fill="#FFFFFF" />
-        <rect x={px * 4} y={px * 4} width={px * 2} height={px} fill="#FFFFFF" />
+        <rect width="28" height="20" fill="#97D700" />
+        <rect width="8" height="20" fill="#FFFFFF" />
       </svg>
     ),
 
-    // Canterbury Bulldogs - White with blue hoops (2004 anniversary)
+    // Canterbury Bulldogs - Blue and white (horizontal blocks)
     cby: (
       <svg width={width} height={height} viewBox="0 0 28 20" className={className}>
-        <rect width="28" height="20" fill="#FFFFFF" />
-        {/* Blue horizontal bands */}
-        <rect y={0} width="28" height={px} fill="#005BAC" />
-        <rect y={px * 2} width="28" height={px} fill="#005BAC" />
-        <rect y={px * 4} width="28" height={px} fill="#005BAC" />
+        <rect width="28" height="20" fill="#0055A4" />
+        <rect y="10" width="28" height="10" fill="#FFFFFF" />
       </svg>
     ),
 
-    // Cronulla Sharks - Black and white/sky blue stripes
+    // Cronulla Sharks - Black, sky blue, white (horizontal thirds)
     cro: (
       <svg width={width} height={height} viewBox="0 0 28 20" className={className}>
         <rect width="28" height="20" fill="#000000" />
-        {/* Sky blue and white stripes */}
-        <rect y={px} width="28" height={px} fill="#00B5E2" />
-        <rect y={px * 3} width="28" height={px} fill="#FFFFFF" />
+        <rect y="7" width="28" height="6" fill="#00A9CE" />
+        <rect y="13" width="28" height="7" fill="#FFFFFF" />
       </svg>
     ),
 
-    // Dolphins - Predominantly red with gold trim
+    // Dolphins - Red and gold (red with gold bottom)
     dol: (
       <svg width={width} height={height} viewBox="0 0 28 20" className={className}>
-        <rect width="28" height="20" fill="#E31837" />
-        {/* Gold horizontal accent */}
-        <rect y={px * 2} width="28" height={px} fill="#FDB813" />
-        {/* Red/gold pixel pattern top */}
-        <rect x={px * 3} y={0} width={px} height={px} fill="#FDB813" />
+        <rect width="28" height="20" fill="#C8102E" />
+        <rect y="14" width="28" height="6" fill="#FFB81C" />
       </svg>
     ),
 
-    // Gold Coast Titans - Light blue/aqua with gold band
+    // Gold Coast Titans - Aqua and gold (aqua with gold top)
     gld: (
       <svg width={width} height={height} viewBox="0 0 28 20" className={className}>
-        <rect width="28" height="20" fill="#00B5E2" />
-        {/* Gold horizontal band middle */}
-        <rect y={px * 2} width="28" height={px} fill="#FDB813" />
-        {/* Navy accent pixels */}
-        <rect x={0} y={0} width={px} height={px} fill="#002B5C" />
-        <rect x={px * 6} y={0} width={px} height={px} fill="#002B5C" />
+        <rect width="28" height="20" fill="#009FDF" />
+        <rect width="28" height="6" fill="#FFB81C" />
       </svg>
     ),
 
-    // Manly Sea Eagles - White with maroon (90s Pepsi style)
+    // Manly Sea Eagles - Maroon and white (chevron from left)
     man: (
       <svg width={width} height={height} viewBox="0 0 28 20" className={className}>
-        <rect width="28" height="20" fill="#FFFFFF" />
-        {/* Maroon chevron-like pixel pattern */}
-        <rect x={px * 2} y={0} width={px * 3} height={px} fill="#6B2C35" />
-        <rect x={px * 1} y={px} width={px * 2} height={px} fill="#6B2C35" />
-        <rect x={px * 4} y={px} width={px * 2} height={px} fill="#6B2C35" />
-        <rect x={0} y={px * 2} width={px * 2} height={px} fill="#6B2C35" />
-        <rect x={px * 5} y={px * 2} width={px * 2} height={px} fill="#6B2C35" />
-        {/* Bottom accent */}
-        <rect y={px * 4} width="28" height={px} fill="#6B2C35" />
+        <rect width="28" height="20" fill="#84002E" />
+        <polygon points="0,0 16,10 0,20" fill="#FFFFFF" />
       </svg>
     ),
 
-    // Melbourne Storm - Purple and dark blue with lightning bolt
+    // Melbourne Storm - Purple (solid purple with navy side)
     mel: (
       <svg width={width} height={height} viewBox="0 0 28 20" className={className}>
-        <rect width="28" height="20" fill="#452C7C" />
-        {/* Dark blue sections */}
-        <rect x={0} y={0} width={px * 3} height="20" fill="#002B5C" />
-        {/* Gold lightning bolt pixels */}
-        <rect x={px * 4} y={0} width={px} height={px} fill="#FDB813" />
-        <rect x={px * 3} y={px} width={px} height={px} fill="#FDB813" />
-        <rect x={px * 4} y={px * 2} width={px} height={px} fill="#FDB813" />
-        <rect x={px * 3} y={px * 3} width={px} height={px} fill="#FDB813" />
-        <rect x={px * 2} y={px * 4} width={px} height={px} fill="#FDB813" />
+        <rect width="28" height="20" fill="#5F259F" />
+        <rect width="10" height="20" fill="#001F5C" />
       </svg>
     ),
 
-    // Newcastle Knights - Vertical red and blue stripes (2026 return)
+    // Newcastle Knights - Red and blue (diagonal split with white)
     new: (
       <svg width={width} height={height} viewBox="0 0 28 20" className={className}>
-        <rect width="28" height="20" fill="#FFFFFF" />
-        {/* Alternating red and blue vertical stripes */}
-        <rect x={0} width={px} height="20" fill="#C8102E" />
-        <rect x={px * 2} width={px} height="20" fill="#005BAC" />
-        <rect x={px * 4} width={px} height="20" fill="#C8102E" />
-        <rect x={px * 6} width={px} height="20" fill="#005BAC" />
+        <rect width="28" height="20" fill="#0055A4" />
+        <polygon points="0,0 28,0 28,10 0,20" fill="#C8102E" />
+        <polygon points="12,6 16,6 16,14 12,14" fill="#FFFFFF" />
       </svg>
     ),
 
-    // North Queensland Cowboys - Navy with gold/yellow chevron
+    // North Queensland Cowboys - Navy and gold (navy with gold band)
     nql: (
       <svg width={width} height={height} viewBox="0 0 28 20" className={className}>
         <rect width="28" height="20" fill="#002B5C" />
-        {/* Gold V-shaped chevron pixels */}
-        <rect x={px * 3} y={0} width={px} height={px} fill="#FDB813" />
-        <rect x={px * 2} y={px} width={px} height={px} fill="#FDB813" />
-        <rect x={px * 4} y={px} width={px} height={px} fill="#FDB813" />
-        <rect x={px * 1} y={px * 2} width={px} height={px} fill="#FDB813" />
-        <rect x={px * 5} y={px * 2} width={px} height={px} fill="#FDB813" />
-        <rect x={0} y={px * 3} width={px} height={px} fill="#FDB813" />
-        <rect x={px * 6} y={px * 3} width={px} height={px} fill="#FDB813" />
+        <rect y="6" width="28" height="8" fill="#FFB81C" />
       </svg>
     ),
 
-    // New Zealand Warriors - Predominantly blue (mid-90s style)
+    // New Zealand Warriors - Navy (navy with red top stripe)
     nzl: (
       <svg width={width} height={height} viewBox="0 0 28 20" className={className}>
-        <rect width="28" height="20" fill="#0033A0" />
-        {/* White/silver accents */}
-        <rect y={0} width="28" height={px} fill="#C0C0C0" />
-        {/* Red accent pixels */}
-        <rect x={px * 3} y={px * 2} width={px} height={px} fill="#C8102E" />
-        <rect x={px * 3} y={px * 3} width={px} height={px} fill="#C8102E" />
+        <rect width="28" height="20" fill="#002B5C" />
+        <rect width="28" height="5" fill="#C8102E" />
       </svg>
     ),
 
-    // Parramatta Eels - Blue and gold hoops (1986 design)
+    // Parramatta Eels - Blue and gold HOOPS (signature pattern)
     par: (
       <svg width={width} height={height} viewBox="0 0 28 20" className={className}>
-        <rect width="28" height="20" fill="#005BAC" />
-        {/* Gold horizontal hoops */}
-        <rect y={px} width="28" height={px} fill="#FDB813" />
-        <rect y={px * 3} width="28" height={px} fill="#FDB813" />
+        <rect width="28" height="20" fill="#0055A4" />
+        <rect y="0" width="28" height="4" fill="#FFB81C" />
+        <rect y="8" width="28" height="4" fill="#FFB81C" />
+        <rect y="16" width="28" height="4" fill="#FFB81C" />
       </svg>
     ),
 
-    // Penrith Panthers - Black with pink/magenta accent (60th anniversary)
+    // Penrith Panthers - Black with pink (black with pink diagonal)
     pen: (
       <svg width={width} height={height} viewBox="0 0 28 20" className={className}>
         <rect width="28" height="20" fill="#000000" />
-        {/* Pink diagonal accent */}
-        <rect x={px * 4} y={0} width={px} height={px} fill="#FF69B4" />
-        <rect x={px * 5} y={0} width={px} height={px} fill="#FF69B4" />
-        <rect x={px * 3} y={px} width={px} height={px} fill="#FF69B4" />
-        <rect x={px * 4} y={px} width={px} height={px} fill="#FF69B4" />
-        <rect x={px * 2} y={px * 2} width={px} height={px} fill="#FF69B4" />
-        <rect x={px * 3} y={px * 2} width={px} height={px} fill="#FF69B4" />
-        {/* White bottom edge */}
-        <rect y={px * 4} width="28" height={px} fill="#FFFFFF" />
+        <polygon points="18,0 28,0 10,20 0,20" fill="#E84087" />
       </svg>
     ),
 
-    // South Sydney Rabbitohs - Cardinal red and myrtle green hoops
+    // South Sydney Rabbitohs - Red and green HOOPS (signature pattern)
     sou: (
       <svg width={width} height={height} viewBox="0 0 28 20" className={className}>
-        <rect width="28" height="20" fill="#00843D" />
-        {/* Cardinal red horizontal bands */}
-        <rect y={0} width="28" height={px} fill="#C8102E" />
-        <rect y={px * 2} width="28" height={px} fill="#C8102E" />
-        <rect y={px * 4} width="28" height={px} fill="#C8102E" />
+        <rect width="28" height="20" fill="#007544" />
+        <rect y="0" width="28" height="5" fill="#C8102E" />
+        <rect y="10" width="28" height="5" fill="#C8102E" />
       </svg>
     ),
 
-    // St George Illawarra Dragons - Red V on white (unchanged classic)
+    // St George Illawarra Dragons - Red V on white (signature pattern)
     sti: (
       <svg width={width} height={height} viewBox="0 0 28 20" className={className}>
         <rect width="28" height="20" fill="#FFFFFF" />
-        {/* Red V shape - pixel art */}
-        <rect x={px * 3} y={0} width={px} height={px} fill="#C8102E" />
-        <rect x={px * 2} y={px} width={px} height={px} fill="#C8102E" />
-        <rect x={px * 4} y={px} width={px} height={px} fill="#C8102E" />
-        <rect x={px * 1} y={px * 2} width={px} height={px} fill="#C8102E" />
-        <rect x={px * 5} y={px * 2} width={px} height={px} fill="#C8102E" />
-        <rect x={0} y={px * 3} width={px} height={px} fill="#C8102E" />
-        <rect x={px * 6} y={px * 3} width={px} height={px} fill="#C8102E" />
-        <rect x={0} y={px * 4} width={px} height={px} fill="#C8102E" />
-        <rect x={px * 6} y={px * 4} width={px} height={px} fill="#C8102E" />
+        <polygon points="0,0 14,14 28,0 22,0 14,8 6,0" fill="#C8102E" />
       </svg>
     ),
 
-    // Sydney Roosters - Tricolor with red stripe accents
+    // Sydney Roosters - Tricolor chevron (signature pattern)
     syd: (
       <svg width={width} height={height} viewBox="0 0 28 20" className={className}>
-        <rect width="28" height="20" fill="#FFFFFF" />
-        {/* Navy left section */}
-        <rect x={0} width={px * 2} height="20" fill="#00205B" />
-        {/* Red right section */}
-        <rect x={px * 5} width={px * 2} height="20" fill="#C8102E" />
-        {/* Red side stripes (2026 update) */}
-        <rect x={px * 2} y={px} width={px} height={px * 3} fill="#C8102E" />
-        <rect x={px * 4} y={px} width={px} height={px * 3} fill="#C8102E" />
+        <rect width="28" height="20" fill="#001F5C" />
+        <polygon points="0,0 14,14 28,0 22,0 14,8 6,0" fill="#FFFFFF" />
+        <polygon points="0,0 14,10 28,0 24,0 14,6 4,0" fill="#C8102E" />
       </svg>
     ),
 
-    // Wests Tigers - Orange with black claw marks (Balmain vibe 2026)
+    // Wests Tigers - Orange and black STRIPES (signature pattern)
     wst: (
       <svg width={width} height={height} viewBox="0 0 28 20" className={className}>
         <rect width="28" height="20" fill="#F57F20" />
-        {/* Black claw mark pixels - diagonal scratches */}
-        <rect x={px} y={0} width={px} height={px} fill="#000000" />
-        <rect x={px * 2} y={px} width={px} height={px} fill="#000000" />
-        <rect x={px * 3} y={px * 2} width={px} height={px} fill="#000000" />
-        {/* Second claw */}
-        <rect x={px * 4} y={0} width={px} height={px} fill="#000000" />
-        <rect x={px * 5} y={px} width={px} height={px} fill="#000000" />
-        <rect x={px * 6} y={px * 2} width={px} height={px} fill="#000000" />
-        {/* White accent */}
-        <rect x={px * 3} y={px * 4} width={px} height={px} fill="#FFFFFF" />
+        <rect y="0" width="28" height="4" fill="#000000" />
+        <rect y="8" width="28" height="4" fill="#000000" />
+        <rect y="16" width="28" height="4" fill="#000000" />
       </svg>
     ),
   };
 
-  // Fallback for unknown teams - pixelated gray
+  // Fallback for unknown teams
   const fallback = (
     <svg width={width} height={height} viewBox="0 0 28 20" className={className}>
       <rect width="28" height="20" fill="#333333" />
-      <rect x={px * 2} y={px} width={px * 3} height={px * 3} fill="#555555" />
     </svg>
   );
 
