@@ -1,9 +1,11 @@
 /**
  * 2026 NRL Season Schedule Import
- * Source: NRL.com / Rugby League Zone (rugbyleaguezone.com)
+ * Source: Rugby League Project (rugbyleagueproject.org/seasons/nrl-2026/results.html)
  *
- * Note: Dates are approximate based on round structure.
- * Actual kickoff times will be updated as they become available.
+ * All kickoff times stored in UTC.
+ * Original times from source are in AEST/AEDT:
+ * - Before April 5: AEDT (UTC+11)
+ * - April 5 onwards: AEST (UTC+10)
  */
 
 import { sql, generateId } from "./database";
@@ -11,425 +13,394 @@ import type { GameStatus } from "./types";
 
 // Map team names from source to our team IDs
 const TEAM_NAME_MAP: Record<string, string> = {
-  "Brisbane Broncos": "bri",
-  "Canberra Raiders": "can",
-  "Canterbury-Bankstown Bulldogs": "cby",
-  "Cronulla-Sutherland Sharks": "cro",
+  "Brisbane": "bri",
+  "Canberra": "can",
+  "Canterbury": "cby",
+  "Cronulla": "cro",
   "Dolphins": "dol",
-  "Gold Coast Titans": "gld",
-  "Manly-Warringah Sea Eagles": "man",
-  "Melbourne Storm": "mel",
-  "Newcastle Knights": "new",
-  "North Queensland Cowboys": "nql",
-  "New Zealand Warriors": "nzl",
-  "Parramatta Eels": "par",
-  "Penrith Panthers": "pen",
-  "South Sydney Rabbitohs": "sou",
-  "St George Illawarra Dragons": "sti",
-  "Sydney Roosters": "syd",
+  "Gold Coast": "gld",
+  "Manly": "man",
+  "Melbourne": "mel",
+  "Newcastle": "new",
+  "North Qld": "nql",
+  "Warriors": "nzl",
+  "Parramatta": "par",
+  "Penrith": "pen",
+  "South Sydney": "sou",
+  "St Geo Illa": "sti",
+  "Sydney": "syd",
   "Wests Tigers": "wst",
-};
-
-// Home venues for each team
-const HOME_VENUES: Record<string, string> = {
-  "Brisbane Broncos": "Suncorp Stadium",
-  "Canberra Raiders": "GIO Stadium",
-  "Canterbury-Bankstown Bulldogs": "Accor Stadium",
-  "Cronulla-Sutherland Sharks": "PointsBet Stadium",
-  "Dolphins": "Suncorp Stadium",
-  "Gold Coast Titans": "Cbus Super Stadium",
-  "Manly-Warringah Sea Eagles": "4 Pines Park",
-  "Melbourne Storm": "AAMI Park",
-  "Newcastle Knights": "McDonald Jones Stadium",
-  "North Queensland Cowboys": "Qld Country Bank Stadium",
-  "New Zealand Warriors": "Go Media Stadium",
-  "Parramatta Eels": "CommBank Stadium",
-  "Penrith Panthers": "BlueBet Stadium",
-  "South Sydney Rabbitohs": "Accor Stadium",
-  "St George Illawarra Dragons": "WIN Stadium",
-  "Sydney Roosters": "Allianz Stadium",
-  "Wests Tigers": "Campbelltown Stadium",
 };
 
 interface ScheduledGame {
   homeTeam: string;
   awayTeam: string;
-  venue?: string;
+  venue: string;
+  kickoffUTC: string | null; // ISO string in UTC, null if TBD
 }
 
 interface RoundData {
   round: number;
-  startDate: string; // ISO date string
+  name?: string; // e.g., "Magic Round", "ANZAC Round"
   games: ScheduledGame[];
 }
 
-// 2026 NRL Season Schedule
-// Season starts March 1, 2026 (Round 1 in Las Vegas)
-// Approximate dates based on typical Thursday-Sunday round structure
+// 2026 NRL Season Schedule - All times converted to UTC
 const SEASON_2026: RoundData[] = [
   {
     round: 1,
-    startDate: "2026-03-01",
     games: [
-      { homeTeam: "Newcastle Knights", awayTeam: "North Queensland Cowboys", venue: "Allegiant Stadium" },
-      { homeTeam: "Canterbury-Bankstown Bulldogs", awayTeam: "St George Illawarra Dragons", venue: "Allegiant Stadium" },
-      { homeTeam: "Melbourne Storm", awayTeam: "Parramatta Eels", venue: "AAMI Park" },
-      { homeTeam: "New Zealand Warriors", awayTeam: "Sydney Roosters", venue: "Go Media Stadium" },
-      { homeTeam: "Brisbane Broncos", awayTeam: "Penrith Panthers", venue: "Suncorp Stadium" },
-      { homeTeam: "Cronulla-Sutherland Sharks", awayTeam: "Gold Coast Titans", venue: "Sharks Stadium" },
-      { homeTeam: "Manly-Warringah Sea Eagles", awayTeam: "Canberra Raiders", venue: "4 Pines Park" },
-      { homeTeam: "Dolphins", awayTeam: "South Sydney Rabbitohs", venue: "Suncorp Stadium" },
+      // Las Vegas games - Feb 28 (no kickoff times listed)
+      { homeTeam: "Canterbury", awayTeam: "St Geo Illa", venue: "Allegiant Stadium", kickoffUTC: null },
+      { homeTeam: "Newcastle", awayTeam: "North Qld", venue: "Allegiant Stadium", kickoffUTC: null },
+      // Australian games - AEDT (UTC+11)
+      { homeTeam: "Melbourne", awayTeam: "Parramatta", venue: "AAMI Park", kickoffUTC: "2026-03-05T09:00:00Z" }, // Thu 8pm AEDT
+      { homeTeam: "Warriors", awayTeam: "Sydney", venue: "Go Media Stadium", kickoffUTC: "2026-03-06T09:00:00Z" }, // Fri 8pm AEDT
+      { homeTeam: "Brisbane", awayTeam: "Penrith", venue: "Suncorp Stadium", kickoffUTC: "2026-03-06T08:00:00Z" }, // Fri 7pm AEDT
+      { homeTeam: "Cronulla", awayTeam: "Gold Coast", venue: "PointsBet Stadium", kickoffUTC: "2026-03-07T06:30:00Z" }, // Sat 5:30pm AEDT
+      { homeTeam: "Manly", awayTeam: "Canberra", venue: "4 Pines Park", kickoffUTC: "2026-03-07T08:30:00Z" }, // Sat 7:30pm AEDT
+      { homeTeam: "Dolphins", awayTeam: "South Sydney", venue: "Suncorp Stadium", kickoffUTC: "2026-03-08T04:05:00Z" }, // Sun 3:05pm AEDT
     ],
   },
   {
     round: 2,
-    startDate: "2026-03-12",
     games: [
-      { homeTeam: "Brisbane Broncos", awayTeam: "Parramatta Eels" },
-      { homeTeam: "New Zealand Warriors", awayTeam: "Canberra Raiders" },
-      { homeTeam: "Sydney Roosters", awayTeam: "South Sydney Rabbitohs" },
-      { homeTeam: "Wests Tigers", awayTeam: "North Queensland Cowboys" },
-      { homeTeam: "St George Illawarra Dragons", awayTeam: "Melbourne Storm" },
-      { homeTeam: "Penrith Panthers", awayTeam: "Cronulla-Sutherland Sharks" },
-      { homeTeam: "Manly-Warringah Sea Eagles", awayTeam: "Newcastle Knights" },
-      { homeTeam: "Dolphins", awayTeam: "Gold Coast Titans" },
+      { homeTeam: "Brisbane", awayTeam: "Parramatta", venue: "Suncorp Stadium", kickoffUTC: "2026-03-12T08:00:00Z" }, // Thu 7pm AEDT
+      { homeTeam: "Warriors", awayTeam: "Canberra", venue: "Go Media Stadium", kickoffUTC: "2026-03-13T09:00:00Z" }, // Fri 8pm AEDT
+      { homeTeam: "Sydney", awayTeam: "South Sydney", venue: "Allianz Stadium", kickoffUTC: "2026-03-13T09:00:00Z" }, // Fri 8pm AEDT
+      { homeTeam: "Wests Tigers", awayTeam: "North Qld", venue: "Leichhardt Oval", kickoffUTC: "2026-03-14T04:00:00Z" }, // Sat 3pm AEDT
+      { homeTeam: "St Geo Illa", awayTeam: "Melbourne", venue: "WIN Stadium", kickoffUTC: "2026-03-14T06:30:00Z" }, // Sat 5:30pm AEDT
+      { homeTeam: "Penrith", awayTeam: "Cronulla", venue: "BlueBet Stadium", kickoffUTC: "2026-03-14T08:30:00Z" }, // Sat 7:30pm AEDT
+      { homeTeam: "Manly", awayTeam: "Newcastle", venue: "4 Pines Park", kickoffUTC: "2026-03-15T05:05:00Z" }, // Sun 4:05pm AEDT
+      { homeTeam: "Dolphins", awayTeam: "Gold Coast", venue: "Suncorp Stadium", kickoffUTC: "2026-03-15T06:15:00Z" }, // Sun 5:15pm AEDT
     ],
   },
   {
     round: 3,
-    startDate: "2026-03-19",
+    name: "Multicultural Round",
     games: [
-      { homeTeam: "Canberra Raiders", awayTeam: "Canterbury-Bankstown Bulldogs" },
-      { homeTeam: "Sydney Roosters", awayTeam: "Penrith Panthers" },
-      { homeTeam: "Melbourne Storm", awayTeam: "Brisbane Broncos" },
-      { homeTeam: "Newcastle Knights", awayTeam: "New Zealand Warriors" },
-      { homeTeam: "Cronulla-Sutherland Sharks", awayTeam: "Dolphins" },
-      { homeTeam: "South Sydney Rabbitohs", awayTeam: "Wests Tigers" },
-      { homeTeam: "Parramatta Eels", awayTeam: "St George Illawarra Dragons" },
-      { homeTeam: "North Queensland Cowboys", awayTeam: "Gold Coast Titans" },
+      { homeTeam: "Canberra", awayTeam: "Canterbury", venue: "GIO Stadium", kickoffUTC: "2026-03-19T09:00:00Z" }, // Thu 8pm AEDT
+      { homeTeam: "Sydney", awayTeam: "Penrith", venue: "Allianz Stadium", kickoffUTC: "2026-03-20T07:00:00Z" }, // Fri 6pm AEDT
+      { homeTeam: "Melbourne", awayTeam: "Brisbane", venue: "AAMI Park", kickoffUTC: "2026-03-20T09:00:00Z" }, // Fri 8pm AEDT
+      { homeTeam: "Newcastle", awayTeam: "Warriors", venue: "McDonald Jones Stadium", kickoffUTC: "2026-03-21T04:00:00Z" }, // Sat 3pm AEDT
+      { homeTeam: "Cronulla", awayTeam: "Dolphins", venue: "PointsBet Stadium", kickoffUTC: "2026-03-21T06:30:00Z" }, // Sat 5:30pm AEDT
+      { homeTeam: "South Sydney", awayTeam: "Wests Tigers", venue: "Accor Stadium", kickoffUTC: "2026-03-21T08:30:00Z" }, // Sat 7:30pm AEDT
+      { homeTeam: "Parramatta", awayTeam: "St Geo Illa", venue: "CommBank Stadium", kickoffUTC: "2026-03-22T05:05:00Z" }, // Sun 4:05pm AEDT
+      { homeTeam: "North Qld", awayTeam: "Gold Coast", venue: "Qld Country Bank Stadium", kickoffUTC: "2026-03-22T06:15:00Z" }, // Sun 5:15pm AEDT
     ],
   },
   {
     round: 4,
-    startDate: "2026-03-26",
     games: [
-      { homeTeam: "Manly-Warringah Sea Eagles", awayTeam: "Sydney Roosters" },
-      { homeTeam: "New Zealand Warriors", awayTeam: "Wests Tigers" },
-      { homeTeam: "Brisbane Broncos", awayTeam: "Dolphins" },
-      { homeTeam: "Canterbury-Bankstown Bulldogs", awayTeam: "Newcastle Knights" },
-      { homeTeam: "Penrith Panthers", awayTeam: "Parramatta Eels" },
-      { homeTeam: "North Queensland Cowboys", awayTeam: "Melbourne Storm" },
-      { homeTeam: "Canberra Raiders", awayTeam: "Cronulla-Sutherland Sharks" },
-      { homeTeam: "Gold Coast Titans", awayTeam: "St George Illawarra Dragons" },
+      { homeTeam: "Manly", awayTeam: "Sydney", venue: "4 Pines Park", kickoffUTC: "2026-03-26T09:00:00Z" }, // Thu 8pm AEDT
+      { homeTeam: "Warriors", awayTeam: "Wests Tigers", venue: "Go Media Stadium", kickoffUTC: "2026-03-27T09:00:00Z" }, // Fri 8pm AEDT
+      { homeTeam: "Brisbane", awayTeam: "Dolphins", venue: "Suncorp Stadium", kickoffUTC: "2026-03-27T08:00:00Z" }, // Fri 7pm AEDT
+      { homeTeam: "Canterbury", awayTeam: "Newcastle", venue: "Accor Stadium", kickoffUTC: "2026-03-28T04:00:00Z" }, // Sat 3pm AEDT
+      { homeTeam: "Penrith", awayTeam: "Parramatta", venue: "CommBank Stadium", kickoffUTC: "2026-03-28T06:30:00Z" }, // Sat 5:30pm AEDT
+      { homeTeam: "North Qld", awayTeam: "Melbourne", venue: "Qld Country Bank Stadium", kickoffUTC: "2026-03-28T07:30:00Z" }, // Sat 6:30pm AEDT
+      { homeTeam: "Canberra", awayTeam: "Cronulla", venue: "GIO Stadium", kickoffUTC: "2026-03-29T05:05:00Z" }, // Sun 4:05pm AEDT
+      { homeTeam: "Gold Coast", awayTeam: "St Geo Illa", venue: "Cbus Super Stadium", kickoffUTC: "2026-03-29T06:15:00Z" }, // Sun 5:15pm AEDT
     ],
   },
   {
     round: 5,
-    startDate: "2026-04-02",
     games: [
-      { homeTeam: "Dolphins", awayTeam: "Manly-Warringah Sea Eagles" },
-      { homeTeam: "South Sydney Rabbitohs", awayTeam: "Canterbury-Bankstown Bulldogs" },
-      { homeTeam: "Penrith Panthers", awayTeam: "Melbourne Storm" },
-      { homeTeam: "St George Illawarra Dragons", awayTeam: "North Queensland Cowboys" },
-      { homeTeam: "Gold Coast Titans", awayTeam: "Brisbane Broncos" },
-      { homeTeam: "Cronulla-Sutherland Sharks", awayTeam: "New Zealand Warriors" },
-      { homeTeam: "Newcastle Knights", awayTeam: "Canberra Raiders" },
-      { homeTeam: "Parramatta Eels", awayTeam: "Wests Tigers" },
+      { homeTeam: "Dolphins", awayTeam: "Manly", venue: "Kayo Stadium", kickoffUTC: "2026-04-02T08:00:00Z" }, // Thu 7pm AEDT
+      { homeTeam: "South Sydney", awayTeam: "Canterbury", venue: "Accor Stadium", kickoffUTC: "2026-04-03T05:05:00Z" }, // Fri 4:05pm AEDT
+      { homeTeam: "Penrith", awayTeam: "Melbourne", venue: "CommBank Stadium", kickoffUTC: "2026-04-03T09:00:00Z" }, // Fri 8pm AEDT
+      { homeTeam: "St Geo Illa", awayTeam: "North Qld", venue: "Netstrata Jubilee Stadium", kickoffUTC: "2026-04-04T06:30:00Z" }, // Sat 5:30pm AEDT
+      { homeTeam: "Gold Coast", awayTeam: "Brisbane", venue: "Cbus Super Stadium", kickoffUTC: "2026-04-04T07:30:00Z" }, // Sat 6:30pm AEDT
+      // After April 5 - AEST (UTC+10)
+      { homeTeam: "Cronulla", awayTeam: "Warriors", venue: "PointsBet Stadium", kickoffUTC: "2026-04-05T04:00:00Z" }, // Sun 2pm AEST
+      { homeTeam: "Newcastle", awayTeam: "Canberra", venue: "McDonald Jones Stadium", kickoffUTC: "2026-04-05T06:05:00Z" }, // Sun 4:05pm AEST
+      { homeTeam: "Parramatta", awayTeam: "Wests Tigers", venue: "CommBank Stadium", kickoffUTC: "2026-04-06T06:05:00Z" }, // Mon 4:05pm AEST
     ],
   },
   {
     round: 6,
-    startDate: "2026-04-09",
     games: [
-      { homeTeam: "Canterbury-Bankstown Bulldogs", awayTeam: "Penrith Panthers" },
-      { homeTeam: "St George Illawarra Dragons", awayTeam: "Manly-Warringah Sea Eagles" },
-      { homeTeam: "Brisbane Broncos", awayTeam: "North Queensland Cowboys" },
-      { homeTeam: "South Sydney Rabbitohs", awayTeam: "Canberra Raiders" },
-      { homeTeam: "Cronulla-Sutherland Sharks", awayTeam: "Sydney Roosters" },
-      { homeTeam: "Melbourne Storm", awayTeam: "New Zealand Warriors" },
-      { homeTeam: "Parramatta Eels", awayTeam: "Gold Coast Titans" },
-      { homeTeam: "Wests Tigers", awayTeam: "Newcastle Knights" },
+      { homeTeam: "Canterbury", awayTeam: "Penrith", venue: "Accor Stadium", kickoffUTC: "2026-04-09T09:50:00Z" }, // Thu 7:50pm AEST
+      { homeTeam: "St Geo Illa", awayTeam: "Manly", venue: "WIN Stadium", kickoffUTC: "2026-04-10T08:00:00Z" }, // Fri 6pm AEST
+      { homeTeam: "Brisbane", awayTeam: "North Qld", venue: "Suncorp Stadium", kickoffUTC: "2026-04-10T10:00:00Z" }, // Fri 8pm AEST
+      // Perth double-header - AWST (UTC+8)
+      { homeTeam: "South Sydney", awayTeam: "Canberra", venue: "Optus Stadium", kickoffUTC: "2026-04-11T05:00:00Z" }, // Sat 1pm AWST
+      { homeTeam: "Cronulla", awayTeam: "Sydney", venue: "Optus Stadium", kickoffUTC: "2026-04-11T07:30:00Z" }, // Sat 3:30pm AWST
+      { homeTeam: "Melbourne", awayTeam: "Warriors", venue: "AAMI Park", kickoffUTC: "2026-04-11T09:30:00Z" }, // Sat 7:30pm AEST
+      { homeTeam: "Parramatta", awayTeam: "Gold Coast", venue: "CommBank Stadium", kickoffUTC: "2026-04-12T04:00:00Z" }, // Sun 2pm AEST
+      { homeTeam: "Wests Tigers", awayTeam: "Newcastle", venue: "Campbelltown Stadium", kickoffUTC: "2026-04-12T06:05:00Z" }, // Sun 4:05pm AEST
     ],
   },
   {
     round: 7,
-    startDate: "2026-04-16",
     games: [
-      { homeTeam: "North Queensland Cowboys", awayTeam: "Manly-Warringah Sea Eagles" },
-      { homeTeam: "Canberra Raiders", awayTeam: "Melbourne Storm" },
-      { homeTeam: "Dolphins", awayTeam: "Penrith Panthers" },
-      { homeTeam: "New Zealand Warriors", awayTeam: "Gold Coast Titans" },
-      { homeTeam: "South Sydney Rabbitohs", awayTeam: "St George Illawarra Dragons" },
-      { homeTeam: "Wests Tigers", awayTeam: "Brisbane Broncos" },
-      { homeTeam: "Sydney Roosters", awayTeam: "Newcastle Knights" },
-      { homeTeam: "Parramatta Eels", awayTeam: "Canterbury-Bankstown Bulldogs" },
+      { homeTeam: "North Qld", awayTeam: "Manly", venue: "Qld Country Bank Stadium", kickoffUTC: "2026-04-16T09:50:00Z" }, // Thu 7:50pm AEST
+      { homeTeam: "Canberra", awayTeam: "Melbourne", venue: "GIO Stadium", kickoffUTC: "2026-04-17T08:00:00Z" }, // Fri 6pm AEST
+      // Darwin game - ACST (UTC+9:30)
+      { homeTeam: "Dolphins", awayTeam: "Penrith", venue: "TIO Stadium", kickoffUTC: "2026-04-17T10:00:00Z" }, // Fri 7:30pm ACST
+      { homeTeam: "Warriors", awayTeam: "Gold Coast", venue: "Go Media Stadium", kickoffUTC: "2026-04-18T07:00:00Z" }, // Sat 5pm AEST
+      { homeTeam: "South Sydney", awayTeam: "St Geo Illa", venue: "Accor Stadium", kickoffUTC: "2026-04-18T07:30:00Z" }, // Sat 5:30pm AEST
+      { homeTeam: "Wests Tigers", awayTeam: "Brisbane", venue: "Campbelltown Stadium", kickoffUTC: "2026-04-18T09:30:00Z" }, // Sat 7:30pm AEST
+      { homeTeam: "Sydney", awayTeam: "Newcastle", venue: "Allianz Stadium", kickoffUTC: "2026-04-19T04:00:00Z" }, // Sun 2pm AEST
+      { homeTeam: "Parramatta", awayTeam: "Canterbury", venue: "CommBank Stadium", kickoffUTC: "2026-04-19T06:05:00Z" }, // Sun 4:05pm AEST
     ],
   },
   {
     round: 8,
-    startDate: "2026-04-23",
+    name: "ANZAC Round",
     games: [
-      { homeTeam: "Wests Tigers", awayTeam: "Canberra Raiders" },
-      { homeTeam: "North Queensland Cowboys", awayTeam: "Cronulla-Sutherland Sharks" },
-      { homeTeam: "Brisbane Broncos", awayTeam: "Canterbury-Bankstown Bulldogs" },
-      { homeTeam: "St George Illawarra Dragons", awayTeam: "Sydney Roosters" },
-      { homeTeam: "New Zealand Warriors", awayTeam: "Dolphins" },
-      { homeTeam: "Melbourne Storm", awayTeam: "South Sydney Rabbitohs" },
-      { homeTeam: "Newcastle Knights", awayTeam: "Penrith Panthers" },
-      { homeTeam: "Manly-Warringah Sea Eagles", awayTeam: "Parramatta Eels" },
+      { homeTeam: "Wests Tigers", awayTeam: "Canberra", venue: "Leichhardt Oval", kickoffUTC: "2026-04-23T09:50:00Z" }, // Thu 7:50pm AEST
+      { homeTeam: "North Qld", awayTeam: "Cronulla", venue: "Qld Country Bank Stadium", kickoffUTC: "2026-04-24T08:00:00Z" }, // Fri 6pm AEST
+      { homeTeam: "Brisbane", awayTeam: "Canterbury", venue: "Suncorp Stadium", kickoffUTC: "2026-04-24T10:00:00Z" }, // Fri 8pm AEST
+      { homeTeam: "St Geo Illa", awayTeam: "Sydney", venue: "Allianz Stadium", kickoffUTC: "2026-04-25T06:00:00Z" }, // Sat 4pm AEST (ANZAC Day)
+      // Wellington game - NZST (UTC+12)
+      { homeTeam: "Warriors", awayTeam: "Dolphins", venue: "Sky Stadium", kickoffUTC: "2026-04-25T08:05:00Z" }, // Sat 8:05pm NZST
+      { homeTeam: "Melbourne", awayTeam: "South Sydney", venue: "AAMI Park", kickoffUTC: "2026-04-25T10:10:00Z" }, // Sat 8:10pm AEST
+      { homeTeam: "Newcastle", awayTeam: "Penrith", venue: "McDonald Jones Stadium", kickoffUTC: "2026-04-26T04:00:00Z" }, // Sun 2pm AEST
+      { homeTeam: "Manly", awayTeam: "Parramatta", venue: "4 Pines Park", kickoffUTC: "2026-04-26T06:05:00Z" }, // Sun 4:05pm AEST
     ],
   },
   {
     round: 9,
-    startDate: "2026-04-30",
     games: [
-      { homeTeam: "Canterbury-Bankstown Bulldogs", awayTeam: "North Queensland Cowboys" },
-      { homeTeam: "Dolphins", awayTeam: "Melbourne Storm" },
-      { homeTeam: "Gold Coast Titans", awayTeam: "Canberra Raiders" },
-      { homeTeam: "Parramatta Eels", awayTeam: "New Zealand Warriors" },
-      { homeTeam: "Sydney Roosters", awayTeam: "Brisbane Broncos" },
-      { homeTeam: "Newcastle Knights", awayTeam: "South Sydney Rabbitohs" },
-      { homeTeam: "Cronulla-Sutherland Sharks", awayTeam: "Wests Tigers" },
-      { homeTeam: "Penrith Panthers", awayTeam: "Manly-Warringah Sea Eagles" },
+      { homeTeam: "Canterbury", awayTeam: "North Qld", venue: "Accor Stadium", kickoffUTC: "2026-05-01T08:00:00Z" }, // Fri 6pm AEST
+      { homeTeam: "Dolphins", awayTeam: "Melbourne", venue: "Suncorp Stadium", kickoffUTC: "2026-05-01T10:00:00Z" }, // Fri 8pm AEST
+      { homeTeam: "Gold Coast", awayTeam: "Canberra", venue: "Cbus Super Stadium", kickoffUTC: "2026-05-02T05:00:00Z" }, // Sat 3pm AEST
+      { homeTeam: "Parramatta", awayTeam: "Warriors", venue: "CommBank Stadium", kickoffUTC: "2026-05-02T07:30:00Z" }, // Sat 5:30pm AEST
+      { homeTeam: "Sydney", awayTeam: "Brisbane", venue: "Allianz Stadium", kickoffUTC: "2026-05-02T09:30:00Z" }, // Sat 7:30pm AEST
+      { homeTeam: "Newcastle", awayTeam: "South Sydney", venue: "McDonald Jones Stadium", kickoffUTC: "2026-05-03T04:00:00Z" }, // Sun 2pm AEST
+      { homeTeam: "Cronulla", awayTeam: "Wests Tigers", venue: "PointsBet Stadium", kickoffUTC: "2026-05-03T06:05:00Z" }, // Sun 4:05pm AEST
+      { homeTeam: "Penrith", awayTeam: "Manly", venue: "CommBank Stadium", kickoffUTC: "2026-05-03T08:15:00Z" }, // Sun 6:15pm AEST
     ],
   },
   {
     round: 10,
-    startDate: "2026-05-07",
     games: [
-      { homeTeam: "Dolphins", awayTeam: "Canterbury-Bankstown Bulldogs" },
-      { homeTeam: "Sydney Roosters", awayTeam: "Gold Coast Titans" },
-      { homeTeam: "North Queensland Cowboys", awayTeam: "Parramatta Eels" },
-      { homeTeam: "St George Illawarra Dragons", awayTeam: "Newcastle Knights" },
-      { homeTeam: "South Sydney Rabbitohs", awayTeam: "Cronulla-Sutherland Sharks" },
-      { homeTeam: "Manly-Warringah Sea Eagles", awayTeam: "Brisbane Broncos" },
-      { homeTeam: "Melbourne Storm", awayTeam: "Wests Tigers" },
-      { homeTeam: "Canberra Raiders", awayTeam: "Penrith Panthers" },
+      { homeTeam: "Dolphins", awayTeam: "Canterbury", venue: "Suncorp Stadium", kickoffUTC: "2026-05-07T09:50:00Z" }, // Thu 7:50pm AEST
+      { homeTeam: "Sydney", awayTeam: "Gold Coast", venue: "Accor Stadium", kickoffUTC: "2026-05-08T08:00:00Z" }, // Fri 6pm AEST
+      { homeTeam: "North Qld", awayTeam: "Parramatta", venue: "Qld Country Bank Stadium", kickoffUTC: "2026-05-08T10:00:00Z" }, // Fri 8pm AEST
+      { homeTeam: "St Geo Illa", awayTeam: "Newcastle", venue: "WIN Stadium", kickoffUTC: "2026-05-09T05:00:00Z" }, // Sat 3pm AEST
+      { homeTeam: "South Sydney", awayTeam: "Cronulla", venue: "Accor Stadium", kickoffUTC: "2026-05-09T07:30:00Z" }, // Sat 5:30pm AEST
+      { homeTeam: "Manly", awayTeam: "Brisbane", venue: "4 Pines Park", kickoffUTC: "2026-05-09T09:30:00Z" }, // Sat 7:30pm AEST
+      { homeTeam: "Melbourne", awayTeam: "Wests Tigers", venue: "AAMI Park", kickoffUTC: "2026-05-10T04:00:00Z" }, // Sun 2pm AEST
+      { homeTeam: "Canberra", awayTeam: "Penrith", venue: "GIO Stadium", kickoffUTC: "2026-05-10T06:05:00Z" }, // Sun 4:05pm AEST
     ],
   },
   {
-    round: 11, // Magic Round
-    startDate: "2026-05-14",
+    round: 11,
+    name: "Magic Round",
     games: [
-      { homeTeam: "Cronulla-Sutherland Sharks", awayTeam: "Canterbury-Bankstown Bulldogs", venue: "Suncorp Stadium" },
-      { homeTeam: "South Sydney Rabbitohs", awayTeam: "Dolphins", venue: "Suncorp Stadium" },
-      { homeTeam: "Wests Tigers", awayTeam: "Manly-Warringah Sea Eagles", venue: "Suncorp Stadium" },
-      { homeTeam: "Sydney Roosters", awayTeam: "North Queensland Cowboys", venue: "Suncorp Stadium" },
-      { homeTeam: "Parramatta Eels", awayTeam: "Melbourne Storm", venue: "Suncorp Stadium" },
-      { homeTeam: "Gold Coast Titans", awayTeam: "Newcastle Knights", venue: "Suncorp Stadium" },
-      { homeTeam: "New Zealand Warriors", awayTeam: "Brisbane Broncos", venue: "Suncorp Stadium" },
-      { homeTeam: "Penrith Panthers", awayTeam: "St George Illawarra Dragons", venue: "Suncorp Stadium" },
+      // All games at Suncorp Stadium
+      { homeTeam: "Cronulla", awayTeam: "Canterbury", venue: "Suncorp Stadium", kickoffUTC: "2026-05-15T08:00:00Z" }, // Fri 6pm AEST
+      { homeTeam: "South Sydney", awayTeam: "Dolphins", venue: "Suncorp Stadium", kickoffUTC: "2026-05-15T10:00:00Z" }, // Fri 8pm AEST
+      { homeTeam: "Wests Tigers", awayTeam: "Manly", venue: "Suncorp Stadium", kickoffUTC: "2026-05-16T05:00:00Z" }, // Sat 3pm AEST
+      { homeTeam: "Sydney", awayTeam: "North Qld", venue: "Suncorp Stadium", kickoffUTC: "2026-05-16T07:30:00Z" }, // Sat 5:30pm AEST
+      { homeTeam: "Parramatta", awayTeam: "Melbourne", venue: "Suncorp Stadium", kickoffUTC: "2026-05-16T09:45:00Z" }, // Sat 7:45pm AEST
+      { homeTeam: "Gold Coast", awayTeam: "Newcastle", venue: "Suncorp Stadium", kickoffUTC: "2026-05-17T04:00:00Z" }, // Sun 2pm AEST
+      { homeTeam: "Warriors", awayTeam: "Brisbane", venue: "Suncorp Stadium", kickoffUTC: "2026-05-17T06:05:00Z" }, // Sun 4:05pm AEST
+      { homeTeam: "Penrith", awayTeam: "St Geo Illa", venue: "Suncorp Stadium", kickoffUTC: "2026-05-17T08:25:00Z" }, // Sun 6:25pm AEST
     ],
   },
   {
-    round: 12, // Bye round
-    startDate: "2026-05-21",
+    round: 12,
     games: [
-      { homeTeam: "Canberra Raiders", awayTeam: "Dolphins" },
-      { homeTeam: "Canterbury-Bankstown Bulldogs", awayTeam: "Melbourne Storm" },
-      { homeTeam: "St George Illawarra Dragons", awayTeam: "New Zealand Warriors" },
-      { homeTeam: "Manly-Warringah Sea Eagles", awayTeam: "Gold Coast Titans" },
-      { homeTeam: "North Queensland Cowboys", awayTeam: "South Sydney Rabbitohs" },
+      { homeTeam: "Canberra", awayTeam: "Dolphins", venue: "GIO Stadium", kickoffUTC: "2026-05-21T09:50:00Z" }, // Thu 7:50pm AEST
+      { homeTeam: "Canterbury", awayTeam: "Melbourne", venue: "Accor Stadium", kickoffUTC: "2026-05-22T10:00:00Z" }, // Fri 8pm AEST
+      { homeTeam: "St Geo Illa", awayTeam: "Warriors", venue: "Netstrata Jubilee Stadium", kickoffUTC: "2026-05-23T07:30:00Z" }, // Sat 5:30pm AEST
+      { homeTeam: "Manly", awayTeam: "Gold Coast", venue: "4 Pines Park", kickoffUTC: "2026-05-23T09:30:00Z" }, // Sat 7:30pm AEST
+      { homeTeam: "North Qld", awayTeam: "South Sydney", venue: "Qld Country Bank Stadium", kickoffUTC: "2026-05-24T06:05:00Z" }, // Sun 4:05pm AEST
     ],
   },
   {
     round: 13,
-    startDate: "2026-05-28",
     games: [
-      { homeTeam: "Cronulla-Sutherland Sharks", awayTeam: "Manly-Warringah Sea Eagles" },
-      { homeTeam: "Newcastle Knights", awayTeam: "Parramatta Eels" },
-      { homeTeam: "Wests Tigers", awayTeam: "Canterbury-Bankstown Bulldogs" },
-      { homeTeam: "Melbourne Storm", awayTeam: "Sydney Roosters" },
-      { homeTeam: "Brisbane Broncos", awayTeam: "St George Illawarra Dragons" },
-      { homeTeam: "Canberra Raiders", awayTeam: "North Queensland Cowboys" },
-      { homeTeam: "Penrith Panthers", awayTeam: "New Zealand Warriors" },
+      { homeTeam: "Cronulla", awayTeam: "Manly", venue: "PointsBet Stadium", kickoffUTC: "2026-05-29T10:00:00Z" }, // Fri 8pm AEST
+      { homeTeam: "Newcastle", awayTeam: "Parramatta", venue: "McDonald Jones Stadium", kickoffUTC: "2026-05-30T05:00:00Z" }, // Sat 3pm AEST
+      { homeTeam: "Wests Tigers", awayTeam: "Canterbury", venue: "CommBank Stadium", kickoffUTC: "2026-05-30T07:30:00Z" }, // Sat 5:30pm AEST
+      { homeTeam: "Melbourne", awayTeam: "Sydney", venue: "AAMI Park", kickoffUTC: "2026-05-30T09:30:00Z" }, // Sat 7:30pm AEST
+      { homeTeam: "Brisbane", awayTeam: "St Geo Illa", venue: "Suncorp Stadium", kickoffUTC: "2026-05-31T04:00:00Z" }, // Sun 2pm AEST
+      { homeTeam: "Canberra", awayTeam: "North Qld", venue: "GIO Stadium", kickoffUTC: "2026-05-31T06:05:00Z" }, // Sun 4:05pm AEST
+      { homeTeam: "Penrith", awayTeam: "Warriors", venue: "CommBank Stadium", kickoffUTC: "2026-05-31T08:15:00Z" }, // Sun 6:15pm AEST
     ],
   },
   {
     round: 14,
-    startDate: "2026-06-04",
     games: [
-      { homeTeam: "Manly-Warringah Sea Eagles", awayTeam: "South Sydney Rabbitohs" },
-      { homeTeam: "Melbourne Storm", awayTeam: "Newcastle Knights" },
-      { homeTeam: "Canberra Raiders", awayTeam: "Sydney Roosters" },
-      { homeTeam: "North Queensland Cowboys", awayTeam: "Dolphins" },
-      { homeTeam: "Brisbane Broncos", awayTeam: "Gold Coast Titans" },
-      { homeTeam: "Wests Tigers", awayTeam: "Penrith Panthers" },
-      { homeTeam: "Cronulla-Sutherland Sharks", awayTeam: "St George Illawarra Dragons" },
+      { homeTeam: "Manly", awayTeam: "South Sydney", venue: "4 Pines Park", kickoffUTC: "2026-06-04T09:50:00Z" }, // Thu 7:50pm AEST
+      { homeTeam: "Melbourne", awayTeam: "Newcastle", venue: "AAMI Park", kickoffUTC: "2026-06-05T08:00:00Z" }, // Fri 6pm AEST
+      { homeTeam: "Canberra", awayTeam: "Sydney", venue: "GIO Stadium", kickoffUTC: "2026-06-05T10:00:00Z" }, // Fri 8pm AEST
+      { homeTeam: "North Qld", awayTeam: "Dolphins", venue: "Qld Country Bank Stadium", kickoffUTC: "2026-06-06T07:30:00Z" }, // Sat 5:30pm AEST
+      { homeTeam: "Brisbane", awayTeam: "Gold Coast", venue: "Suncorp Stadium", kickoffUTC: "2026-06-06T09:30:00Z" }, // Sat 7:30pm AEST
+      { homeTeam: "Wests Tigers", awayTeam: "Penrith", venue: "CommBank Stadium", kickoffUTC: "2026-06-07T04:00:00Z" }, // Sun 2pm AEST
+      { homeTeam: "Cronulla", awayTeam: "St Geo Illa", venue: "PointsBet Stadium", kickoffUTC: "2026-06-07T06:05:00Z" }, // Sun 4:05pm AEST
+      { homeTeam: "Canterbury", awayTeam: "Parramatta", venue: "Accor Stadium", kickoffUTC: "2026-06-08T06:05:00Z" }, // Mon 4:05pm AEST
     ],
   },
   {
-    round: 15, // Bye round
-    startDate: "2026-06-11",
+    round: 15,
     games: [
-      { homeTeam: "South Sydney Rabbitohs", awayTeam: "Brisbane Broncos" },
-      { homeTeam: "Dolphins", awayTeam: "Sydney Roosters" },
-      { homeTeam: "New Zealand Warriors", awayTeam: "Cronulla-Sutherland Sharks" },
-      { homeTeam: "Parramatta Eels", awayTeam: "Canberra Raiders" },
-      { homeTeam: "Wests Tigers", awayTeam: "Gold Coast Titans" },
+      { homeTeam: "South Sydney", awayTeam: "Brisbane", venue: "Accor Stadium", kickoffUTC: "2026-06-11T09:50:00Z" }, // Thu 7:50pm AEST
+      { homeTeam: "Dolphins", awayTeam: "Sydney", venue: "Suncorp Stadium", kickoffUTC: "2026-06-12T10:00:00Z" }, // Fri 8pm AEST
+      { homeTeam: "Warriors", awayTeam: "Cronulla", venue: "Go Media Stadium", kickoffUTC: "2026-06-13T09:30:00Z" }, // Sat 7:30pm AEST
+      { homeTeam: "Parramatta", awayTeam: "Canberra", venue: "CommBank Stadium", kickoffUTC: "2026-06-13T09:30:00Z" }, // Sat 7:30pm AEST
+      { homeTeam: "Wests Tigers", awayTeam: "Gold Coast", venue: "Leichhardt Oval", kickoffUTC: "2026-06-14T06:05:00Z" }, // Sun 4:05pm AEST
     ],
   },
   {
     round: 16,
-    startDate: "2026-06-18",
     games: [
-      { homeTeam: "Newcastle Knights", awayTeam: "St George Illawarra Dragons" },
-      { homeTeam: "Wests Tigers", awayTeam: "Dolphins" },
-      { homeTeam: "Gold Coast Titans", awayTeam: "Penrith Panthers" },
-      { homeTeam: "Canterbury-Bankstown Bulldogs", awayTeam: "Manly-Warringah Sea Eagles" },
-      { homeTeam: "New Zealand Warriors", awayTeam: "North Queensland Cowboys" },
-      { homeTeam: "Melbourne Storm", awayTeam: "Canberra Raiders" },
-      { homeTeam: "Sydney Roosters", awayTeam: "Cronulla-Sutherland Sharks" },
+      { homeTeam: "Newcastle", awayTeam: "St Geo Illa", venue: "McDonald Jones Stadium", kickoffUTC: "2026-06-19T10:00:00Z" }, // Fri 8pm AEST
+      { homeTeam: "Wests Tigers", awayTeam: "Dolphins", venue: "Campbelltown Stadium", kickoffUTC: "2026-06-20T05:00:00Z" }, // Sat 3pm AEST
+      { homeTeam: "Gold Coast", awayTeam: "Penrith", venue: "Cbus Super Stadium", kickoffUTC: "2026-06-20T07:30:00Z" }, // Sat 5:30pm AEST
+      { homeTeam: "Canterbury", awayTeam: "Manly", venue: "Accor Stadium", kickoffUTC: "2026-06-20T09:30:00Z" }, // Sat 7:30pm AEST
+      // Auckland game - NZST (UTC+12)
+      { homeTeam: "Warriors", awayTeam: "North Qld", venue: "Go Media Stadium", kickoffUTC: "2026-06-21T04:00:00Z" }, // Sun 4pm NZST
+      { homeTeam: "Melbourne", awayTeam: "Canberra", venue: "AAMI Park", kickoffUTC: "2026-06-21T06:05:00Z" }, // Sun 4:05pm AEST
+      { homeTeam: "Sydney", awayTeam: "Cronulla", venue: "Allianz Stadium", kickoffUTC: "2026-06-21T08:15:00Z" }, // Sun 6:15pm AEST
     ],
   },
   {
     round: 17,
-    startDate: "2026-06-25",
+    name: "Beanie for Brain Cancer Round",
     games: [
-      { homeTeam: "Parramatta Eels", awayTeam: "South Sydney Rabbitohs" },
-      { homeTeam: "Gold Coast Titans", awayTeam: "Canterbury-Bankstown Bulldogs" },
-      { homeTeam: "Brisbane Broncos", awayTeam: "Sydney Roosters" },
-      { homeTeam: "Dolphins", awayTeam: "New Zealand Warriors" },
-      { homeTeam: "North Queensland Cowboys", awayTeam: "Penrith Panthers" },
-      { homeTeam: "Manly-Warringah Sea Eagles", awayTeam: "Melbourne Storm" },
-      { homeTeam: "Canberra Raiders", awayTeam: "St George Illawarra Dragons" },
-      { homeTeam: "Newcastle Knights", awayTeam: "Wests Tigers" },
+      { homeTeam: "Parramatta", awayTeam: "South Sydney", venue: "CommBank Stadium", kickoffUTC: "2026-06-25T09:50:00Z" }, // Thu 7:50pm AEST
+      { homeTeam: "Gold Coast", awayTeam: "Canterbury", venue: "Cbus Super Stadium", kickoffUTC: "2026-06-26T08:00:00Z" }, // Fri 6pm AEST
+      { homeTeam: "Brisbane", awayTeam: "Sydney", venue: "Suncorp Stadium", kickoffUTC: "2026-06-26T10:00:00Z" }, // Fri 8pm AEST
+      { homeTeam: "Dolphins", awayTeam: "Warriors", venue: "Suncorp Stadium", kickoffUTC: "2026-06-27T05:00:00Z" }, // Sat 3pm AEST
+      { homeTeam: "North Qld", awayTeam: "Penrith", venue: "Qld Country Bank Stadium", kickoffUTC: "2026-06-27T07:30:00Z" }, // Sat 5:30pm AEST
+      { homeTeam: "Manly", awayTeam: "Melbourne", venue: "4 Pines Park", kickoffUTC: "2026-06-27T09:30:00Z" }, // Sat 7:30pm AEST
+      { homeTeam: "Canberra", awayTeam: "St Geo Illa", venue: "GIO Stadium", kickoffUTC: "2026-06-28T04:00:00Z" }, // Sun 2pm AEST
+      { homeTeam: "Newcastle", awayTeam: "Wests Tigers", venue: "McDonald Jones Stadium", kickoffUTC: "2026-06-28T06:05:00Z" }, // Sun 4:05pm AEST
     ],
   },
   {
-    round: 18, // Bye round
-    startDate: "2026-07-02",
+    round: 18,
     games: [
-      { homeTeam: "Penrith Panthers", awayTeam: "South Sydney Rabbitohs" },
-      { homeTeam: "St George Illawarra Dragons", awayTeam: "Wests Tigers" },
-      { homeTeam: "Brisbane Broncos", awayTeam: "Cronulla-Sutherland Sharks" },
-      { homeTeam: "Parramatta Eels", awayTeam: "Manly-Warringah Sea Eagles" },
-      { homeTeam: "Newcastle Knights", awayTeam: "Dolphins" },
+      { homeTeam: "Penrith", awayTeam: "South Sydney", venue: "CommBank Stadium", kickoffUTC: "2026-07-03T10:00:00Z" }, // Fri 8pm AEST
+      { homeTeam: "St Geo Illa", awayTeam: "Wests Tigers", venue: "Netstrata Jubilee Stadium", kickoffUTC: "2026-07-04T07:30:00Z" }, // Sat 5:30pm AEST
+      { homeTeam: "Brisbane", awayTeam: "Cronulla", venue: "Suncorp Stadium", kickoffUTC: "2026-07-04T09:30:00Z" }, // Sat 7:30pm AEST
+      { homeTeam: "Parramatta", awayTeam: "Manly", venue: "CommBank Stadium", kickoffUTC: "2026-07-05T04:00:00Z" }, // Sun 2pm AEST
+      { homeTeam: "Newcastle", awayTeam: "Dolphins", venue: "McDonald Jones Stadium", kickoffUTC: "2026-07-05T06:05:00Z" }, // Sun 4:05pm AEST
     ],
   },
   {
     round: 19,
-    startDate: "2026-07-09",
     games: [
-      { homeTeam: "Wests Tigers", awayTeam: "New Zealand Warriors" },
-      { homeTeam: "Dolphins", awayTeam: "Cronulla-Sutherland Sharks" },
-      { homeTeam: "Canterbury-Bankstown Bulldogs", awayTeam: "Canberra Raiders" },
-      { homeTeam: "Sydney Roosters", awayTeam: "Parramatta Eels" },
-      { homeTeam: "South Sydney Rabbitohs", awayTeam: "Newcastle Knights" },
-      { homeTeam: "Manly-Warringah Sea Eagles", awayTeam: "North Queensland Cowboys" },
-      { homeTeam: "Melbourne Storm", awayTeam: "Gold Coast Titans" },
+      { homeTeam: "Wests Tigers", awayTeam: "Warriors", venue: "Campbelltown Stadium", kickoffUTC: "2026-07-10T10:00:00Z" }, // Fri 8pm AEST
+      { homeTeam: "Dolphins", awayTeam: "Cronulla", venue: "Kayo Stadium", kickoffUTC: "2026-07-11T05:00:00Z" }, // Sat 3pm AEST
+      { homeTeam: "Canterbury", awayTeam: "Canberra", venue: "Accor Stadium", kickoffUTC: "2026-07-11T07:30:00Z" }, // Sat 5:30pm AEST
+      { homeTeam: "Sydney", awayTeam: "Parramatta", venue: "Allianz Stadium", kickoffUTC: "2026-07-11T09:30:00Z" }, // Sat 7:30pm AEST
+      { homeTeam: "South Sydney", awayTeam: "Newcastle", venue: "Accor Stadium", kickoffUTC: "2026-07-12T04:00:00Z" }, // Sun 2pm AEST
+      { homeTeam: "Manly", awayTeam: "North Qld", venue: "4 Pines Park", kickoffUTC: "2026-07-12T06:05:00Z" }, // Sun 4:05pm AEST
+      { homeTeam: "Melbourne", awayTeam: "Gold Coast", venue: "AAMI Park", kickoffUTC: "2026-07-12T08:15:00Z" }, // Sun 6:15pm AEST
     ],
   },
   {
     round: 20,
-    startDate: "2026-07-16",
+    name: "Women in League Round",
     games: [
-      { homeTeam: "Penrith Panthers", awayTeam: "Brisbane Broncos" },
-      { homeTeam: "Cronulla-Sutherland Sharks", awayTeam: "Newcastle Knights" },
-      { homeTeam: "Sydney Roosters", awayTeam: "Melbourne Storm" },
-      { homeTeam: "Canberra Raiders", awayTeam: "South Sydney Rabbitohs" },
-      { homeTeam: "New Zealand Warriors", awayTeam: "St George Illawarra Dragons" },
-      { homeTeam: "Canterbury-Bankstown Bulldogs", awayTeam: "Wests Tigers" },
-      { homeTeam: "Gold Coast Titans", awayTeam: "Manly-Warringah Sea Eagles" },
-      { homeTeam: "Dolphins", awayTeam: "North Queensland Cowboys" },
+      { homeTeam: "Penrith", awayTeam: "Brisbane", venue: "CommBank Stadium", kickoffUTC: "2026-07-16T09:50:00Z" }, // Thu 7:50pm AEST
+      { homeTeam: "Cronulla", awayTeam: "Newcastle", venue: "PointsBet Stadium", kickoffUTC: "2026-07-17T08:00:00Z" }, // Fri 6pm AEST
+      { homeTeam: "Sydney", awayTeam: "Melbourne", venue: "Allianz Stadium", kickoffUTC: "2026-07-17T10:00:00Z" }, // Fri 8pm AEST
+      { homeTeam: "Canberra", awayTeam: "South Sydney", venue: "GIO Stadium", kickoffUTC: "2026-07-18T05:00:00Z" }, // Sat 3pm AEST
+      { homeTeam: "Warriors", awayTeam: "St Geo Illa", venue: "Go Media Stadium", kickoffUTC: "2026-07-18T09:30:00Z" }, // Sat 7:30pm AEST
+      { homeTeam: "Canterbury", awayTeam: "Wests Tigers", venue: "Accor Stadium", kickoffUTC: "2026-07-18T09:30:00Z" }, // Sat 7:30pm AEST
+      { homeTeam: "Gold Coast", awayTeam: "Manly", venue: "Cbus Super Stadium", kickoffUTC: "2026-07-19T04:00:00Z" }, // Sun 2pm AEST
+      { homeTeam: "Dolphins", awayTeam: "North Qld", venue: "Suncorp Stadium", kickoffUTC: "2026-07-19T06:05:00Z" }, // Sun 4:05pm AEST
     ],
   },
   {
     round: 21,
-    startDate: "2026-07-23",
     games: [
-      { homeTeam: "Parramatta Eels", awayTeam: "Penrith Panthers" },
-      { homeTeam: "Newcastle Knights", awayTeam: "Sydney Roosters" },
-      { homeTeam: "South Sydney Rabbitohs", awayTeam: "Melbourne Storm" },
-      { homeTeam: "Canberra Raiders", awayTeam: "Wests Tigers" },
-      { homeTeam: "Canterbury-Bankstown Bulldogs", awayTeam: "New Zealand Warriors" },
-      { homeTeam: "North Queensland Cowboys", awayTeam: "Brisbane Broncos" },
-      { homeTeam: "St George Illawarra Dragons", awayTeam: "Gold Coast Titans" },
-      { homeTeam: "Manly-Warringah Sea Eagles", awayTeam: "Cronulla-Sutherland Sharks" },
+      { homeTeam: "Parramatta", awayTeam: "Penrith", venue: "CommBank Stadium", kickoffUTC: "2026-07-23T09:50:00Z" }, // Thu 7:50pm AEST
+      { homeTeam: "Newcastle", awayTeam: "Sydney", venue: "McDonald Jones Stadium", kickoffUTC: "2026-07-24T08:00:00Z" }, // Fri 6pm AEST
+      { homeTeam: "South Sydney", awayTeam: "Melbourne", venue: "Accor Stadium", kickoffUTC: "2026-07-24T10:00:00Z" }, // Fri 8pm AEST
+      { homeTeam: "Canberra", awayTeam: "Wests Tigers", venue: "GIO Stadium", kickoffUTC: "2026-07-25T05:00:00Z" }, // Sat 3pm AEST
+      { homeTeam: "Canterbury", awayTeam: "Warriors", venue: "Accor Stadium", kickoffUTC: "2026-07-25T07:30:00Z" }, // Sat 5:30pm AEST
+      { homeTeam: "North Qld", awayTeam: "Brisbane", venue: "Qld Country Bank Stadium", kickoffUTC: "2026-07-25T09:30:00Z" }, // Sat 7:30pm AEST
+      { homeTeam: "St Geo Illa", awayTeam: "Gold Coast", venue: "Netstrata Jubilee Stadium", kickoffUTC: "2026-07-26T04:00:00Z" }, // Sun 2pm AEST
+      { homeTeam: "Manly", awayTeam: "Cronulla", venue: "4 Pines Park", kickoffUTC: "2026-07-26T06:05:00Z" }, // Sun 4:05pm AEST
     ],
   },
   {
     round: 22,
-    startDate: "2026-07-30",
     games: [
-      { homeTeam: "North Queensland Cowboys", awayTeam: "Sydney Roosters" },
-      { homeTeam: "St George Illawarra Dragons", awayTeam: "Dolphins" },
-      { homeTeam: "Melbourne Storm", awayTeam: "Canterbury-Bankstown Bulldogs" },
-      { homeTeam: "Gold Coast Titans", awayTeam: "New Zealand Warriors" },
-      { homeTeam: "Penrith Panthers", awayTeam: "Canberra Raiders" },
-      { homeTeam: "Brisbane Broncos", awayTeam: "Newcastle Knights" },
-      { homeTeam: "Cronulla-Sutherland Sharks", awayTeam: "South Sydney Rabbitohs" },
-      { homeTeam: "Wests Tigers", awayTeam: "Parramatta Eels" },
+      { homeTeam: "North Qld", awayTeam: "Sydney", venue: "Qld Country Bank Stadium", kickoffUTC: "2026-07-30T09:50:00Z" }, // Thu 7:50pm AEST
+      { homeTeam: "St Geo Illa", awayTeam: "Dolphins", venue: "WIN Stadium", kickoffUTC: "2026-07-31T08:00:00Z" }, // Fri 6pm AEST
+      { homeTeam: "Melbourne", awayTeam: "Canterbury", venue: "AAMI Park", kickoffUTC: "2026-07-31T10:00:00Z" }, // Fri 8pm AEST
+      { homeTeam: "Gold Coast", awayTeam: "Warriors", venue: "Cbus Super Stadium", kickoffUTC: "2026-08-01T05:00:00Z" }, // Sat 3pm AEST
+      // Mudgee regional game
+      { homeTeam: "Penrith", awayTeam: "Canberra", venue: "Glen Willow Stadium", kickoffUTC: "2026-08-01T07:30:00Z" }, // Sat 5:30pm AEST
+      { homeTeam: "Brisbane", awayTeam: "Newcastle", venue: "Suncorp Stadium", kickoffUTC: "2026-08-01T09:30:00Z" }, // Sat 7:30pm AEST
+      { homeTeam: "Cronulla", awayTeam: "South Sydney", venue: "PointsBet Stadium", kickoffUTC: "2026-08-02T04:00:00Z" }, // Sun 2pm AEST
+      { homeTeam: "Wests Tigers", awayTeam: "Parramatta", venue: "CommBank Stadium", kickoffUTC: "2026-08-02T06:05:00Z" }, // Sun 4:05pm AEST
     ],
   },
   {
     round: 23,
-    startDate: "2026-08-06",
+    name: "Indigenous Round",
     games: [
-      { homeTeam: "Gold Coast Titans", awayTeam: "North Queensland Cowboys" },
-      { homeTeam: "New Zealand Warriors", awayTeam: "Penrith Panthers" },
-      { homeTeam: "Sydney Roosters", awayTeam: "Canterbury-Bankstown Bulldogs" },
-      { homeTeam: "Melbourne Storm", awayTeam: "Manly-Warringah Sea Eagles" },
-      { homeTeam: "Dolphins", awayTeam: "Brisbane Broncos" },
-      { homeTeam: "South Sydney Rabbitohs", awayTeam: "Parramatta Eels" },
-      { homeTeam: "Canberra Raiders", awayTeam: "Newcastle Knights" },
-      { homeTeam: "St George Illawarra Dragons", awayTeam: "Cronulla-Sutherland Sharks" },
+      { homeTeam: "Gold Coast", awayTeam: "North Qld", venue: "Cbus Super Stadium", kickoffUTC: "2026-08-06T09:50:00Z" }, // Thu 7:50pm AEST
+      { homeTeam: "Warriors", awayTeam: "Penrith", venue: "Go Media Stadium", kickoffUTC: "2026-08-07T10:00:00Z" }, // Fri 8pm AEST
+      { homeTeam: "Sydney", awayTeam: "Canterbury", venue: "Allianz Stadium", kickoffUTC: "2026-08-07T10:00:00Z" }, // Fri 8pm AEST
+      // Perth game - AWST (UTC+8)
+      { homeTeam: "Melbourne", awayTeam: "Manly", venue: "HBF Park", kickoffUTC: "2026-08-08T05:00:00Z" }, // Sat 1pm AWST
+      { homeTeam: "Dolphins", awayTeam: "Brisbane", venue: "Suncorp Stadium", kickoffUTC: "2026-08-08T07:30:00Z" }, // Sat 5:30pm AEST
+      { homeTeam: "South Sydney", awayTeam: "Parramatta", venue: "Allianz Stadium", kickoffUTC: "2026-08-08T09:30:00Z" }, // Sat 7:30pm AEST
+      { homeTeam: "Canberra", awayTeam: "Newcastle", venue: "GIO Stadium", kickoffUTC: "2026-08-09T04:00:00Z" }, // Sun 2pm AEST
+      { homeTeam: "St Geo Illa", awayTeam: "Cronulla", venue: "Netstrata Jubilee Stadium", kickoffUTC: "2026-08-09T06:05:00Z" }, // Sun 4:05pm AEST
     ],
   },
   {
     round: 24,
-    startDate: "2026-08-13",
     games: [
-      { homeTeam: "Penrith Panthers", awayTeam: "Sydney Roosters" },
-      { homeTeam: "Manly-Warringah Sea Eagles", awayTeam: "Dolphins" },
-      { homeTeam: "Canterbury-Bankstown Bulldogs", awayTeam: "South Sydney Rabbitohs" },
-      { homeTeam: "Cronulla-Sutherland Sharks", awayTeam: "Canberra Raiders" },
-      { homeTeam: "Parramatta Eels", awayTeam: "North Queensland Cowboys" },
-      { homeTeam: "Brisbane Broncos", awayTeam: "New Zealand Warriors" },
-      { homeTeam: "Newcastle Knights", awayTeam: "Gold Coast Titans" },
-      { homeTeam: "Wests Tigers", awayTeam: "St George Illawarra Dragons" },
+      { homeTeam: "Penrith", awayTeam: "Sydney", venue: "CommBank Stadium", kickoffUTC: "2026-08-13T09:50:00Z" }, // Thu 7:50pm AEST
+      { homeTeam: "Manly", awayTeam: "Dolphins", venue: "4 Pines Park", kickoffUTC: "2026-08-14T08:00:00Z" }, // Fri 6pm AEST
+      { homeTeam: "Canterbury", awayTeam: "South Sydney", venue: "Accor Stadium", kickoffUTC: "2026-08-14T10:00:00Z" }, // Fri 8pm AEST
+      { homeTeam: "Cronulla", awayTeam: "Canberra", venue: "PointsBet Stadium", kickoffUTC: "2026-08-15T05:00:00Z" }, // Sat 3pm AEST
+      { homeTeam: "Parramatta", awayTeam: "North Qld", venue: "CommBank Stadium", kickoffUTC: "2026-08-15T07:30:00Z" }, // Sat 5:30pm AEST
+      { homeTeam: "Brisbane", awayTeam: "Warriors", venue: "Suncorp Stadium", kickoffUTC: "2026-08-15T09:30:00Z" }, // Sat 7:30pm AEST
+      { homeTeam: "Newcastle", awayTeam: "Gold Coast", venue: "McDonald Jones Stadium", kickoffUTC: "2026-08-16T04:00:00Z" }, // Sun 2pm AEST
+      { homeTeam: "Wests Tigers", awayTeam: "St Geo Illa", venue: "CommBank Stadium", kickoffUTC: "2026-08-16T06:05:00Z" }, // Sun 4:05pm AEST
     ],
   },
   {
     round: 25,
-    startDate: "2026-08-20",
+    name: "Telstra Round",
     games: [
-      { homeTeam: "Melbourne Storm", awayTeam: "Penrith Panthers" },
-      { homeTeam: "Canberra Raiders", awayTeam: "Brisbane Broncos" },
-      { homeTeam: "Dolphins", awayTeam: "Parramatta Eels" },
-      { homeTeam: "Newcastle Knights", awayTeam: "Manly-Warringah Sea Eagles" },
-      { homeTeam: "South Sydney Rabbitohs", awayTeam: "New Zealand Warriors" },
-      { homeTeam: "St George Illawarra Dragons", awayTeam: "Canterbury-Bankstown Bulldogs" },
-      { homeTeam: "Gold Coast Titans", awayTeam: "Cronulla-Sutherland Sharks" },
-      { homeTeam: "Sydney Roosters", awayTeam: "Wests Tigers" },
+      { homeTeam: "Melbourne", awayTeam: "Penrith", venue: "AAMI Park", kickoffUTC: "2026-08-20T09:50:00Z" }, // Thu 7:50pm AEST
+      { homeTeam: "Canberra", awayTeam: "Brisbane", venue: "GIO Stadium", kickoffUTC: "2026-08-21T08:00:00Z" }, // Fri 6pm AEST
+      { homeTeam: "Dolphins", awayTeam: "Parramatta", venue: "Suncorp Stadium", kickoffUTC: "2026-08-21T10:00:00Z" }, // Fri 8pm AEST
+      { homeTeam: "Newcastle", awayTeam: "Manly", venue: "McDonald Jones Stadium", kickoffUTC: "2026-08-22T05:00:00Z" }, // Sat 3pm AEST
+      { homeTeam: "South Sydney", awayTeam: "Warriors", venue: "Accor Stadium", kickoffUTC: "2026-08-22T07:30:00Z" }, // Sat 5:30pm AEST
+      { homeTeam: "St Geo Illa", awayTeam: "Canterbury", venue: "Allianz Stadium", kickoffUTC: "2026-08-22T09:30:00Z" }, // Sat 7:30pm AEST
+      { homeTeam: "Gold Coast", awayTeam: "Cronulla", venue: "Cbus Super Stadium", kickoffUTC: "2026-08-23T04:00:00Z" }, // Sun 2pm AEST
+      { homeTeam: "Sydney", awayTeam: "Wests Tigers", venue: "Allianz Stadium", kickoffUTC: "2026-08-23T06:05:00Z" }, // Sun 4:05pm AEST
     ],
   },
   {
     round: 26,
-    startDate: "2026-08-27",
     games: [
-      { homeTeam: "Brisbane Broncos", awayTeam: "Melbourne Storm" },
-      { homeTeam: "Manly-Warringah Sea Eagles", awayTeam: "St George Illawarra Dragons" },
-      { homeTeam: "Penrith Panthers", awayTeam: "Canterbury-Bankstown Bulldogs" },
-      { homeTeam: "Gold Coast Titans", awayTeam: "South Sydney Rabbitohs" },
-      { homeTeam: "Sydney Roosters", awayTeam: "Dolphins" },
-      { homeTeam: "North Queensland Cowboys", awayTeam: "Wests Tigers" },
-      { homeTeam: "New Zealand Warriors", awayTeam: "Newcastle Knights" },
-      { homeTeam: "Parramatta Eels", awayTeam: "Cronulla-Sutherland Sharks" },
+      { homeTeam: "Brisbane", awayTeam: "Melbourne", venue: "Suncorp Stadium", kickoffUTC: "2026-08-27T09:50:00Z" }, // Thu 7:50pm AEST
+      { homeTeam: "Manly", awayTeam: "St Geo Illa", venue: "4 Pines Park", kickoffUTC: "2026-08-28T08:00:00Z" }, // Fri 6pm AEST
+      { homeTeam: "Penrith", awayTeam: "Canterbury", venue: "CommBank Stadium", kickoffUTC: "2026-08-28T10:00:00Z" }, // Fri 8pm AEST
+      { homeTeam: "Gold Coast", awayTeam: "South Sydney", venue: "Cbus Super Stadium", kickoffUTC: "2026-08-29T05:00:00Z" }, // Sat 3pm AEST
+      { homeTeam: "Sydney", awayTeam: "Dolphins", venue: "Allianz Stadium", kickoffUTC: "2026-08-29T07:30:00Z" }, // Sat 5:30pm AEST
+      { homeTeam: "North Qld", awayTeam: "Wests Tigers", venue: "Qld Country Bank Stadium", kickoffUTC: "2026-08-29T09:30:00Z" }, // Sat 7:30pm AEST
+      { homeTeam: "Warriors", awayTeam: "Newcastle", venue: "Go Media Stadium", kickoffUTC: "2026-08-30T06:00:00Z" }, // Sun 4pm AEST
+      { homeTeam: "Parramatta", awayTeam: "Cronulla", venue: "CommBank Stadium", kickoffUTC: "2026-08-30T06:05:00Z" }, // Sun 4:05pm AEST
     ],
   },
   {
     round: 27,
-    startDate: "2026-09-03",
     games: [
-      { homeTeam: "Canterbury-Bankstown Bulldogs", awayTeam: "Brisbane Broncos" },
-      { homeTeam: "Gold Coast Titans", awayTeam: "Dolphins" },
-      { homeTeam: "South Sydney Rabbitohs", awayTeam: "Sydney Roosters" },
-      { homeTeam: "New Zealand Warriors", awayTeam: "Manly-Warringah Sea Eagles" },
-      { homeTeam: "North Queensland Cowboys", awayTeam: "Canberra Raiders" },
-      { homeTeam: "Cronulla-Sutherland Sharks", awayTeam: "Melbourne Storm" },
-      { homeTeam: "St George Illawarra Dragons", awayTeam: "Parramatta Eels" },
-      { homeTeam: "Penrith Panthers", awayTeam: "Wests Tigers" },
+      { homeTeam: "Canterbury", awayTeam: "Brisbane", venue: "Accor Stadium", kickoffUTC: "2026-09-03T09:50:00Z" }, // Thu 7:50pm AEST
+      { homeTeam: "Gold Coast", awayTeam: "Dolphins", venue: "Cbus Super Stadium", kickoffUTC: "2026-09-04T08:00:00Z" }, // Fri 6pm AEST
+      { homeTeam: "South Sydney", awayTeam: "Sydney", venue: "Allianz Stadium", kickoffUTC: "2026-09-04T10:00:00Z" }, // Fri 8pm AEST
+      { homeTeam: "Warriors", awayTeam: "Manly", venue: "Go Media Stadium", kickoffUTC: "2026-09-05T07:00:00Z" }, // Sat 5pm AEST
+      { homeTeam: "North Qld", awayTeam: "Canberra", venue: "Qld Country Bank Stadium", kickoffUTC: "2026-09-05T07:30:00Z" }, // Sat 5:30pm AEST
+      { homeTeam: "Cronulla", awayTeam: "Melbourne", venue: "PointsBet Stadium", kickoffUTC: "2026-09-05T09:30:00Z" }, // Sat 7:30pm AEST
+      { homeTeam: "St Geo Illa", awayTeam: "Parramatta", venue: "WIN Stadium", kickoffUTC: "2026-09-06T04:00:00Z" }, // Sun 2pm AEST
+      { homeTeam: "Penrith", awayTeam: "Wests Tigers", venue: "CommBank Stadium", kickoffUTC: "2026-09-06T06:05:00Z" }, // Sun 4:05pm AEST
     ],
   },
 ];
@@ -441,8 +412,7 @@ export async function seed2026Season(): Promise<void> {
   let totalGames = 0;
 
   for (const roundData of SEASON_2026) {
-    for (let i = 0; i < roundData.games.length; i++) {
-      const game = roundData.games[i];
+    for (const game of roundData.games) {
       const homeTeamId = TEAM_NAME_MAP[game.homeTeam];
       const awayTeamId = TEAM_NAME_MAP[game.awayTeam];
 
@@ -454,24 +424,10 @@ export async function seed2026Season(): Promise<void> {
       const id = generateId();
       const status: GameStatus = "scheduled";
 
-      // Calculate approximate kickoff time based on game index
-      // Games typically spread across Thu-Sun
-      const dayOffset = Math.floor(i / 2); // Spread over 4 days
-      const baseDate = new Date(roundData.startDate);
-      baseDate.setDate(baseDate.getDate() + dayOffset);
-
-      // Default kickoff times: 19:00 for even index, 20:00 for odd
-      const hour = i % 2 === 0 ? 19 : 20;
-      baseDate.setHours(hour, 0, 0, 0);
-
-      const kickoff = baseDate.toISOString();
-      // Use specified venue, or fall back to home team's home ground
-      const venue = game.venue || HOME_VENUES[game.homeTeam] || "TBD";
-
       await sql`
         INSERT INTO games (id, season, round, home_team_id, away_team_id, home_score, away_score, venue, kickoff, status, minute)
         VALUES (${id}, 2026, ${roundData.round}, ${homeTeamId}, ${awayTeamId},
-                NULL, NULL, ${venue}, ${kickoff}, ${status}, NULL)
+                NULL, NULL, ${game.venue}, ${game.kickoffUTC}, ${status}, NULL)
         ON CONFLICT (id) DO NOTHING
       `;
       totalGames++;

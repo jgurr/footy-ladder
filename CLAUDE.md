@@ -56,6 +56,21 @@ This project shares Claude Code skills with [Bonnie](/Users/jeffgurr/Documents/B
 
 **NEVER** take data from the original nrl-ladder project (`/Users/jeffgurr/nrl-ladder`). All game data for footy-ladder was scraped specifically for this project from official sources (Rugby League Project, NRL.com). If you need to restore or reference historical data, use git history from THIS repository only.
 
+## Working Style
+
+**Always take the most detailed approach. Never cut corners.**
+
+When implementing features or gathering data:
+1. Use primary sources (official NRL.com, Rugby League Project, etc.)
+2. Scrape actual data rather than making assumptions or using shortcuts
+3. Account for special cases (Magic Round, Las Vegas, regional games, etc.)
+
+**Always present recommendations and ask for decisions.** Before implementing:
+1. Research the options
+2. Present findings with pros/cons
+3. Ask which approach to take
+4. Only proceed after explicit approval
+
 ## Current Sprint
 
 See `docs/sprints/` for current sprint documentation.
