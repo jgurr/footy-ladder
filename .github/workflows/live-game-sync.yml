@@ -4,6 +4,12 @@ on:
   schedule:
     - cron: "*/5 * * * *"
   workflow_dispatch:
+    inputs:
+      force:
+        description: Sync now even when no game window is active
+        required: false
+        default: false
+        type: boolean
 
 concurrency:
   group: live-game-sync
@@ -28,7 +34,7 @@ jobs:
         run: node scripts/check-game-sync-window.mjs
 
       - name: Sync official NRL draw
-        if: steps.window.outputs.active == 'true'
+        if: steps.window.outputs.active == 'true' || (github.event_name == 'workflow_dispatch' && inputs.force)
         env:
           SITE_URL: https://www.getemonside.com
           SEASON: ${{ steps.window.outputs.season }}
@@ -41,5 +47,5 @@ jobs:
             "${SITE_URL}/api/cron/sync?season=${SEASON}"
 
       - name: Skip outside game window
-        if: steps.window.outputs.active != 'true'
+        if: steps.window.outputs.active != 'true' && !(github.event_name == 'workflow_dispatch' && inputs.force)
         run: echo "No game is within the configured sync window."
