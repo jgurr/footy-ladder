@@ -1,8 +1,8 @@
 import { appendFile } from "node:fs/promises";
 
-const PRE_GAME_MINUTES = 5;
-const GAME_DURATION_MINUTES = 120;
-const POST_GAME_MINUTES = 60;
+export const PRE_GAME_MINUTES = 5;
+export const GAME_DURATION_MINUTES = 120;
+export const POST_GAME_MINUTES = 60;
 
 export function findActiveSyncWindow(games, now = new Date()) {
   const nowMs = now.getTime();

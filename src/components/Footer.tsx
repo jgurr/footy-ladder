@@ -88,7 +88,7 @@ export function Footer({ initialStatus }: FooterProps) {
               Live
             </span>
           )}
-          <span>Live check every 5 min</span>
+          <span>Live sync every 5 min during games</span>
           <span>Win % ladder, no bye distortion</span>
         </div>
       </div>
