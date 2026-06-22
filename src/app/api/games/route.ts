@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getGamesByRound, getGamesBySeason } from "@/lib/queries";
 import { getTeamById } from "@/lib/teams";
+import { getSeasonCacheControl } from "@/lib/cache";
 
 export async function GET(request: NextRequest) {
   try {
@@ -26,16 +27,12 @@ export async function GET(request: NextRequest) {
       awayTeam: getTeamById(game.awayTeamId),
     }));
 
-    // Cache headers: 2025 is immutable, 2026 uses shorter cache for live updates
     const hasLiveGames = enrichedGames.some((g: any) => g.status === "live");
-    const cacheControl = season === 2025
-      ? "public, max-age=31536000, immutable"
-      : hasLiveGames
-        ? "public, max-age=30, stale-while-revalidate=60"
-        : "public, max-age=3600, stale-while-revalidate=86400";
 
     return NextResponse.json(enrichedGames, {
-      headers: { "Cache-Control": cacheControl },
+      headers: {
+        "Cache-Control": getSeasonCacheControl(season, { hasLiveGames }),
+      },
     });
   } catch (error) {
     console.error("Games API error:", error);

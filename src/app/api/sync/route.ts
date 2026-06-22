@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { updateGameScore, getGamesByRound, initializeDatabase } from "@/lib/queries";
+import { syncOfficialLadderSnapshots } from "@/lib/nrl-official";
+import { syncOfficialDrawGames } from "@/lib/nrl-draw";
 import type { GameStatus } from "@/lib/types";
 
 /**
@@ -43,6 +45,40 @@ export async function POST(request: NextRequest) {
     await initializeDatabase();
 
     const body = await request.json();
+
+    // Sync current ladder snapshots from the official NRL ladder page.
+    if (body.action === "official-ladder" || body.source === "nrl-official") {
+      const season = Number(body.season || new Date().getFullYear());
+      const round = body.round ? Number(body.round) : undefined;
+      const allAvailableRounds = body.allAvailableRounds ?? !round;
+      const result = await syncOfficialLadderSnapshots(season, {
+        round,
+        allAvailableRounds,
+      });
+
+      return NextResponse.json({
+        success: true,
+        source: "nrl-official",
+        ...result,
+      });
+    }
+
+    // Sync games, scores, and fixtures from the official NRL draw page.
+    if (body.action === "official-games" || body.source === "nrl-official-draw") {
+      const season = Number(body.season || new Date().getFullYear());
+      const round = body.round ? Number(body.round) : undefined;
+      const allAvailableRounds = body.allAvailableRounds ?? !round;
+      const result = await syncOfficialDrawGames(season, {
+        round,
+        allAvailableRounds,
+      });
+
+      return NextResponse.json({
+        success: true,
+        source: "nrl-official-draw",
+        ...result,
+      });
+    }
 
     // Handle bulk updates
     if (body.games && Array.isArray(body.games)) {

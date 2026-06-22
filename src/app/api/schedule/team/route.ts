@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { sql } from "@vercel/postgres";
+import { getSeasonCacheControl } from "@/lib/cache";
+import { getSeasonStatus } from "@/lib/status";
 
 interface Game {
   id: string;
@@ -25,7 +27,7 @@ export async function GET(request: NextRequest) {
   try {
 
     const searchParams = request.nextUrl.searchParams;
-    const season = parseInt(searchParams.get("season") || "2025");
+    const season = parseInt(searchParams.get("season") || "2026");
     const teamId = searchParams.get("teamId");
 
     if (!teamId) {
@@ -88,10 +90,7 @@ export async function GET(request: NextRequest) {
       SELECT MAX(round) as "latestRound" FROM games WHERE season = ${season} AND status = 'final'
     `;
 
-    // Cache headers: 2025 is immutable, 2026 revalidates hourly
-    const cacheControl = season === 2025
-      ? "public, max-age=31536000, immutable"
-      : "public, max-age=3600, stale-while-revalidate=86400";
+    const status = await getSeasonStatus(season);
 
     return NextResponse.json({
       season,
@@ -100,7 +99,11 @@ export async function GET(request: NextRequest) {
       games,
       latestRound: latestRows[0]?.latestRound || 1,
     }, {
-      headers: { "Cache-Control": cacheControl },
+      headers: {
+        "Cache-Control": getSeasonCacheControl(season, {
+          hasLiveGames: status.liveGames > 0,
+        }),
+      },
     });
   } catch (error) {
     console.error("Team schedule API error:", error);

@@ -14,8 +14,8 @@ export function Header() {
         background: `${palette.bg}ee`,
       }}
     >
-      <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-4">
-        <div>
+      <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-3 px-4 py-4">
+        <div className="min-w-0">
           <h1
             className="text-2xl font-bold tracking-tight"
             style={{ color: palette.accent }}
@@ -30,7 +30,7 @@ export function Header() {
         <select
           value={paletteKey}
           onChange={(e) => setPaletteKey(e.target.value as PaletteKey)}
-          className="rounded-lg px-3 py-2 text-sm font-medium"
+          className="max-w-full rounded-lg px-3 py-2 text-sm font-medium"
           style={{
             background: "rgba(255,255,255,0.08)",
             border: `1px solid ${palette.border}`,

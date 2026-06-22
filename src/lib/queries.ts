@@ -99,6 +99,24 @@ export async function insertGame(game: Omit<Game, "id">): Promise<string> {
 }
 
 /**
+ * Replace every game for a season/round with canonical source data.
+ */
+export async function replaceGamesForRound(
+  season: number,
+  round: number,
+  games: Omit<Game, "id">[]
+): Promise<void> {
+  await sql`
+    DELETE FROM games
+    WHERE season = ${season} AND round = ${round}
+  `;
+
+  for (const game of games) {
+    await insertGame(game);
+  }
+}
+
+/**
  * Update game score
  */
 export async function updateGameScore(
@@ -238,23 +256,52 @@ export async function calculateLadderFromGames(
 }
 
 /**
+ * Find the latest round with either a saved ladder snapshot or completed games.
+ */
+export async function getLatestLadderRound(season: number): Promise<number> {
+  const { rows } = await sql`
+    SELECT MAX(round) as "maxRound"
+    FROM (
+      SELECT round FROM ladder_snapshots WHERE season = ${season}
+      UNION ALL
+      SELECT round FROM games WHERE season = ${season} AND status = 'final'
+    ) rounds
+  `;
+
+  return Number(rows[0]?.maxRound || 1);
+}
+
+/**
+ * Get rounds that can produce a meaningful ladder.
+ */
+export async function getAvailableLadderRounds(season: number): Promise<number[]> {
+  const { rows } = await sql`
+    SELECT DISTINCT round
+    FROM (
+      SELECT round FROM ladder_snapshots WHERE season = ${season}
+      UNION
+      SELECT round FROM games WHERE season = ${season} AND status = 'final'
+    ) rounds
+    ORDER BY round DESC
+  `;
+
+  return rows.map((row) => Number(row.round));
+}
+
+/**
  * Get or calculate ladder for a specific round
  */
 export async function getLadder(season: number, round?: number): Promise<LadderEntry[]> {
   // If no round specified, find the latest round with completed games
   let currentRound: number;
   if (!round) {
-    const { rows } = await sql`
-      SELECT MAX(round) as "maxRound"
-      FROM games
-      WHERE season = ${season} AND status = 'final'
-    `;
-    currentRound = rows[0]?.maxRound || 1;
+    currentRound = await getLatestLadderRound(season);
   } else {
     currentRound = round;
   }
 
-  // Check if we have a snapshot for this round
+  // Prefer precomputed snapshots. Draw sync writes these from canonical game
+  // data, which keeps public reads fast without changing the ladder source.
   const { rows: snapshot } = await sql`
     SELECT ls.*, t.name, t.location, t.short_code as "shortCode",
            t.primary_color as "primaryColor", t.secondary_color as "secondaryColor",
@@ -266,7 +313,7 @@ export async function getLadder(season: number, round?: number): Promise<LadderE
   `;
 
   if (snapshot.length > 0) {
-    return snapshot.map((row: any) => ({
+    const entries = snapshot.map((row: any) => ({
       team: {
         id: row.team_id,
         name: row.name,
@@ -290,9 +337,10 @@ export async function getLadder(season: number, round?: number): Promise<LadderE
       position: row.position,
       byesTaken: row.byes_taken,
     }));
+
+    return assignPositions(sortLadder(entries));
   }
 
-  // No snapshot, calculate from games
   return calculateLadderFromGames(season, currentRound);
 }
 
@@ -403,8 +451,54 @@ export async function getNext5ForAllTeams(
     }>
   >();
 
+  const roundNumbers = Array.from({ length: 5 }, (_, index) => currentRound + index).filter(
+    (round) => round <= 27
+  );
+  const lastRound = roundNumbers[roundNumbers.length - 1] || currentRound;
+
+  const { rows } = await sql`
+    SELECT round, home_team_id, away_team_id
+    FROM games
+    WHERE season = ${season}
+      AND round >= ${currentRound}
+      AND round <= ${lastRound}
+    ORDER BY round, kickoff NULLS FIRST
+  `;
+
+  const gamesByTeamRound = new Map<string, {
+    round: number;
+    opponentId: string;
+    isHome: boolean;
+  }>();
+
+  for (const game of rows) {
+    gamesByTeamRound.set(`${game.home_team_id}:${game.round}`, {
+      round: Number(game.round),
+      opponentId: game.away_team_id,
+      isHome: true,
+    });
+    gamesByTeamRound.set(`${game.away_team_id}:${game.round}`, {
+      round: Number(game.round),
+      opponentId: game.home_team_id,
+      isHome: false,
+    });
+  }
+
   for (const team of NRL_TEAMS) {
-    const fixtures = await getUpcomingGamesForTeam(season, team.id, currentRound, 5);
+    const fixtures = roundNumbers.map((round) => {
+      const fixture = gamesByTeamRound.get(`${team.id}:${round}`);
+
+      if (fixture) {
+        return fixture;
+      }
+
+      return {
+        round,
+        opponentId: null,
+        isHome: false,
+      };
+    });
+
     result.set(
       team.id,
       fixtures.map((f) => ({

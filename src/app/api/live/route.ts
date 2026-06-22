@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { getGamesByRound, initializeDatabase } from "@/lib/queries";
+import { getGamesByRound } from "@/lib/queries";
 import { getTeamById } from "@/lib/teams";
 
 /**
@@ -18,9 +18,6 @@ export async function GET(request: NextRequest) {
   const round = searchParams.get("round")
     ? parseInt(searchParams.get("round")!)
     : undefined;
-
-  // Initialize database
-  await initializeDatabase();
 
   // Create a readable stream for SSE
   const encoder = new TextEncoder();

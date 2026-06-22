@@ -19,7 +19,7 @@ export interface Game {
   homeScore: number | null;
   awayScore: number | null;
   venue: string;
-  kickoff: string; // ISO date string
+  kickoff: string | null; // ISO date string
   status: GameStatus;
   minute?: number;
 }

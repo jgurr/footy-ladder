@@ -4,6 +4,8 @@ import {
   getNext5ForAllTeams,
   getTotalByesForSeason,
 } from "@/lib/queries";
+import { getSeasonCacheControl } from "@/lib/cache";
+import { getSeasonStatus } from "@/lib/status";
 
 export async function GET(request: NextRequest) {
   try {
@@ -17,6 +19,7 @@ export async function GET(request: NextRequest) {
     // Get current ladder to know positions
     const ladder = await getLadder(season, round);
     const currentRound = round || ladder[0]?.round || 1;
+    const firstFutureRound = currentRound + 1;
 
     // Build position map
     const positions = new Map<string, number>();
@@ -25,7 +28,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Get next 5 fixtures for all teams
-    const next5Map = await getNext5ForAllTeams(season, currentRound, positions);
+    const next5Map = await getNext5ForAllTeams(season, firstFutureRound, positions);
 
     // Format response
     const result: Record<
@@ -42,24 +45,26 @@ export async function GET(request: NextRequest) {
       result[teamId] = fixtures;
     }
 
-    // Get round numbers for column headers (current round + next 4)
-    const roundNumbers = Array.from({ length: 5 }, (_, i) => currentRound + i).filter(
+    // Get round numbers for column headers (next 5 rounds)
+    const roundNumbers = Array.from({ length: 5 }, (_, i) => firstFutureRound + i).filter(
       (r) => r <= 27
     );
 
-    // Cache headers: 2025 is immutable, 2026 revalidates hourly
-    const cacheControl = season === 2025
-      ? "public, max-age=31536000, immutable"
-      : "public, max-age=3600, stale-while-revalidate=86400";
+    const status = await getSeasonStatus(season);
 
     return NextResponse.json({
       season,
       currentRound,
+      firstFutureRound,
       roundNumbers,
       totalByes: getTotalByesForSeason(season),
       fixtures: result,
     }, {
-      headers: { "Cache-Control": cacheControl },
+      headers: {
+        "Cache-Control": getSeasonCacheControl(season, {
+          hasLiveGames: status.liveGames > 0,
+        }),
+      },
     });
   } catch (error) {
     console.error("Schedule API error:", error);

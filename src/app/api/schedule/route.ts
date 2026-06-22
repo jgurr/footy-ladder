@@ -1,12 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getGamesBySeason, initializeDatabase } from "@/lib/queries";
+import { getGamesBySeason } from "@/lib/queries";
 import { getTeamById } from "@/lib/teams";
+import { getSeasonCacheControl } from "@/lib/cache";
 
 export async function GET(request: NextRequest) {
   try {
-    // Initialize database on first request
-    await initializeDatabase();
-
     const searchParams = request.nextUrl.searchParams;
     const season = parseInt(searchParams.get("season") || "2026");
 
@@ -23,7 +21,7 @@ export async function GET(request: NextRequest) {
         homeTeam: ReturnType<typeof getTeamById>;
         awayTeam: ReturnType<typeof getTeamById>;
         venue: string;
-        kickoff: string;
+        kickoff: string | null;
         status: string;
       }>
     > = {};
@@ -49,6 +47,10 @@ export async function GET(request: NextRequest) {
         round: parseInt(round),
         games,
       })),
+    }, {
+      headers: {
+        "Cache-Control": getSeasonCacheControl(season),
+      },
     });
   } catch (error) {
     console.error("Schedule API error:", error);

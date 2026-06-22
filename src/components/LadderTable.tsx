@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import { useTheme } from "./ThemeProvider";
 import { TeamFlag } from "./TeamFlag";
 
@@ -8,6 +8,7 @@ interface LadderEntry {
   team: {
     id: string;
     name: string;
+    location: string;
     shortCode: string;
     primaryColor: string;
     secondaryColor: string;
@@ -77,9 +78,23 @@ interface TeamScheduleGame {
 interface TeamScheduleData {
   season: number;
   teamId: string;
-  team: { id: string; name: string; shortCode: string; primaryColor: string; secondaryColor: string };
+  team: { id: string; name: string; location?: string; shortCode: string; primaryColor: string; secondaryColor: string };
   games: TeamScheduleGame[];
   latestRound: number;
+}
+
+interface LadderTableProps {
+  initialSeason?: number;
+  initialRound?: number;
+  initialRounds?: number[];
+  initialLadder?: LadderEntry[];
+}
+
+interface BootstrapData {
+  season: number;
+  rounds: number[];
+  latestRound: number;
+  ladder: LadderEntry[];
 }
 
 type ViewType = "ladder" | "forAgainst" | "next5" | "scores" | "team";
@@ -137,19 +152,57 @@ const FOR_AGAINST_SORT_OPTIONS: SortOption<ForAgainstSortKey>[] = [
   { key: "pdPerGame", label: "PD/GM", defaultDir: "desc" },
 ];
 
-export function LadderTable() {
+const API_VERSION = "5";
+
+function calculateGamesFromCut(entry: LadderEntry, cutTeam: LadderEntry): number {
+  const cutEffectiveWins = cutTeam.wins + cutTeam.draws * 0.5;
+  const cutEffectiveLosses = cutTeam.losses + cutTeam.draws * 0.5;
+  const entryEffectiveWins = entry.wins + entry.draws * 0.5;
+  const entryEffectiveLosses = entry.losses + entry.draws * 0.5;
+
+  const gamesFromCut =
+    (entryEffectiveWins - cutEffectiveWins + cutEffectiveLosses - entryEffectiveLosses) / 2;
+
+  return Math.round(gamesFromCut * 2) / 2;
+}
+
+function formatGamesFromCut(gamesFromCut: number): string {
+  if (gamesFromCut === 0) return "—";
+
+  const absValue = Math.abs(gamesFromCut);
+  const formatted = Number.isInteger(absValue) ? String(absValue) : absValue.toFixed(1);
+
+  return gamesFromCut > 0 ? `+${formatted}` : `-${formatted}`;
+}
+
+function formatFullTeamName(team: { name: string; location?: string }): string {
+  return team.location ? `${team.location} ${team.name}` : team.name;
+}
+
+export function LadderTable({
+  initialSeason = 2026,
+  initialRound = 1,
+  initialRounds = [],
+  initialLadder = [],
+}: LadderTableProps) {
   const { palette } = useTheme();
-  const [ladder, setLadder] = useState<LadderEntry[]>([]);
+  const hasInitialData = initialRounds.length > 0 && initialLadder.length > 0;
+  const loadedLadderKey = useRef(
+    hasInitialData ? `${initialSeason}:${initialRound}` : ""
+  );
+  const skippedInitialBootstrap = useRef(false);
+
+  const [ladder, setLadder] = useState<LadderEntry[]>(initialLadder);
   const [next5Data, setNext5Data] = useState<Next5Data | null>(null);
   const [games, setGames] = useState<Game[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [roundsLoading, setRoundsLoading] = useState(true);
+  const [loading, setLoading] = useState(!hasInitialData);
+  const [roundsLoading, setRoundsLoading] = useState(!hasInitialData);
   const [next5Loading, setNext5Loading] = useState(false);
   const [gamesLoading, setGamesLoading] = useState(false);
   const [teamLoading, setTeamLoading] = useState(false);
-  const [season, setSeason] = useState(2025);
-  const [round, setRound] = useState<number>(27);
-  const [availableRounds, setAvailableRounds] = useState<number[]>([]);
+  const [season, setSeason] = useState(initialSeason);
+  const [round, setRound] = useState<number>(initialRound);
+  const [availableRounds, setAvailableRounds] = useState<number[]>(initialRounds);
   const [view, setView] = useState<ViewType>("ladder");
   const [ladderSort, setLadderSort] = useState<LadderSortKey>("winPct");
   const [ladderSortDir, setLadderSortDir] = useState<SortDirection>("desc");
@@ -184,13 +237,20 @@ export function LadderTable() {
     }
   };
 
-  // Fetch available rounds when season changes
+  // Fetch current season bootstrap when season changes. Initial server-rendered
+  // data is already present, so the first client render can skip this fetch.
   useEffect(() => {
-    async function fetchRounds() {
+    if (hasInitialData && !skippedInitialBootstrap.current && season === initialSeason) {
+      skippedInitialBootstrap.current = true;
+      return;
+    }
+
+    async function fetchBootstrap() {
       setRoundsLoading(true);
+      setLoading(true);
       try {
-        const res = await fetch(`/api/rounds?season=${season}&v=2`);
-        const data = await res.json();
+        const res = await fetch(`/api/bootstrap?season=${season}&v=${API_VERSION}`);
+        const data = (await res.json()) as BootstrapData;
         let rounds = (data.rounds as number[]).sort((a, b) => b - a);
 
         if (rounds.length === 0) {
@@ -198,22 +258,31 @@ export function LadderTable() {
         }
 
         setAvailableRounds(rounds);
-        // Set to most recent round for 2025, round 1 for future seasons
-        setRound(season === 2025 ? rounds[0] : 1);
+        const nextRound = data.latestRound || rounds[0] || 1;
+        loadedLadderKey.current = `${season}:${nextRound}`;
+        setRound(nextRound);
+        setLadder(data.ladder || []);
       } catch (error) {
-        console.error("Failed to fetch rounds:", error);
+        console.error("Failed to fetch bootstrap data:", error);
         setAvailableRounds([1]);
         setRound(1);
       } finally {
         setRoundsLoading(false);
+        setLoading(false);
       }
     }
-    fetchRounds();
-  }, [season]);
+    fetchBootstrap();
+  }, [hasInitialData, initialSeason, season]);
 
   // Fetch ladder data
   useEffect(() => {
     if (roundsLoading) return;
+    const ladderKey = `${season}:${round}`;
+
+    if (loadedLadderKey.current === ladderKey) {
+      setLoading(false);
+      return;
+    }
 
     async function fetchLadder() {
       setLoading(true);
@@ -221,9 +290,11 @@ export function LadderTable() {
         const params = new URLSearchParams({ season: String(season) });
         params.set("round", String(round));
 
-        const res = await fetch(`/api/ladder?${params}&v=2`);
+        params.set("v", API_VERSION);
+        const res = await fetch(`/api/ladder?${params}`);
         const data = await res.json();
         setLadder(data);
+        loadedLadderKey.current = ladderKey;
       } catch (error) {
         console.error("Failed to fetch ladder:", error);
       } finally {
@@ -243,7 +314,8 @@ export function LadderTable() {
         const params = new URLSearchParams({ season: String(season) });
         params.set("round", String(round));
 
-        const res = await fetch(`/api/schedule/next5?${params}&v=2`);
+        params.set("v", API_VERSION);
+        const res = await fetch(`/api/schedule/next5?${params}`);
         const data = await res.json();
         setNext5Data(data);
       } catch (error) {
@@ -262,7 +334,7 @@ export function LadderTable() {
     async function fetchGames() {
       setGamesLoading(true);
       try {
-        const res = await fetch(`/api/games?season=${season}&round=${round}&v=2`);
+        const res = await fetch(`/api/games?season=${season}&round=${round}&v=${API_VERSION}`);
         const data = await res.json();
         // API returns array directly
         setGames(Array.isArray(data) ? data : []);
@@ -282,7 +354,7 @@ export function LadderTable() {
     async function fetchTeamSchedule() {
       setTeamLoading(true);
       try {
-        const res = await fetch(`/api/schedule/team?season=${season}&teamId=${selectedTeamId}&v=2`);
+        const res = await fetch(`/api/schedule/team?season=${season}&teamId=${selectedTeamId}&v=${API_VERSION}`);
         const data = await res.json();
         setTeamSchedule(data);
         // Set selected round to latest round or current selection
@@ -364,12 +436,16 @@ export function LadderTable() {
     return sorted.map((entry, index) => ({ ...entry, position: index + 1 }));
   }, [ladder, view, ladderSort, ladderSortDir, forAgainstSort, forAgainstSortDir]);
 
-  // Build team lookup for Next 5 view
-  const teamById = useMemo(() => {
-    const map = new Map<string, LadderEntry["team"]>();
+  const gamesFromCutByTeam = useMemo(() => {
+    const map = new Map<string, number>();
+    const playoffCut = [...ladder].sort((a, b) => a.position - b.position)[7];
+
+    if (!playoffCut) return map;
+
     for (const entry of ladder) {
-      map.set(entry.team.id, entry.team);
+      map.set(entry.team.id, calculateGamesFromCut(entry, playoffCut));
     }
+
     return map;
   }, [ladder]);
 
@@ -456,6 +532,9 @@ export function LadderTable() {
             key={v}
             onClick={() => {
               setView(v);
+              if (v === "team") {
+                setSelectedRound(null);
+              }
               // If switching to team view without a team selected, pick first team
               if (v === "team" && !selectedTeamId && ladder.length > 0) {
                 setSelectedTeamId(ladder[0].team.id);
@@ -759,6 +838,7 @@ export function LadderTable() {
                     <th className="px-1 py-2 text-center font-mono">L</th>
                     <th className="px-1 py-2 text-center font-mono">D</th>
                     <th className="px-1 py-2 text-center font-mono">%</th>
+                    <th className="px-1 py-2 text-center font-mono">CUT</th>
                     <th className="px-1 py-2 text-center font-mono">PD</th>
                     <th className="hidden sm:table-cell px-1 py-2 text-center font-mono">B</th>
                   </>
@@ -789,10 +869,18 @@ export function LadderTable() {
                 const paPerGame = entry.played > 0 ? entry.pointsAgainst / entry.played : 0;
                 const pdPerGame = entry.played > 0 ? entry.differential / entry.played : 0;
                 const fixtures = next5Data?.fixtures[entry.team.id] || [];
+                const gamesFromCut = gamesFromCutByTeam.get(entry.team.id) || 0;
 
                 // Only show markers when in default sort order (playoff order)
                 // For/Against view never shows markers as it doesn't represent playoff order
                 const showMarkers = (view === "ladder" && isDefaultLadderSort) || view === "next5";
+                const markerColor = showMarkers
+                  ? isTop4
+                    ? "#22c55e"
+                    : isTop8
+                    ? "#f59e0b"
+                    : "transparent"
+                  : "transparent";
 
                 return (
                   <tr
@@ -801,7 +889,10 @@ export function LadderTable() {
                     style={{ borderColor: palette.border }}
                   >
                     {/* Position */}
-                    <td className="px-1 py-2 text-center font-mono text-sm">
+                    <td
+                      className="px-1 py-2 text-center font-mono text-sm"
+                      style={{ borderLeft: `3px solid ${markerColor}` }}
+                    >
                       {entry.position}
                     </td>
 
@@ -812,7 +903,15 @@ export function LadderTable() {
                         className="flex items-center gap-1.5 hover:opacity-80 transition"
                       >
                         <TeamFlag teamId={entry.team.id} size={16} />
-                        <span className="font-medium text-sm">{entry.team.shortCode}</span>
+                        <span className="font-medium text-sm sm:hidden">
+                          {entry.team.shortCode}
+                        </span>
+                        <span className="hidden font-medium text-sm sm:inline lg:hidden">
+                          {entry.team.name}
+                        </span>
+                        <span className="hidden font-medium text-sm lg:inline">
+                          {formatFullTeamName(entry.team)}
+                        </span>
                       </button>
                     </td>
 
@@ -856,6 +955,19 @@ export function LadderTable() {
                           }}
                         >
                           {entry.winPct.toFixed(0)}
+                        </td>
+                        <td
+                          className="px-1 py-2 text-center font-mono text-sm tabular-nums"
+                          style={{
+                            color:
+                              gamesFromCut > 0
+                                ? "#22c55e"
+                                : gamesFromCut < 0
+                                ? "#ef4444"
+                                : palette.textMuted,
+                          }}
+                        >
+                          {formatGamesFromCut(gamesFromCut)}
                         </td>
                         <td
                           className="px-1 py-2 text-center font-mono text-sm tabular-nums"
@@ -1011,6 +1123,7 @@ export function LadderTable() {
               <span style={{ color: "#f59e0b" }}>D</span>=Draws
             </span>
             <span>PD=Point Diff</span>
+            <span>CUT=Games from 8th</span>
           </>
         )}
         {view === "forAgainst" && (
