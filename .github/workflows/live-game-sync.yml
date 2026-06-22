@@ -10,6 +10,10 @@ on:
         required: false
         default: false
         type: boolean
+      round:
+        description: Optional round for a forced recovery sync
+        required: false
+        type: string
 
 concurrency:
   group: live-game-sync
@@ -38,13 +42,19 @@ jobs:
         env:
           SITE_URL: https://www.getemonside.com
           SEASON: ${{ steps.window.outputs.season }}
+          ROUND: ${{ inputs.round || steps.window.outputs.round }}
           SYNC_SECRET: ${{ secrets.SYNC_SECRET }}
         run: |
+          sync_url="${SITE_URL}/api/cron/sync?season=${SEASON}"
+          if [ -n "${ROUND}" ]; then
+            sync_url="${sync_url}&round=${ROUND}"
+          fi
+
           curl --fail --show-error --silent \
             --retry 3 \
             --max-time 240 \
             -H "Authorization: Bearer ${SYNC_SECRET}" \
-            "${SITE_URL}/api/cron/sync?season=${SEASON}"
+            "${sync_url}"
 
       - name: Skip outside game window
         if: steps.window.outputs.active != 'true' && !(github.event_name == 'workflow_dispatch' && inputs.force)

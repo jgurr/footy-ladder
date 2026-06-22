@@ -13,14 +13,17 @@ export async function GET(request: NextRequest) {
     const season = Number(
       request.nextUrl.searchParams.get("season") || new Date().getFullYear()
     );
+    const requestedRound = request.nextUrl.searchParams.get("round");
+    const round = requestedRound ? Number(requestedRound) : undefined;
     const result = await syncOfficialDrawGames(season, {
       allAvailableRounds: false,
+      round,
     });
 
     return NextResponse.json({
       success: true,
       source: "nrl-official-draw",
-      mode: "current-round",
+      mode: round ? "requested-round" : "current-round",
       ...result,
     });
   } catch (error) {
