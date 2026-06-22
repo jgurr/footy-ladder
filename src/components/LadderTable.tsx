@@ -3,6 +3,9 @@
 import { useEffect, useRef, useState, useMemo } from "react";
 import { useTheme } from "./ThemeProvider";
 import { TeamFlag } from "./TeamFlag";
+import { FixtureDifficulty } from "./FixtureDifficulty";
+import { RunHomeTable } from "./RunHomeTable";
+import type { RunHomeData } from "@/lib/run-home";
 
 interface LadderEntry {
   team: {
@@ -97,7 +100,7 @@ interface BootstrapData {
   ladder: LadderEntry[];
 }
 
-type ViewType = "ladder" | "forAgainst" | "next5" | "scores" | "team";
+type ViewType = "ladder" | "forAgainst" | "next5" | "scores" | "runHome" | "team";
 type LadderSortKey = "winPct" | "wins" | "losses" | "draws" | "differential";
 type ForAgainstSortKey = "pointsFor" | "pfPerGame" | "pointsAgainst" | "paPerGame" | "differential" | "pdPerGame";
 type SortDirection = "asc" | "desc";
@@ -152,7 +155,7 @@ const FOR_AGAINST_SORT_OPTIONS: SortOption<ForAgainstSortKey>[] = [
   { key: "pdPerGame", label: "PD/GM", defaultDir: "desc" },
 ];
 
-const API_VERSION = "5";
+const API_VERSION = "6";
 
 function calculateGamesFromCut(entry: LadderEntry, cutTeam: LadderEntry): number {
   const cutEffectiveWins = cutTeam.wins + cutTeam.draws * 0.5;
@@ -200,6 +203,8 @@ export function LadderTable({
   const [next5Loading, setNext5Loading] = useState(false);
   const [gamesLoading, setGamesLoading] = useState(false);
   const [teamLoading, setTeamLoading] = useState(false);
+  const [runHomeLoading, setRunHomeLoading] = useState(false);
+  const [runHomeData, setRunHomeData] = useState<RunHomeData | null>(null);
   const [season, setSeason] = useState(initialSeason);
   const [round, setRound] = useState<number>(initialRound);
   const [availableRounds, setAvailableRounds] = useState<number[]>(initialRounds);
@@ -258,6 +263,7 @@ export function LadderTable({
         }
 
         setAvailableRounds(rounds);
+        setRunHomeData(null);
         const nextRound = data.latestRound || rounds[0] || 1;
         loadedLadderKey.current = `${season}:${nextRound}`;
         setRound(nextRound);
@@ -370,6 +376,25 @@ export function LadderTable({
     fetchTeamSchedule();
   }, [view, season, selectedTeamId, selectedRound, round]);
 
+  // Run Home powers both its summary tab and future-game detail on Team view.
+  useEffect(() => {
+    if ((view !== "runHome" && view !== "team") || runHomeData?.season === season) return;
+
+    async function fetchRunHome() {
+      setRunHomeLoading(true);
+      try {
+        const res = await fetch(`/api/run-home?season=${season}&v=${API_VERSION}`);
+        if (!res.ok) throw new Error(`Run Home returned ${res.status}`);
+        setRunHomeData(await res.json());
+      } catch (error) {
+        console.error("Failed to fetch run home:", error);
+      } finally {
+        setRunHomeLoading(false);
+      }
+    }
+    fetchRunHome();
+  }, [view, season, runHomeData]);
+
   // Handle team click - navigate to team view
   const handleTeamClick = (teamId: string) => {
     setSelectedTeamId(teamId);
@@ -379,7 +404,7 @@ export function LadderTable({
 
   // Sort ladder based on current view and sort key
   const sortedLadder = useMemo(() => {
-    if (view === "next5" || view === "scores") {
+    if (view === "next5" || view === "scores" || view === "runHome") {
       return [...ladder].sort((a, b) => a.position - b.position);
     }
 
@@ -524,10 +549,10 @@ export function LadderTable({
 
       {/* View Tabs */}
       <div
-        className="mb-4 grid grid-cols-5 gap-1 rounded-lg p-1"
+        className="mb-4 grid grid-cols-3 gap-1 rounded-lg p-1 sm:grid-cols-6"
         style={{ background: "rgba(255,255,255,0.05)" }}
       >
-        {(["ladder", "forAgainst", "scores", "next5", "team"] as ViewType[]).map((v) => (
+        {(["ladder", "forAgainst", "scores", "next5", "runHome", "team"] as ViewType[]).map((v) => (
           <button
             key={v}
             onClick={() => {
@@ -548,10 +573,20 @@ export function LadderTable({
               color: view === v ? "#000" : palette.text,
             }}
           >
-            {v === "ladder" ? "Ladder" : v === "forAgainst" ? <span>For/<br className="sm:hidden"/>Against</span> : v === "scores" ? "Scores" : v === "next5" ? <span>Next 5</span> : "Team"}
+            {v === "ladder" ? "Ladder" : v === "forAgainst" ? <span>For/<br className="sm:hidden"/>Against</span> : v === "scores" ? "Scores" : v === "next5" ? <span>Next 5</span> : v === "runHome" ? "Run Home" : "Team"}
           </button>
         ))}
       </div>
+
+      {/* Run Home View */}
+      {view === "runHome" && runHomeLoading && (
+        <div className="flex h-64 items-center justify-center rounded-lg border" style={{ borderColor: palette.border }}>
+          <div className="font-mono" style={{ color: palette.accent }}>Calculating run home...</div>
+        </div>
+      )}
+      {view === "runHome" && !runHomeLoading && runHomeData && (
+        <RunHomeTable data={runHomeData} onSelectTeam={handleTeamClick} />
+      )}
 
       {/* Sort Chips */}
       {(view === "ladder" || view === "forAgainst") && (
@@ -720,6 +755,9 @@ export function LadderTable({
             {teamSchedule.games.map((game) => {
               const isCurrentRound = game.round === teamSchedule.latestRound;
               const isFinal = game.status === "final";
+              const runHomeFixture = runHomeData?.fixtures[teamSchedule.team.id]?.find(
+                (fixture) => fixture.gameId === game.id
+              );
 
               return (
                 <div
@@ -795,6 +833,9 @@ export function LadderTable({
                   >
                     {game.venue}
                   </div>
+                  {!isFinal && runHomeFixture && (
+                    <FixtureDifficulty fixture={runHomeFixture} />
+                  )}
                 </div>
               );
             })}
@@ -818,7 +859,7 @@ export function LadderTable({
       )}
 
       {/* Table (for ladder/forAgainst/next5 views) */}
-      {view !== "scores" && view !== "team" && !(view === "next5" && next5Loading) && (
+      {view !== "scores" && view !== "team" && view !== "runHome" && !(view === "next5" && next5Loading) && (
         <div
           className="overflow-hidden rounded-lg border"
           style={{ borderColor: palette.border }}
