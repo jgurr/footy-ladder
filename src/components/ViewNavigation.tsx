@@ -2,6 +2,7 @@
 
 import {
   Activity,
+  BarChart3,
   CalendarDays,
   LineChart,
   ListChecks,
@@ -14,7 +15,15 @@ import {
 import { useState } from "react";
 import { useTheme } from "./ThemeProvider";
 
-export type AppView = "ladder" | "forAgainst" | "scores" | "next5" | "runHome" | "elo" | "team";
+export type AppView =
+  | "ladder"
+  | "forAgainst"
+  | "scores"
+  | "next5"
+  | "runHome"
+  | "monteCarlo"
+  | "elo"
+  | "team";
 
 const NAV_ITEMS: Array<{
   view: AppView;
@@ -26,6 +35,7 @@ const NAV_ITEMS: Array<{
   { view: "scores", label: "Scores", Icon: ListChecks },
   { view: "next5", label: "Next 5", Icon: CalendarDays },
   { view: "runHome", label: "Run Home", Icon: Trophy },
+  { view: "monteCarlo", label: "Monte Carlo", Icon: BarChart3 },
   { view: "elo", label: "Elo Graph", Icon: LineChart },
   { view: "team", label: "Team", Icon: Users },
 ];

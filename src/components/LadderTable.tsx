@@ -5,8 +5,10 @@ import { useTheme } from "./ThemeProvider";
 import { TeamFlag } from "./TeamFlag";
 import { FixtureDifficulty } from "./FixtureDifficulty";
 import { EloGraph, type EloHistoryData } from "./EloGraph";
+import { MonteCarloTable } from "./MonteCarloTable";
 import { RunHomeTable } from "./RunHomeTable";
 import { ViewNavigation, type AppView } from "./ViewNavigation";
+import type { MonteCarloData } from "@/lib/monte-carlo";
 import type { RunHomeData } from "@/lib/run-home";
 
 interface LadderEntry {
@@ -157,7 +159,7 @@ const FOR_AGAINST_SORT_OPTIONS: SortOption<ForAgainstSortKey>[] = [
   { key: "pdPerGame", label: "PD/GM", defaultDir: "desc" },
 ];
 
-const API_VERSION = "9";
+const API_VERSION = "10";
 
 function calculateGamesFromCut(entry: LadderEntry, cutTeam: LadderEntry): number {
   const cutEffectiveWins = cutTeam.wins + cutTeam.draws * 0.5;
@@ -206,8 +208,10 @@ export function LadderTable({
   const [gamesLoading, setGamesLoading] = useState(false);
   const [teamLoading, setTeamLoading] = useState(false);
   const [runHomeLoading, setRunHomeLoading] = useState(false);
+  const [monteCarloLoading, setMonteCarloLoading] = useState(false);
   const [eloLoading, setEloLoading] = useState(false);
   const [runHomeData, setRunHomeData] = useState<RunHomeData | null>(null);
+  const [monteCarloData, setMonteCarloData] = useState<MonteCarloData | null>(null);
   const [eloHistoryData, setEloHistoryData] = useState<EloHistoryData | null>(null);
   const [season, setSeason] = useState(initialSeason);
   const [round, setRound] = useState<number>(initialRound);
@@ -268,6 +272,7 @@ export function LadderTable({
 
         setAvailableRounds(rounds);
         setRunHomeData(null);
+        setMonteCarloData(null);
         setEloHistoryData(null);
         const nextRound = data.latestRound || rounds[0] || 1;
         loadedLadderKey.current = `${season}:${nextRound}`;
@@ -400,6 +405,25 @@ export function LadderTable({
     fetchRunHome();
   }, [view, season, runHomeData]);
 
+  // Fetch Monte Carlo simulation when that view is opened.
+  useEffect(() => {
+    if (view !== "monteCarlo" || monteCarloData?.season === season) return;
+
+    async function fetchMonteCarlo() {
+      setMonteCarloLoading(true);
+      try {
+        const res = await fetch(`/api/monte-carlo?season=${season}&v=${API_VERSION}`);
+        if (!res.ok) throw new Error(`Monte Carlo returned ${res.status}`);
+        setMonteCarloData(await res.json());
+      } catch (error) {
+        console.error("Failed to fetch Monte Carlo:", error);
+      } finally {
+        setMonteCarloLoading(false);
+      }
+    }
+    fetchMonteCarlo();
+  }, [view, season, monteCarloData]);
+
   // Fetch Elo history when the graph view is opened.
   useEffect(() => {
     if (view !== "elo" || eloHistoryData?.season === season) return;
@@ -438,7 +462,13 @@ export function LadderTable({
 
   // Sort ladder based on current view and sort key
   const sortedLadder = useMemo(() => {
-    if (view === "next5" || view === "scores" || view === "runHome" || view === "elo") {
+    if (
+      view === "next5" ||
+      view === "scores" ||
+      view === "runHome" ||
+      view === "monteCarlo" ||
+      view === "elo"
+    ) {
       return [...ladder].sort((a, b) => a.position - b.position);
     }
 
@@ -594,6 +624,16 @@ export function LadderTable({
       )}
       {view === "runHome" && !runHomeLoading && runHomeData && (
         <RunHomeTable data={runHomeData} onSelectTeam={handleTeamClick} />
+      )}
+
+      {/* Monte Carlo View */}
+      {view === "monteCarlo" && monteCarloLoading && (
+        <div className="flex h-64 items-center justify-center rounded-lg border" style={{ borderColor: palette.border }}>
+          <div className="font-mono" style={{ color: palette.accent }}>Running simulations...</div>
+        </div>
+      )}
+      {view === "monteCarlo" && !monteCarloLoading && monteCarloData && (
+        <MonteCarloTable data={monteCarloData} />
       )}
 
       {/* Elo Graph View */}
@@ -877,7 +917,7 @@ export function LadderTable({
       )}
 
       {/* Table (for ladder/forAgainst/next5 views) */}
-      {view !== "scores" && view !== "team" && view !== "runHome" && view !== "elo" && !(view === "next5" && next5Loading) && (
+      {view !== "scores" && view !== "team" && view !== "runHome" && view !== "monteCarlo" && view !== "elo" && !(view === "next5" && next5Loading) && (
         <div
           className="overflow-hidden rounded-lg border"
           style={{ borderColor: palette.border }}
