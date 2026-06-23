@@ -186,6 +186,14 @@ function formatFullTeamName(team: { name: string; location?: string }): string {
   return team.location ? `${team.location} ${team.name}` : team.name;
 }
 
+function usesRoundSelector(view: ViewType): boolean {
+  return view === "ladder" || view === "forAgainst" || view === "scores" || view === "next5";
+}
+
+function usesCurrentSeasonOnly(view: ViewType): boolean {
+  return view === "runHome" || view === "monteCarlo" || view === "elo";
+}
+
 export function LadderTable({
   initialSeason = 2026,
   initialRound = 1,
@@ -248,6 +256,11 @@ export function LadderTable({
       const option = FOR_AGAINST_SORT_OPTIONS.find(o => o.key === key);
       setForAgainstSortDir(option?.defaultDir || "desc");
     }
+  };
+
+  const handleSeasonChange = (nextSeason: number) => {
+    setSeason(nextSeason);
+    setSelectedRound(null);
   };
 
   // Fetch current season bootstrap when season changes. Initial server-rendered
@@ -451,6 +464,9 @@ export function LadderTable({
   };
 
   const handleViewChange = (nextView: ViewType) => {
+    if (usesCurrentSeasonOnly(nextView) && season !== initialSeason) {
+      handleSeasonChange(initialSeason);
+    }
     setView(nextView);
     if (nextView === "team") {
       setSelectedRound(null);
@@ -540,6 +556,55 @@ export function LadderTable({
 
   const totalByes = next5Data?.totalByes || 3;
   const currentRound = round;
+  const selectStyle = {
+    background: "rgba(255,255,255,0.08)",
+    border: `1px solid ${palette.border}`,
+    color: palette.text,
+  };
+
+  const seasonSelect = (
+    <select
+      value={season}
+      onChange={(e) => handleSeasonChange(Number(e.target.value))}
+      aria-label="Season"
+      className="rounded-lg px-3 py-2 text-sm font-semibold"
+      style={selectStyle}
+    >
+      <option value={2025}>2025</option>
+      <option value={2026}>2026</option>
+    </select>
+  );
+
+  const roundSelect = (
+    <select
+      value={round}
+      onChange={(e) => setRound(Number(e.target.value))}
+      aria-label="Round"
+      className="rounded-lg px-3 py-2 text-sm"
+      style={selectStyle}
+    >
+      {availableRounds.map((r) => (
+        <option key={r} value={r}>
+          Round {r}
+        </option>
+      ))}
+    </select>
+  );
+
+  const roundToolbar = usesRoundSelector(view) ? (
+    <div
+      className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-lg border p-3"
+      style={{ borderColor: palette.border }}
+    >
+      <div className="flex flex-wrap items-center gap-3">
+        {seasonSelect}
+        {roundSelect}
+      </div>
+      <div className="font-mono text-xs" style={{ color: palette.textMuted }}>
+        Round {currentRound}
+      </div>
+    </div>
+  ) : null;
 
   // Format kickoff time in local timezone
   const formatKickoff = (kickoff: string | null) => {
@@ -571,50 +636,11 @@ export function LadderTable({
 
   return (
     <div>
-      {/* Header */}
-      <div className="mb-4 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <select
-            value={season}
-            onChange={(e) => setSeason(Number(e.target.value))}
-            className="rounded-lg px-3 py-2 text-sm font-semibold"
-            style={{
-              background: "rgba(255,255,255,0.08)",
-              border: `1px solid ${palette.border}`,
-              color: palette.text,
-            }}
-          >
-            <option value={2025}>2025</option>
-            <option value={2026}>2026</option>
-          </select>
-
-          <select
-            value={round}
-            onChange={(e) => setRound(Number(e.target.value))}
-            className="rounded-lg px-3 py-2 text-sm"
-            style={{
-              background: "rgba(255,255,255,0.08)",
-              border: `1px solid ${palette.border}`,
-              color: palette.text,
-            }}
-          >
-            {availableRounds.map((r) => (
-              <option key={r} value={r}>
-                Round {r}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="text-xs" style={{ color: palette.textMuted }}>
-          Round {currentRound}
-        </div>
-      </div>
-
       <div className="grid gap-4 md:grid-cols-[10.5rem_minmax(0,1fr)]">
         <ViewNavigation view={view} onViewChange={handleViewChange} />
 
         <div className="min-w-0">
+      {roundToolbar}
 
       {/* Run Home View */}
       {view === "runHome" && runHomeLoading && (
@@ -781,7 +807,7 @@ export function LadderTable({
       {view === "team" && !teamLoading && teamSchedule && (
         <div>
           {/* Team Header with Picker */}
-          <div className="mb-4 flex items-center gap-4">
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-3">
               <TeamFlag teamId={teamSchedule.team.id} size={32} />
               <select
@@ -790,6 +816,7 @@ export function LadderTable({
                   setSelectedTeamId(e.target.value);
                   setSelectedRound(null);
                 }}
+                aria-label="Team"
                 className="rounded-lg px-3 py-2 text-lg font-bold"
                 style={{
                   background: "rgba(255,255,255,0.08)",
@@ -806,6 +833,7 @@ export function LadderTable({
                   ))}
               </select>
             </div>
+            {seasonSelect}
           </div>
 
           {/* Schedule List */}
