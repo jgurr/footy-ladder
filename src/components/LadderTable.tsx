@@ -405,7 +405,7 @@ export function LadderTable({
     fetchRunHome();
   }, [view, season, runHomeData]);
 
-  // Fetch Monte Carlo simulation when that view is opened.
+  // Fetch ladder simulation when that view is opened.
   useEffect(() => {
     if (view !== "monteCarlo" || monteCarloData?.season === season) return;
 
@@ -413,10 +413,10 @@ export function LadderTable({
       setMonteCarloLoading(true);
       try {
         const res = await fetch(`/api/monte-carlo?season=${season}&v=${API_VERSION}`);
-        if (!res.ok) throw new Error(`Monte Carlo returned ${res.status}`);
+        if (!res.ok) throw new Error(`Ladder simulation returned ${res.status}`);
         setMonteCarloData(await res.json());
       } catch (error) {
-        console.error("Failed to fetch Monte Carlo:", error);
+        console.error("Failed to fetch ladder simulation:", error);
       } finally {
         setMonteCarloLoading(false);
       }
@@ -626,10 +626,10 @@ export function LadderTable({
         <RunHomeTable data={runHomeData} onSelectTeam={handleTeamClick} />
       )}
 
-      {/* Monte Carlo View */}
+      {/* Ladder Simulation View */}
       {view === "monteCarlo" && monteCarloLoading && (
         <div className="flex h-64 items-center justify-center rounded-lg border" style={{ borderColor: palette.border }}>
-          <div className="font-mono" style={{ color: palette.accent }}>Running simulations...</div>
+          <div className="font-mono" style={{ color: palette.accent }}>Running ladder simulations...</div>
         </div>
       )}
       {view === "monteCarlo" && !monteCarloLoading && monteCarloData && (

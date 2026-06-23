@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
       headers: { "Cache-Control": getSeasonCacheControl(season) },
     });
   } catch (error) {
-    console.error("Monte Carlo API error:", error);
-    return NextResponse.json({ error: "Failed to run Monte Carlo simulation" }, { status: 500 });
+    console.error("Ladder simulation API error:", error);
+    return NextResponse.json({ error: "Failed to run ladder simulation" }, { status: 500 });
   }
 }

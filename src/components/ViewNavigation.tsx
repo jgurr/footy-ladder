@@ -35,7 +35,7 @@ const NAV_ITEMS: Array<{
   { view: "scores", label: "Scores", Icon: ListChecks },
   { view: "next5", label: "Next 5", Icon: CalendarDays },
   { view: "runHome", label: "Run Home", Icon: Trophy },
-  { view: "monteCarlo", label: "Monte Carlo", Icon: BarChart3 },
+  { view: "monteCarlo", label: "Ladder Sim", Icon: BarChart3 },
   { view: "elo", label: "Elo Graph", Icon: LineChart },
   { view: "team", label: "Team", Icon: Users },
 ];

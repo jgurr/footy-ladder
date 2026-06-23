@@ -88,7 +88,7 @@ export function MonteCarloTable({ data }: { data: MonteCarloData }) {
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
             <h2 className="text-lg font-bold" style={{ color: palette.accent }}>
-              Monte Carlo
+              Ladder Simulation
             </h2>
             <div className="text-xs" style={{ color: palette.textMuted }}>
               {data.iterations.toLocaleString()} runs · {data.remainingGames} remaining games · seeded #{data.seed}
