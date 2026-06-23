@@ -119,12 +119,18 @@ export function EloGraph({ data }: { data: EloHistoryData }) {
           </button>
         </div>
 
-        <div className="overflow-x-auto">
+        <div
+          className="overflow-x-auto overflow-y-clip"
+          style={{
+            overscrollBehaviorX: "contain",
+            touchAction: "pan-y",
+          }}
+        >
           <svg
             role="img"
             aria-label="Elo ratings over time"
             viewBox={`0 0 ${CHART.width} ${CHART.height}`}
-            className="min-w-[760px]"
+            className="h-auto w-full min-w-[680px] md:min-w-[760px]"
           >
             <rect width={CHART.width} height={CHART.height} fill="transparent" />
             {gridValues.map((value) => {
