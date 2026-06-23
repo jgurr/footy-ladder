@@ -87,26 +87,43 @@ export function ViewNavigation({
   );
 
   return (
-    <aside className="sticky top-24 z-30 self-start">
-      <button
-        type="button"
-        onClick={() => setMobileOpen((open) => !open)}
-        className="mb-3 flex w-full items-center justify-between rounded-md border px-3 py-2 text-sm font-semibold md:hidden"
+    <aside className="sticky top-[85px] z-30 self-start md:top-24">
+      <div
+        className="-mx-4 mb-4 border-b px-4 pb-3 pt-2 shadow-lg md:hidden"
         style={{
           background: palette.bg,
           borderColor: palette.border,
-          color: palette.text,
         }}
       >
-        <span className="flex items-center gap-2">
-          <Menu size={18} />
-          Menu
-        </span>
-        <Activity size={16} style={{ color: palette.accent }} />
-      </button>
+        <button
+          type="button"
+          onClick={() => setMobileOpen((open) => !open)}
+          className="flex w-full items-center justify-between rounded-md border px-3 py-2 text-sm font-semibold"
+          style={{
+            background: "rgba(255,255,255,0.04)",
+            borderColor: palette.border,
+            color: palette.text,
+          }}
+        >
+          <span className="flex items-center gap-2">
+            <Menu size={18} />
+            Menu
+          </span>
+          <Activity size={16} style={{ color: palette.accent }} />
+        </button>
+
+        {mobileOpen && (
+          <div
+            className="mt-3 rounded-lg border p-2"
+            style={{ borderColor: palette.border, background: "rgba(255,255,255,0.04)" }}
+          >
+            {nav}
+          </div>
+        )}
+      </div>
 
       <div
-        className={`${mobileOpen ? "block" : "hidden"} mb-4 rounded-lg border p-2 md:mb-0 md:block`}
+        className="hidden rounded-lg border p-2 md:block"
         style={{ borderColor: palette.border, background: "rgba(255,255,255,0.04)" }}
       >
         {nav}
