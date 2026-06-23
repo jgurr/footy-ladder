@@ -1,5 +1,5 @@
-import historicalGamesJson from "@/data/elo-history.json";
 import { calculateEloRatings, ELO_BASELINE, expectedWinProbability, rankEloRatings } from "./elo";
+import { buildEloModelGames } from "./elo-history";
 import { NRL_TEAMS, getTeamById } from "./teams";
 import type { Game, LadderEntry, Team } from "./types";
 
@@ -107,18 +107,6 @@ const VENUES: Record<string, Coordinates> = {
   "WIN Stadium": { lat: -34.427, lon: 150.902 },
 };
 
-const historicalGames = historicalGamesJson as Array<{
-  season: number;
-  round: number;
-  stage: string;
-  kickoff: string;
-  venue: string;
-  homeTeamId: string;
-  awayTeamId: string;
-  homeScore: number;
-  awayScore: number;
-}>;
-
 function toRadians(value: number): number {
   return (value * Math.PI) / 180;
 }
@@ -213,16 +201,7 @@ export function buildRunHomeData(
   ladder: LadderEntry[],
   seasonGames: Game[]
 ): RunHomeData {
-  const completedCurrentGames = seasonGames
-    .filter(
-      (game): game is Game & { homeScore: number; awayScore: number } =>
-        game.status === "final" && game.homeScore !== null && game.awayScore !== null
-    )
-    .map((game) => ({ ...game, homeScore: game.homeScore, awayScore: game.awayScore }));
-  const modelGames = [
-    ...historicalGames,
-    ...(season > 2025 ? completedCurrentGames : []),
-  ];
+  const modelGames = buildEloModelGames(season, seasonGames);
   const { ratings, gamesProcessed } = calculateEloRatings(modelGames);
   const powerRanks = rankEloRatings(
     ratings,

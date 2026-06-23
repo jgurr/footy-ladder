@@ -3,7 +3,9 @@ import test from "node:test";
 import historicalGames from "@/data/elo-history.json";
 import {
   calculateEloRatings,
+  calculateEloRoundSnapshots,
   ELO_BASELINE,
+  ELO_SEASON_REGRESSION,
   expectedWinProbability,
   rankEloRatings,
 } from "./elo";
@@ -20,6 +22,10 @@ test("four-season history contains regular season and finals games", () => {
     assert.equal(games.filter((game) => game.stage === "Grand Final").length, 1);
     assert.equal(games.filter((game) => game.stage.startsWith("Finals Week")).length, 8);
   }
+});
+
+test("prototype Elo carries continuously across seasons", () => {
+  assert.equal(ELO_SEASON_REGRESSION, 0);
 });
 
 test("Elo processing remains zero-sum around the league baseline", () => {
@@ -41,4 +47,13 @@ test("power rankings order stronger ratings first", () => {
   );
   assert.equal(ranks.get("b"), 1);
   assert.equal(ranks.get("c"), 3);
+});
+
+test("round snapshots include finals labels and a rating for every requested team", () => {
+  const snapshots = calculateEloRoundSnapshots(historicalGames, ["pen", "bri", "mel"]);
+  assert.ok(snapshots.length > 100);
+  assert.ok(snapshots.some((snapshot) => snapshot.label === "Grand Final"));
+  assert.equal(typeof snapshots.at(-1)?.ratings.pen, "number");
+  assert.equal(typeof snapshots.at(-1)?.ratings.bri, "number");
+  assert.equal(typeof snapshots.at(-1)?.ratings.mel, "number");
 });

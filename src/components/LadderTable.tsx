@@ -4,7 +4,9 @@ import { useEffect, useRef, useState, useMemo } from "react";
 import { useTheme } from "./ThemeProvider";
 import { TeamFlag } from "./TeamFlag";
 import { FixtureDifficulty } from "./FixtureDifficulty";
+import { EloGraph, type EloHistoryData } from "./EloGraph";
 import { RunHomeTable } from "./RunHomeTable";
+import { ViewNavigation, type AppView } from "./ViewNavigation";
 import type { RunHomeData } from "@/lib/run-home";
 
 interface LadderEntry {
@@ -100,7 +102,7 @@ interface BootstrapData {
   ladder: LadderEntry[];
 }
 
-type ViewType = "ladder" | "forAgainst" | "next5" | "scores" | "runHome" | "team";
+type ViewType = AppView;
 type LadderSortKey = "winPct" | "wins" | "losses" | "draws" | "differential";
 type ForAgainstSortKey = "pointsFor" | "pfPerGame" | "pointsAgainst" | "paPerGame" | "differential" | "pdPerGame";
 type SortDirection = "asc" | "desc";
@@ -155,7 +157,7 @@ const FOR_AGAINST_SORT_OPTIONS: SortOption<ForAgainstSortKey>[] = [
   { key: "pdPerGame", label: "PD/GM", defaultDir: "desc" },
 ];
 
-const API_VERSION = "6";
+const API_VERSION = "8";
 
 function calculateGamesFromCut(entry: LadderEntry, cutTeam: LadderEntry): number {
   const cutEffectiveWins = cutTeam.wins + cutTeam.draws * 0.5;
@@ -204,7 +206,9 @@ export function LadderTable({
   const [gamesLoading, setGamesLoading] = useState(false);
   const [teamLoading, setTeamLoading] = useState(false);
   const [runHomeLoading, setRunHomeLoading] = useState(false);
+  const [eloLoading, setEloLoading] = useState(false);
   const [runHomeData, setRunHomeData] = useState<RunHomeData | null>(null);
+  const [eloHistoryData, setEloHistoryData] = useState<EloHistoryData | null>(null);
   const [season, setSeason] = useState(initialSeason);
   const [round, setRound] = useState<number>(initialRound);
   const [availableRounds, setAvailableRounds] = useState<number[]>(initialRounds);
@@ -264,6 +268,7 @@ export function LadderTable({
 
         setAvailableRounds(rounds);
         setRunHomeData(null);
+        setEloHistoryData(null);
         const nextRound = data.latestRound || rounds[0] || 1;
         loadedLadderKey.current = `${season}:${nextRound}`;
         setRound(nextRound);
@@ -395,6 +400,25 @@ export function LadderTable({
     fetchRunHome();
   }, [view, season, runHomeData]);
 
+  // Fetch Elo history when the graph view is opened.
+  useEffect(() => {
+    if (view !== "elo" || eloHistoryData?.season === season) return;
+
+    async function fetchEloHistory() {
+      setEloLoading(true);
+      try {
+        const res = await fetch(`/api/elo-history?season=${season}&v=${API_VERSION}`);
+        if (!res.ok) throw new Error(`Elo history returned ${res.status}`);
+        setEloHistoryData(await res.json());
+      } catch (error) {
+        console.error("Failed to fetch Elo history:", error);
+      } finally {
+        setEloLoading(false);
+      }
+    }
+    fetchEloHistory();
+  }, [view, season, eloHistoryData]);
+
   // Handle team click - navigate to team view
   const handleTeamClick = (teamId: string) => {
     setSelectedTeamId(teamId);
@@ -402,9 +426,19 @@ export function LadderTable({
     setView("team");
   };
 
+  const handleViewChange = (nextView: ViewType) => {
+    setView(nextView);
+    if (nextView === "team") {
+      setSelectedRound(null);
+      if (!selectedTeamId && ladder.length > 0) {
+        setSelectedTeamId(ladder[0].team.id);
+      }
+    }
+  };
+
   // Sort ladder based on current view and sort key
   const sortedLadder = useMemo(() => {
-    if (view === "next5" || view === "scores" || view === "runHome") {
+    if (view === "next5" || view === "scores" || view === "runHome" || view === "elo") {
       return [...ladder].sort((a, b) => a.position - b.position);
     }
 
@@ -547,36 +581,10 @@ export function LadderTable({
         </div>
       </div>
 
-      {/* View Tabs */}
-      <div
-        className="mb-4 grid grid-cols-3 gap-1 rounded-lg p-1 sm:grid-cols-6"
-        style={{ background: "rgba(255,255,255,0.05)" }}
-      >
-        {(["ladder", "forAgainst", "scores", "next5", "runHome", "team"] as ViewType[]).map((v) => (
-          <button
-            key={v}
-            onClick={() => {
-              setView(v);
-              if (v === "team") {
-                setSelectedRound(null);
-              }
-              // If switching to team view without a team selected, pick first team
-              if (v === "team" && !selectedTeamId && ladder.length > 0) {
-                setSelectedTeamId(ladder[0].team.id);
-              }
-            }}
-            className={`rounded-md px-2 py-2 text-xs sm:text-sm font-medium transition text-center leading-tight ${
-              view === v ? "" : "opacity-60 hover:opacity-100"
-            }`}
-            style={{
-              background: view === v ? palette.accent : "transparent",
-              color: view === v ? "#000" : palette.text,
-            }}
-          >
-            {v === "ladder" ? "Ladder" : v === "forAgainst" ? <span>For/<br className="sm:hidden"/>Against</span> : v === "scores" ? "Scores" : v === "next5" ? <span>Next 5</span> : v === "runHome" ? "Run Home" : "Team"}
-          </button>
-        ))}
-      </div>
+      <div className="grid gap-4 md:grid-cols-[10.5rem_minmax(0,1fr)]">
+        <ViewNavigation view={view} onViewChange={handleViewChange} />
+
+        <div className="min-w-0">
 
       {/* Run Home View */}
       {view === "runHome" && runHomeLoading && (
@@ -586,6 +594,16 @@ export function LadderTable({
       )}
       {view === "runHome" && !runHomeLoading && runHomeData && (
         <RunHomeTable data={runHomeData} onSelectTeam={handleTeamClick} />
+      )}
+
+      {/* Elo Graph View */}
+      {view === "elo" && eloLoading && (
+        <div className="flex h-64 items-center justify-center rounded-lg border" style={{ borderColor: palette.border }}>
+          <div className="font-mono" style={{ color: palette.accent }}>Calculating Elo history...</div>
+        </div>
+      )}
+      {view === "elo" && !eloLoading && eloHistoryData && (
+        <EloGraph data={eloHistoryData} />
       )}
 
       {/* Sort Chips */}
@@ -859,7 +877,7 @@ export function LadderTable({
       )}
 
       {/* Table (for ladder/forAgainst/next5 views) */}
-      {view !== "scores" && view !== "team" && view !== "runHome" && !(view === "next5" && next5Loading) && (
+      {view !== "scores" && view !== "team" && view !== "runHome" && view !== "elo" && !(view === "next5" && next5Loading) && (
         <div
           className="overflow-hidden rounded-lg border"
           style={{ borderColor: palette.border }}
@@ -1210,6 +1228,8 @@ export function LadderTable({
             </span>
           </>
         )}
+      </div>
+        </div>
       </div>
     </div>
   );

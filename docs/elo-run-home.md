@@ -26,10 +26,10 @@ npm run test:elo
 
 - New teams begin at 1500.
 - Home advantage is 50 Elo points, except for Las Vegas and Grand Finals.
-- The update factor is 12.
+- The update factor is 8.
 - Winning margin applies a damped logarithmic multiplier.
-- Ratings regress 45% toward 1500 before each new season.
-- Parameters were selected using out-of-season log-loss over the 2023-2025 official results.
+- Ratings carry continuously across seasons; they only change when matches are played.
+- The update factor and home advantage were selected using out-of-season log-loss over the 2023-2025 official results.
 
 The user interface presents Elo as a power rank. Raw Elo points and rating-point adjustments are not
 shown because they do not help explain an individual fixture.
