@@ -1,6 +1,12 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { buildRunHomeData, difficultyLabel, distanceKm } from "./run-home";
+import {
+  buildRunHomeData,
+  difficultyLabel,
+  distanceKm,
+  gameOutlookLabel,
+  scheduleEdgeLabel,
+} from "./run-home";
 import { NRL_TEAMS } from "./teams";
 import type { Game, LadderEntry } from "./types";
 
@@ -60,6 +66,21 @@ test("difficulty labels use readable bands", () => {
   assert.equal(difficultyLabel(30), "Easier");
 });
 
+test("run-home labels explain chances and schedule edge", () => {
+  assert.equal(gameOutlookLabel(70), "Strong chance");
+  assert.equal(gameOutlookLabel(60), "Good shot");
+  assert.equal(gameOutlookLabel(50), "Toss-up");
+  assert.equal(gameOutlookLabel(40), "Tough game");
+  assert.equal(gameOutlookLabel(25), "Rough ask");
+
+  assert.equal(scheduleEdgeLabel(1.1, 10), "Friendly");
+  assert.equal(scheduleEdgeLabel(0.3, 10), "Easier");
+  assert.equal(scheduleEdgeLabel(0, 10), "Neutral");
+  assert.equal(scheduleEdgeLabel(-0.3, 10), "Harder");
+  assert.equal(scheduleEdgeLabel(-1.1, 10), "Brutal");
+  assert.equal(scheduleEdgeLabel(0, 0), "Complete");
+});
+
 test("run home produces reciprocal fixture context and summaries", () => {
   const data = buildRunHomeData(2026, ladder, games);
   const broncos = data.fixtures.bri[0];
@@ -69,8 +90,13 @@ test("run home produces reciprocal fixture context and summaries", () => {
   assert.equal(raiders.venueType, "away");
   assert.equal(broncos.factors.rest.detail, "7 days vs 7 days");
   assert.equal(broncos.factors.travel.assessment, "favourable");
+  assert.equal(typeof broncos.averageWinChance, "number");
+  assert.equal(typeof broncos.outlookLabel, "string");
   assert.equal(raiders.factors.travel.assessment, "disadvantage");
-  assert.equal(data.summaries.find((row) => row.team.id === "bri")?.remainingGames, 1);
+  const broncosSummary = data.summaries.find((row) => row.team.id === "bri");
+  assert.equal(broncosSummary?.remainingGames, 1);
+  assert.equal(typeof broncosSummary?.averageTeamWins, "number");
+  assert.equal(typeof broncosSummary?.scheduleEdge, "number");
   assert.equal(data.model.includesFinals, true);
   assert.equal(data.model.gamesProcessed, 841);
 });

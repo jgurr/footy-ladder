@@ -8,6 +8,17 @@ function fullTeamName(team: { location: string; name: string }): string {
   return `${team.location} ${team.name}`;
 }
 
+function formatScheduleEdge(edge: number): string {
+  if (edge === 0) return "0.0";
+  return `${edge > 0 ? "+" : ""}${edge.toFixed(1)}`;
+}
+
+function edgeColor(edge: number, muted: string): string {
+  if (edge >= 0.3) return "#22c55e";
+  if (edge <= -0.3) return "#ef4444";
+  return muted;
+}
+
 export function RunHomeTable({
   data,
   onSelectTeam,
@@ -26,13 +37,13 @@ export function RunHomeTable({
               className="text-xs uppercase"
               style={{ background: "rgba(255,255,255,0.03)", color: palette.textMuted }}
             >
-              <th className="w-8 px-1 py-2 text-center font-mono">Pos</th>
+              <th className="w-8 px-1 py-2 text-center font-mono">Run</th>
               <th className="px-1 py-2 text-left">Team</th>
-              <th className="px-1 py-2 text-center font-mono">Power</th>
+              <th className="hidden px-1 py-2 text-center font-mono sm:table-cell">Lad</th>
               <th className="px-1 py-2 text-center font-mono">Rem</th>
-              <th className="px-1 py-2 text-center font-mono">SOS</th>
-              <th className="hidden px-1 py-2 text-center font-mono sm:table-cell">Rank</th>
-              <th className="hidden px-1 py-2 text-center font-mono md:table-cell">Exp W</th>
+              <th className="px-1 py-2 text-center font-mono">Edge</th>
+              <th className="hidden px-1 py-2 text-center font-mono sm:table-cell">Avg W</th>
+              <th className="hidden px-1 py-2 text-center font-mono md:table-cell">Team W</th>
             </tr>
           </thead>
           <tbody>
@@ -52,36 +63,44 @@ export function RunHomeTable({
                 style={{ borderColor: palette.border }}
               >
                 <td className="px-1 py-3 text-center font-mono text-sm tabular-nums">
-                  {summary.position}
+                  #{summary.scheduleRank}
                 </td>
                 <td className="px-1 py-3">
                   <div className="flex items-center gap-2">
                     <TeamFlag teamId={summary.team.id} size={18} />
-                    <span className="text-sm font-medium sm:hidden">{summary.team.shortCode}</span>
-                    <span className="hidden text-sm font-medium sm:inline">
-                      {fullTeamName(summary.team)}
-                    </span>
+                    <div className="min-w-0">
+                      <div className="text-sm font-medium sm:hidden">{summary.team.shortCode}</div>
+                      <div className="hidden text-sm font-medium sm:block">
+                        {fullTeamName(summary.team)}
+                      </div>
+                      <div className="text-xs sm:hidden" style={{ color: palette.textMuted }}>
+                        Ladder #{summary.position}
+                      </div>
+                    </div>
                   </div>
                 </td>
-                <td className="px-1 py-3 text-center font-mono text-sm tabular-nums">
-                  #{summary.powerRank}
+                <td className="hidden px-1 py-3 text-center font-mono text-sm tabular-nums sm:table-cell">
+                  #{summary.position}
                 </td>
                 <td className="px-1 py-3 text-center font-mono text-sm tabular-nums">
                   {summary.remainingGames}
                 </td>
                 <td className="px-1 py-3 text-center">
-                  <div className="font-mono text-base font-bold tabular-nums">
-                    {summary.scheduleDifficulty}
+                  <div
+                    className="font-mono text-base font-bold tabular-nums"
+                    style={{ color: edgeColor(summary.scheduleEdge, palette.textMuted) }}
+                  >
+                    {formatScheduleEdge(summary.scheduleEdge)}
                   </div>
                   <div className="text-xs" style={{ color: palette.accent }}>
-                    {summary.difficultyLabel}
+                    {summary.scheduleEdgeLabel}
                   </div>
                 </td>
                 <td className="hidden px-1 py-3 text-center font-mono text-sm tabular-nums sm:table-cell">
-                  #{summary.scheduleRank}
+                  {summary.averageTeamWins.toFixed(1)}
                 </td>
                 <td className="hidden px-1 py-3 text-center font-mono text-sm tabular-nums md:table-cell">
-                  {summary.projectedWins}
+                  {summary.projectedWins.toFixed(1)}
                 </td>
               </tr>
             ))}
@@ -90,9 +109,10 @@ export function RunHomeTable({
       </div>
 
       <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-xs" style={{ color: palette.textMuted }}>
-        <span>SOS=Remaining schedule difficulty</span>
-        <span>Power=Elo power rank</span>
-        <span>Exp W=Expected remaining wins</span>
+        <span>Run=#1 easiest remaining draw</span>
+        <span>Edge=wins above/below a .500 run for a league-average team</span>
+        <span>Avg W=average-team expected wins</span>
+        <span>Team W=expected wins for the selected team</span>
         <span>{data.model.seasons} · finals included · {data.model.gamesProcessed} games</span>
       </div>
     </div>

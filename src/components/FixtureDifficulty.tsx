@@ -24,13 +24,15 @@ export function FixtureDifficulty({ fixture }: { fixture: RunHomeFixture }) {
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <div className="text-xs uppercase" style={{ color: palette.textMuted }}>
-            Difficulty
+            Game outlook
           </div>
           <div className="flex items-baseline gap-2">
-            <span className="font-mono text-2xl font-bold tabular-nums">{fixture.difficulty}</span>
             <span className="text-sm font-semibold" style={{ color: palette.accent }}>
-              {fixture.difficultyLabel}
+              {fixture.outlookLabel}
             </span>
+          </div>
+          <div className="mt-0.5 text-xs" style={{ color: palette.textMuted }}>
+            Avg team chance {fixture.averageWinChance}%
           </div>
         </div>
         <div className="text-right">

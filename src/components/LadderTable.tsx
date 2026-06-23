@@ -157,7 +157,7 @@ const FOR_AGAINST_SORT_OPTIONS: SortOption<ForAgainstSortKey>[] = [
   { key: "pdPerGame", label: "PD/GM", defaultDir: "desc" },
 ];
 
-const API_VERSION = "8";
+const API_VERSION = "9";
 
 function calculateGamesFromCut(entry: LadderEntry, cutTeam: LadderEntry): number {
   const cutEffectiveWins = cutTeam.wins + cutTeam.draws * 0.5;

@@ -26,7 +26,9 @@ export interface RunHomeFixture {
   venueType: "home" | "away" | "local" | "neutral";
   difficulty: number;
   difficultyLabel: string;
+  averageWinChance: number;
   winChance: number;
+  outlookLabel: string;
   explanation: string;
   factors: {
     opponent: ScheduleFactor;
@@ -45,6 +47,9 @@ export interface RunHomeSummary {
   difficultyLabel: string;
   scheduleRank: number;
   projectedWins: number;
+  averageTeamWins: number;
+  scheduleEdge: number;
+  scheduleEdgeLabel: string;
 }
 
 export interface RunHomeData {
@@ -146,6 +151,25 @@ export function difficultyLabel(score: number): string {
   return "Easier";
 }
 
+export function gameOutlookLabel(winChance: number): string {
+  if (winChance >= 68) return "Strong chance";
+  if (winChance >= 56) return "Good shot";
+  if (winChance >= 44) return "Toss-up";
+  if (winChance >= 32) return "Tough game";
+  return "Rough ask";
+}
+
+export function scheduleEdgeLabel(scheduleEdge: number, remainingGames: number): string {
+  if (remainingGames === 0) return "Complete";
+
+  const edgePerTen = (scheduleEdge / remainingGames) * 10;
+  if (edgePerTen >= 0.8) return "Friendly";
+  if (edgePerTen >= 0.25) return "Easier";
+  if (edgePerTen > -0.25) return "Neutral";
+  if (edgePerTen > -0.8) return "Harder";
+  return "Brutal";
+}
+
 function assessDifference(value: number, threshold: number): FactorAssessment {
   if (value >= threshold) return "favourable";
   if (value <= -threshold) return "disadvantage";
@@ -179,15 +203,17 @@ function getPreviousKickoffs(games: Game[]): Map<string, string | null> {
 }
 
 function fixtureExplanation(fixture: {
-  difficultyLabel: string;
   venueType: "home" | "away" | "local" | "neutral";
   opponentRank: number;
+  winChance: number;
+  averageWinChance: number;
+  outlookLabel: string;
   restAssessment: FactorAssessment;
   travelAssessment: FactorAssessment;
 }): string {
-  const article = fixture.difficultyLabel === "Even" || fixture.difficultyLabel === "Easier" ? "An" : "A";
   const parts = [
-    `${article} ${fixture.difficultyLabel.toLowerCase()} ${fixture.venueType} fixture against the #${fixture.opponentRank} power-ranked team.`,
+    `${fixture.outlookLabel} ${fixture.venueType} fixture against the #${fixture.opponentRank} power-ranked team.`,
+    `Model chance ${fixture.winChance}%; a league-average side would be ${fixture.averageWinChance}%.`,
   ];
   if (fixture.restAssessment === "disadvantage") parts.push("They have the better recovery window.");
   if (fixture.restAssessment === "favourable") parts.push("The recovery window is in your favour.");
@@ -271,8 +297,10 @@ export function buildRunHomeData(
         (1 - expectedWinProbability(ELO_BASELINE, opponentRating, contextAdvantage)) * 100
       );
       const label = difficultyLabel(difficulty);
+      const averageWinChance = 100 - difficulty;
       const restAssessment = assessDifference(restDifference, 0.75);
       const travelAssessment = assessDifference(travelDifference, 250);
+      const outlookLabel = gameOutlookLabel(winChance);
 
       fixtures[teamId].push({
         gameId: game.id,
@@ -284,11 +312,15 @@ export function buildRunHomeData(
         venueType,
         difficulty,
         difficultyLabel: label,
+        averageWinChance,
         winChance,
+        outlookLabel,
         explanation: fixtureExplanation({
-          difficultyLabel: label,
           venueType,
           opponentRank,
+          winChance,
+          averageWinChance,
+          outlookLabel,
           restAssessment,
           travelAssessment,
         }),
@@ -345,6 +377,17 @@ export function buildRunHomeData(
             teamFixtures.length
         )
       : 0;
+    const projectedWins =
+      Math.round(
+        teamFixtures.reduce((total, fixture) => total + fixture.winChance / 100, 0) * 10
+      ) / 10;
+    const averageTeamWins =
+      Math.round(
+        teamFixtures.reduce((total, fixture) => total + fixture.averageWinChance / 100, 0) * 10
+      ) / 10;
+    const scheduleEdge =
+      Math.round((averageTeamWins - teamFixtures.length * 0.5) * 10) / 10;
+
     return {
       position: entry.position,
       team: entry.team,
@@ -353,16 +396,16 @@ export function buildRunHomeData(
       scheduleDifficulty,
       difficultyLabel: teamFixtures.length ? difficultyLabel(scheduleDifficulty) : "Complete",
       scheduleRank: 0,
-      projectedWins:
-        Math.round(
-          teamFixtures.reduce((total, fixture) => total + fixture.winChance / 100, 0) * 10
-        ) / 10,
+      projectedWins,
+      averageTeamWins,
+      scheduleEdge,
+      scheduleEdgeLabel: scheduleEdgeLabel(scheduleEdge, teamFixtures.length),
     };
   });
 
   const scheduleRanks = new Map(
     [...summaries]
-      .sort((a, b) => b.scheduleDifficulty - a.scheduleDifficulty)
+      .sort((a, b) => b.scheduleEdge - a.scheduleEdge)
       .map((summary, index) => [summary.team.id, index + 1])
   );
   for (const summary of summaries) {
@@ -376,7 +419,7 @@ export function buildRunHomeData(
       seasons: `2022-${season}`,
       includesFinals: true,
     },
-    summaries: summaries.sort((a, b) => a.position - b.position),
+    summaries: summaries.sort((a, b) => a.scheduleRank - b.scheduleRank),
     fixtures,
   };
 }
