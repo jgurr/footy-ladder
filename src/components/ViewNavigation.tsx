@@ -87,12 +87,16 @@ export function ViewNavigation({
   );
 
   return (
-    <aside className="md:sticky md:top-24 md:self-start">
+    <aside className="sticky top-24 z-30 self-start">
       <button
         type="button"
         onClick={() => setMobileOpen((open) => !open)}
         className="mb-3 flex w-full items-center justify-between rounded-md border px-3 py-2 text-sm font-semibold md:hidden"
-        style={{ borderColor: palette.border, color: palette.text }}
+        style={{
+          background: palette.bg,
+          borderColor: palette.border,
+          color: palette.text,
+        }}
       >
         <span className="flex items-center gap-2">
           <Menu size={18} />
