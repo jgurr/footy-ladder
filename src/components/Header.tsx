@@ -20,7 +20,7 @@ export function Header() {
             className="text-2xl font-bold tracking-tight"
             style={{ color: palette.accent }}
           >
-            Hi Lisa!
+            Footy Ladder
           </h1>
           <p className="text-sm" style={{ color: palette.textMuted }}>
             The ladder that actually makes sense
