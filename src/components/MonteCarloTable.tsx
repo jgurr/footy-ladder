@@ -150,7 +150,7 @@ export function MonteCarloTable({ data }: { data: MonteCarloData }) {
                 </div>
               </div>
 
-              <div className="overflow-x-auto overflow-y-hidden">
+              <div className="overflow-x-auto overflow-y-hidden pb-4">
                 <Histogram team={team} />
               </div>
             </div>
