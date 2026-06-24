@@ -59,7 +59,7 @@ interface Game {
   awayScore: number | null;
   status: "scheduled" | "live" | "final" | "postponed";
   venue: string;
-  kickoff: string;
+  kickoff: string | null;
 }
 
 interface TeamScheduleGame {
@@ -159,7 +159,8 @@ const FOR_AGAINST_SORT_OPTIONS: SortOption<ForAgainstSortKey>[] = [
   { key: "pdPerGame", label: "PD/GM", defaultDir: "desc" },
 ];
 
-const API_VERSION = "10";
+const API_VERSION = "11";
+const SCORES_NEXT_ROUND_LEAD_MS = 48 * 60 * 60 * 1000;
 
 function calculateGamesFromCut(entry: LadderEntry, cutTeam: LadderEntry): number {
   const cutEffectiveWins = cutTeam.wins + cutTeam.draws * 0.5;
@@ -187,11 +188,85 @@ function formatFullTeamName(team: { name: string; location?: string }): string {
 }
 
 function usesRoundSelector(view: ViewType): boolean {
-  return view === "ladder" || view === "forAgainst" || view === "scores" || view === "next5";
+  return view === "ladder" || view === "forAgainst" || view === "next5";
 }
 
 function usesCurrentSeasonOnly(view: ViewType): boolean {
   return view === "runHome" || view === "monteCarlo" || view === "elo";
+}
+
+function getKickoffMs(game: Game): number | null {
+  if (!game.kickoff) return null;
+  const kickoffMs = new Date(game.kickoff).getTime();
+  return Number.isFinite(kickoffMs) ? kickoffMs : null;
+}
+
+function getRoundKickoffMs(games: Game[]): number | null {
+  const kickoffTimes = games
+    .map(getKickoffMs)
+    .filter((kickoffMs): kickoffMs is number => kickoffMs !== null);
+
+  return kickoffTimes.length > 0 ? Math.min(...kickoffTimes) : null;
+}
+
+function pickDefaultScoresRound(
+  games: Game[],
+  fallbackRound: number,
+  now = new Date()
+): number {
+  const liveRound = games
+    .filter((game) => game.status === "live")
+    .map((game) => game.round)
+    .sort((a, b) => a - b)[0];
+
+  if (liveRound) return liveRound;
+
+  const latestFinalRound = Math.max(
+    0,
+    ...games
+      .filter((game) => game.status === "final")
+      .map((game) => game.round)
+  );
+  const gamesByRound = new Map<number, Game[]>();
+
+  for (const game of games) {
+    const roundGames = gamesByRound.get(game.round) || [];
+    roundGames.push(game);
+    gamesByRound.set(game.round, roundGames);
+  }
+
+  const nowMs = now.getTime();
+  const nextScheduledRound = [...gamesByRound.entries()]
+    .map(([roundNumber, roundGames]) => ({
+      round: roundNumber,
+      firstKickoffMs: getRoundKickoffMs(roundGames),
+      hasScheduledGame: roundGames.some((game) => game.status === "scheduled"),
+    }))
+    .filter((roundInfo) => roundInfo.hasScheduledGame)
+    .filter(
+      (roundInfo) =>
+        roundInfo.firstKickoffMs === null || roundInfo.firstKickoffMs >= nowMs
+    )
+    .sort((a, b) => {
+      if (a.firstKickoffMs === null && b.firstKickoffMs === null) {
+        return a.round - b.round;
+      }
+      if (a.firstKickoffMs === null) return 1;
+      if (b.firstKickoffMs === null) return -1;
+      return a.firstKickoffMs - b.firstKickoffMs || a.round - b.round;
+    })[0];
+
+  if (!latestFinalRound && nextScheduledRound) return nextScheduledRound.round;
+
+  if (
+    nextScheduledRound &&
+    nextScheduledRound.firstKickoffMs !== null &&
+    nextScheduledRound.firstKickoffMs - nowMs <= SCORES_NEXT_ROUND_LEAD_MS
+  ) {
+    return nextScheduledRound.round;
+  }
+
+  return latestFinalRound || nextScheduledRound?.round || fallbackRound;
 }
 
 export function LadderTable({
@@ -224,6 +299,10 @@ export function LadderTable({
   const [season, setSeason] = useState(initialSeason);
   const [round, setRound] = useState<number>(initialRound);
   const [availableRounds, setAvailableRounds] = useState<number[]>(initialRounds);
+  const [scoresRound, setScoresRound] = useState<number>(initialRound);
+  const [scoreRounds, setScoreRounds] = useState<number[]>(initialRounds);
+  const [scoreRoundsLoading, setScoreRoundsLoading] = useState(false);
+  const [scoresRoundTouched, setScoresRoundTouched] = useState(false);
   const [view, setView] = useState<ViewType>("ladder");
   const [ladderSort, setLadderSort] = useState<LadderSortKey>("winPct");
   const [ladderSortDir, setLadderSortDir] = useState<SortDirection>("desc");
@@ -261,6 +340,8 @@ export function LadderTable({
   const handleSeasonChange = (nextSeason: number) => {
     setSeason(nextSeason);
     setSelectedRound(null);
+    setScoresRoundTouched(false);
+    if (view === "scores") setScoreRoundsLoading(true);
   };
 
   // Fetch current season bootstrap when season changes. Initial server-rendered
@@ -284,17 +365,21 @@ export function LadderTable({
         }
 
         setAvailableRounds(rounds);
+        setScoreRounds(rounds);
         setRunHomeData(null);
         setMonteCarloData(null);
         setEloHistoryData(null);
         const nextRound = data.latestRound || rounds[0] || 1;
         loadedLadderKey.current = `${season}:${nextRound}`;
         setRound(nextRound);
+        setScoresRound(nextRound);
         setLadder(data.ladder || []);
       } catch (error) {
         console.error("Failed to fetch bootstrap data:", error);
         setAvailableRounds([1]);
+        setScoreRounds([1]);
         setRound(1);
+        setScoresRound(1);
       } finally {
         setRoundsLoading(false);
         setLoading(false);
@@ -356,14 +441,55 @@ export function LadderTable({
     fetchNext5();
   }, [view, season, round, roundsLoading]);
 
-  // Fetch games when in scores view
+  // Fetch every scheduled/played round for Scores. Unlike the ladder round
+  // picker, Scores should be able to jump to future rounds.
   useEffect(() => {
     if (view !== "scores" || roundsLoading) return;
+
+    async function fetchScoreRounds() {
+      setScoreRoundsLoading(true);
+      try {
+        const res = await fetch(`/api/games?season=${season}&v=${API_VERSION}`);
+        if (!res.ok) throw new Error(`Games returned ${res.status}`);
+        const seasonGames = (await res.json()) as Game[];
+        const rounds = [...new Set(seasonGames.map((game) => game.round))]
+          .sort((a, b) => b - a);
+
+        setScoreRounds(rounds.length > 0 ? rounds : availableRounds);
+
+        if (!scoresRoundTouched) {
+          setScoresRound(pickDefaultScoresRound(seasonGames, round));
+        } else if (rounds.length > 0 && !rounds.includes(scoresRound)) {
+          setScoresRound(rounds[0]);
+        }
+      } catch (error) {
+        console.error("Failed to fetch score rounds:", error);
+        setScoreRounds(availableRounds);
+        if (!scoresRoundTouched) setScoresRound(round);
+      } finally {
+        setScoreRoundsLoading(false);
+      }
+    }
+
+    fetchScoreRounds();
+  }, [
+    view,
+    season,
+    round,
+    roundsLoading,
+    availableRounds,
+    scoresRound,
+    scoresRoundTouched,
+  ]);
+
+  // Fetch games when in scores view
+  useEffect(() => {
+    if (view !== "scores" || roundsLoading || scoreRoundsLoading) return;
 
     async function fetchGames() {
       setGamesLoading(true);
       try {
-        const res = await fetch(`/api/games?season=${season}&round=${round}&v=${API_VERSION}`);
+        const res = await fetch(`/api/games?season=${season}&round=${scoresRound}&v=${API_VERSION}`);
         const data = await res.json();
         // API returns array directly
         setGames(Array.isArray(data) ? data : []);
@@ -374,7 +500,7 @@ export function LadderTable({
       }
     }
     fetchGames();
-  }, [view, season, round, roundsLoading]);
+  }, [view, season, scoresRound, roundsLoading, scoreRoundsLoading]);
 
   // Fetch team schedule when in team view
   useEffect(() => {
@@ -466,6 +592,9 @@ export function LadderTable({
   const handleViewChange = (nextView: ViewType) => {
     if (usesCurrentSeasonOnly(nextView) && season !== initialSeason) {
       handleSeasonChange(initialSeason);
+    }
+    if (nextView === "scores" && view !== "scores") {
+      setScoreRoundsLoading(true);
     }
     setView(nextView);
     if (nextView === "team") {
@@ -591,6 +720,25 @@ export function LadderTable({
     </select>
   );
 
+  const scoresRoundSelect = (
+    <select
+      value={scoresRound}
+      onChange={(e) => {
+        setScoresRound(Number(e.target.value));
+        setScoresRoundTouched(true);
+      }}
+      aria-label="Scores round"
+      className="rounded-lg px-3 py-2 text-sm"
+      style={selectStyle}
+    >
+      {scoreRounds.map((r) => (
+        <option key={r} value={r}>
+          Round {r}
+        </option>
+      ))}
+    </select>
+  );
+
   const roundToolbar = usesRoundSelector(view) ? (
     <div
       className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-lg border p-3"
@@ -602,6 +750,21 @@ export function LadderTable({
       </div>
       <div className="font-mono text-xs" style={{ color: palette.textMuted }}>
         Round {currentRound}
+      </div>
+    </div>
+  ) : null;
+
+  const scoresToolbar = view === "scores" ? (
+    <div
+      className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-lg border p-3"
+      style={{ borderColor: palette.border }}
+    >
+      <div className="flex flex-wrap items-center gap-3">
+        {seasonSelect}
+        {scoresRoundSelect}
+      </div>
+      <div className="font-mono text-xs" style={{ color: palette.textMuted }}>
+        Round {scoresRound}
       </div>
     </div>
   ) : null;
@@ -641,6 +804,7 @@ export function LadderTable({
 
         <div className="min-w-0">
       {roundToolbar}
+      {scoresToolbar}
 
       {/* Run Home View */}
       {view === "runHome" && runHomeLoading && (
