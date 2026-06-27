@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { syncOfficialDrawGames } from "@/lib/nrl-draw";
+import { getGamesBySeason, initializeDatabase } from "@/lib/queries";
+import { findActiveSyncGame } from "@/lib/sync-window";
+
+export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
   const cronSecret = process.env.CRON_SECRET || process.env.SYNC_SECRET;
@@ -14,7 +18,25 @@ export async function GET(request: NextRequest) {
       request.nextUrl.searchParams.get("season") || new Date().getFullYear()
     );
     const requestedRound = request.nextUrl.searchParams.get("round");
-    const round = requestedRound ? Number(requestedRound) : undefined;
+    let round = requestedRound ? Number(requestedRound) : undefined;
+
+    if (!round) {
+      await initializeDatabase();
+      const activeGame = findActiveSyncGame(await getGamesBySeason(season));
+
+      if (!activeGame) {
+        return NextResponse.json({
+          success: true,
+          source: "nrl-official-draw",
+          mode: "skipped-outside-game-window",
+          season,
+          syncedRounds: [],
+        });
+      }
+
+      round = activeGame.round;
+    }
+
     const result = await syncOfficialDrawGames(season, {
       allAvailableRounds: false,
       round,

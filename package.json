@@ -8,7 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "test:elo": "npx tsx --test src/lib/elo.test.ts src/lib/run-home.test.ts src/lib/monte-carlo.test.ts",
+    "test:elo": "npx tsx --test src/lib/elo.test.ts src/lib/run-home.test.ts src/lib/monte-carlo.test.ts src/lib/sync-window.test.ts",
     "refresh:elo-history": "node scripts/fetch-elo-history.mjs",
     "sync:official-ladder": "npx tsx scripts/sync-official-ladder.ts",
     "sync:official-games": "npx tsx scripts/sync-official-games.ts"

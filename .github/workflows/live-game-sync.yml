@@ -1,9 +1,6 @@
 name: Live game sync
 
 on:
-  schedule:
-    # GitHub provides the heartbeat; the app schedule decides whether a game window is active.
-    - cron: "*/5 * * * *"
   workflow_dispatch:
     inputs:
       force:
