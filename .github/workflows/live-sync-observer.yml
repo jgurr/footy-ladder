@@ -11,12 +11,35 @@ permissions:
 jobs:
   monitor:
     runs-on: ubuntu-latest
-    timeout-minutes: 3
+    timeout-minutes: 8
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
 
       - name: Check production live sync health
+        id: health
+        continue-on-error: true
+        env:
+          SITE_URL: https://www.getemonside.com
+          SEASON: "2026"
+          MAX_SYNC_STALENESS_MINUTES: "15"
+        run: node scripts/check-live-sync-health.mjs
+
+      - name: Recover stale production sync
+        if: steps.health.outcome == 'failure'
+        env:
+          SITE_URL: https://www.getemonside.com
+          SEASON: "2026"
+          SYNC_SECRET: ${{ secrets.SYNC_SECRET }}
+        run: |
+          curl --fail --show-error --silent \
+            --retry 3 \
+            --max-time 240 \
+            -H "Authorization: Bearer ${SYNC_SECRET}" \
+            "${SITE_URL}/api/cron/sync?season=${SEASON}"
+
+      - name: Recheck production live sync health
+        if: steps.health.outcome == 'failure'
         env:
           SITE_URL: https://www.getemonside.com
           SEASON: "2026"
