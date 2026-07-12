@@ -16,7 +16,9 @@
     "export:salary-cap:source-queue": "node scripts/salary-cap/export-individual-source-queue.mjs",
     "refresh:elo-history": "node scripts/fetch-elo-history.mjs",
     "sync:official-ladder": "npx tsx scripts/sync-official-ladder.ts",
-    "sync:official-games": "npx tsx scripts/sync-official-games.ts"
+    "sync:official-games": "npx tsx scripts/sync-official-games.ts",
+    "harvest:salary-cap:sources": "node scripts/salary-cap/harvest-individual-player-sources.mjs",
+    "merge:salary-cap:sources": "node scripts/salary-cap/merge-individual-player-source-reviews.mjs"
   },
   "dependencies": {
     "@tailwindcss/postcss": "^4.1.18",
