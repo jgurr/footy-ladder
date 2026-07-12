@@ -11,10 +11,25 @@ const data = JSON.parse(await readFile(filePath, "utf8"));
 
 assert.equal(data.season, 2026);
 assert.equal(data.teams.length, 17, "All-team salary file must include 17 clubs");
+assert.equal(
+  data.productionReady,
+  false,
+  "All-team salary file should remain non-production until player-by-player source pass is complete"
+);
+assert.equal(
+  data.individualSourcePass?.status,
+  "required_before_production",
+  "All-team salary file must track the required individual source pass"
+);
 
 let playerCount = 0;
 let sourcedSalaryCount = 0;
 let unknownSalaryCount = 0;
+let primaryIndividualCount = 0;
+let crossReferencedBaselineCount = 0;
+let backupBaselineCount = 0;
+let bucketUnknownCount = 0;
+let openUnknownCount = 0;
 const teamSummaries = [];
 
 for (const team of data.teams) {
@@ -50,8 +65,20 @@ for (const team of data.teams) {
 
       if (estimate.estimateType === "unknown") {
         unknownSalaryCount++;
+        if (estimate.evidenceRole === "bucket_unknown") {
+          bucketUnknownCount++;
+        } else if (estimate.evidenceRole === "open_unknown") {
+          openUnknownCount++;
+        }
       } else {
         sourcedSalaryCount++;
+        if (estimate.evidenceRole === "primary_individual_report") {
+          primaryIndividualCount++;
+        } else if (estimate.evidenceRole === "cross_referenced_baseline") {
+          crossReferencedBaselineCount++;
+        } else if (estimate.evidenceRole === "backup_baseline") {
+          backupBaselineCount++;
+        }
         assert.ok(estimate.sources?.length > 0, `${player.name} sourced estimate needs source ids`);
         for (const sourceId of estimate.sources) {
           assert.ok(sourceIds.has(sourceId), `${player.name} references missing source ${sourceId}`);
@@ -71,14 +98,30 @@ for (const team of data.teams) {
     sourced: team.players.filter((player) =>
       player.salaryEstimates.some((estimate) => estimate.estimateType !== "unknown")
     ).length,
+    primaryIndividual: team.players.filter((player) =>
+      player.salaryEstimates.some((estimate) => estimate.evidenceRole === "primary_individual_report")
+    ).length,
+    crossReferencedBaseline: team.players.filter((player) =>
+      player.salaryEstimates.some((estimate) => estimate.evidenceRole === "cross_referenced_baseline")
+    ).length,
+    backupBaseline: team.players.filter((player) =>
+      player.salaryEstimates.some((estimate) => estimate.evidenceRole === "backup_baseline")
+    ).length,
   });
 }
 
 console.log(JSON.stringify({
   season: data.season,
+  status: data.status,
+  productionReady: data.productionReady,
   teams: data.teams.length,
   playerCount,
   sourcedSalaryCount,
   unknownSalaryCount,
+  primaryIndividualCount,
+  crossReferencedBaselineCount,
+  backupBaselineCount,
+  bucketUnknownCount,
+  openUnknownCount,
   teamSummaries,
 }, null, 2));

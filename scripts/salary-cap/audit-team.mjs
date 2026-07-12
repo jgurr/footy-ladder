@@ -37,6 +37,11 @@ const estimateTypes = new Set([
 
 let sourcedSalaryCount = 0;
 let unknownSalaryCount = 0;
+let primaryIndividualCount = 0;
+let crossReferencedBaselineCount = 0;
+let backupBaselineCount = 0;
+let bucketUnknownCount = 0;
+let openUnknownCount = 0;
 
 for (const player of data.players) {
   assert.equal(player.rosterCategory, "top30", `${player.name} must be top30`);
@@ -55,8 +60,20 @@ for (const player of data.players) {
 
     if (estimate.estimateType === "unknown") {
       unknownSalaryCount++;
+      if (estimate.evidenceRole === "bucket_unknown") {
+        bucketUnknownCount++;
+      } else if (estimate.evidenceRole === "open_unknown") {
+        openUnknownCount++;
+      }
     } else {
       sourcedSalaryCount++;
+      if (estimate.evidenceRole === "primary_individual_report") {
+        primaryIndividualCount++;
+      } else if (estimate.evidenceRole === "cross_referenced_baseline") {
+        crossReferencedBaselineCount++;
+      } else if (estimate.evidenceRole === "backup_baseline") {
+        backupBaselineCount++;
+      }
       assert.ok(
         estimate.sources?.length > 0,
         `${player.name} non-unknown salary estimate needs source ids`
@@ -80,5 +97,10 @@ console.log(JSON.stringify({
   players: data.players.length,
   sourcedSalaryCount,
   unknownSalaryCount,
+  primaryIndividualCount,
+  crossReferencedBaselineCount,
+  backupBaselineCount,
+  bucketUnknownCount,
+  openUnknownCount,
   excludedOrMonitor: data.excludedOrMonitor.length,
 }, null, 2));

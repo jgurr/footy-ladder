@@ -141,7 +141,10 @@
   ],
   "paidMediaSearch": {
     "checkedAt": "2026-07-11",
-    "sites": ["dailytelegraph.com.au", "smh.com.au"],
+    "sites": [
+      "dailytelegraph.com.au",
+      "smh.com.au"
+    ],
     "method": "Player-by-player search across Daily Telegraph and Sydney Morning Herald, using site search/search-engine queries and credentialed article review where a result appeared to contain salary, value, contract, or cap-space claims.",
     "promotionRule": "Only direct article-reviewed money claims are promoted into source records. Search snippets and grouped roster buckets are retained as leads/context but not used as individual salary estimates.",
     "selected2026SalaryPolicy": "The selected 2026 figure remains the Daily Telegraph roster-value investigation for players individually listed there. Historical contract AAVs and future retention reporting are stored as corroborating context unless they cleanly describe 2026 cap cost.",
@@ -151,7 +154,9 @@
         "source": "dt-tigers-2026-scouting-rich100",
         "claimSummary": "Tigers Rich 100 widget lists 2025 salary context at $1.2m.",
         "amountCents": 120000000,
-        "claimYears": [2025],
+        "claimYears": [
+          2025
+        ],
         "useIn2026Estimate": "corroborating_context"
       },
       {
@@ -159,7 +164,9 @@
         "source": "dt-tigers-2026-scouting-rich100",
         "claimSummary": "Tigers Rich 100 widget lists 2025 salary context at $810k.",
         "amountCents": 81000000,
-        "claimYears": [2025],
+        "claimYears": [
+          2025
+        ],
         "useIn2026Estimate": "corroborating_context"
       },
       {
@@ -167,7 +174,9 @@
         "source": "dt-tigers-2026-scouting-rich100",
         "claimSummary": "Tigers Rich 100 widget lists 2025 salary context at $710k.",
         "amountCents": 71000000,
-        "claimYears": [2025],
+        "claimYears": [
+          2025
+        ],
         "useIn2026Estimate": "corroborating_context"
       },
       {
@@ -176,15 +185,24 @@
         "claimSummary": "Original Tigers deal reported as three years and $2m.",
         "amountCents": 200000000,
         "annualizedAmountCents": 66666700,
-        "claimYears": [2025, 2026, 2027],
+        "claimYears": [
+          2025,
+          2026,
+          2027
+        ],
         "useIn2026Estimate": "corroborating_context"
       },
       {
         "player": "Jahream Bula",
         "source": "dt-bula-900k-option-2025",
         "claimSummary": "2027 option dispute described salary moving from $700k toward $900k, with an $800k trigger also reported in the dispute context.",
-        "rangeCents": [70000000, 90000000],
-        "claimYears": [2027],
+        "rangeCents": [
+          70000000,
+          90000000
+        ],
+        "claimYears": [
+          2027
+        ],
         "useIn2026Estimate": "contract_structure_context"
       },
       {
@@ -193,15 +211,28 @@
         "claimSummary": "Three-year extension reported at $1.1m.",
         "amountCents": 110000000,
         "annualizedAmountCents": 36666700,
-        "claimYears": [2027, 2028, 2029],
+        "claimYears": [
+          2027,
+          2028,
+          2029
+        ],
         "useIn2026Estimate": "future_extension_context"
       },
       {
-        "players": ["Heamasi Makasini", "Samuela Fainu"],
+        "players": [
+          "Heamasi Makasini",
+          "Samuela Fainu"
+        ],
         "source": "dt-makasini-samuela-6m-retention-2026",
         "claimSummary": "Reports talks on twin five-year deals as part of a $6m-plus retention drive.",
         "amountCents": 600000000,
-        "claimYears": [2027, 2028, 2029, 2030, 2031],
+        "claimYears": [
+          2027,
+          2028,
+          2029,
+          2030,
+          2031
+        ],
         "useIn2026Estimate": "future_retention_context"
       }
     ],
@@ -237,7 +268,12 @@
       "name": "Adam Doueihi",
       "position": "Centre",
       "profileUrl": "https://www.weststigers.com.au/teams/nrl-premiership/wests-tigers/adam-doueihi/",
-      "contractYears": [2026, 2027, 2028, 2029],
+      "contractYears": [
+        2026,
+        2027,
+        2028,
+        2029
+      ],
       "rosterCategory": "top30",
       "salaryEstimates": [
         {
@@ -245,10 +281,13 @@
           "estimateType": "reported_exact",
           "claimShape": "salary_cap_value",
           "amountCents": 72500000,
-          "confidenceScore": 72,
-          "confidenceBand": "medium",
-          "sources": ["dt-rich-list-2026"],
-          "reasoning": "Daily Telegraph/Code Sports roster-value investigation lists Adam Doueihi at $725K. Treat as a published media roster valuation, not an official NRL cap ledger value."
+          "confidenceScore": 42,
+          "confidenceBand": "low",
+          "sources": [
+            "dt-rich-list-2026"
+          ],
+          "reasoning": "Daily Telegraph/Code Sports roster-value investigation lists Adam Doueihi at $725K. Use as a backup baseline until a player-focused salary or contract article confirms the selected-season value.",
+          "evidenceRole": "backup_baseline"
         }
       ]
     },
@@ -256,7 +295,12 @@
       "name": "Alex Twal",
       "position": "Prop",
       "profileUrl": "https://www.weststigers.com.au/teams/nrl-premiership/wests-tigers/alex-twal/",
-      "contractYears": [2026, 2027, 2028, 2029],
+      "contractYears": [
+        2026,
+        2027,
+        2028,
+        2029
+      ],
       "rosterCategory": "top30",
       "salaryEstimates": [
         {
@@ -264,10 +308,13 @@
           "estimateType": "reported_exact",
           "claimShape": "salary_cap_value",
           "amountCents": 56500000,
-          "confidenceScore": 72,
-          "confidenceBand": "medium",
-          "sources": ["dt-rich-list-2026"],
-          "reasoning": "Daily Telegraph/Code Sports roster-value investigation lists Alex Twal at $565K. Treat as a published media roster valuation, not an official NRL cap ledger value."
+          "confidenceScore": 42,
+          "confidenceBand": "low",
+          "sources": [
+            "dt-rich-list-2026"
+          ],
+          "reasoning": "Daily Telegraph/Code Sports roster-value investigation lists Alex Twal at $565K. Use as a backup baseline until a player-focused salary or contract article confirms the selected-season value.",
+          "evidenceRole": "backup_baseline"
         }
       ]
     },
@@ -275,238 +322,747 @@
       "name": "Alex Seyfarth",
       "position": "2nd Row",
       "profileUrl": "https://www.weststigers.com.au/teams/nrl-premiership/wests-tigers/alex-seyfarth/",
-      "contractYears": [2026, 2027, 2028],
+      "contractYears": [
+        2026,
+        2027,
+        2028
+      ],
       "rosterCategory": "top30",
-      "salaryEstimates": [{ "season": 2026, "estimateType": "reported_exact", "claimShape": "salary_cap_value", "amountCents": 42500000, "confidenceScore": 72, "confidenceBand": "medium", "sources": ["dt-rich-list-2026"], "reasoning": "Daily Telegraph/Code Sports roster-value investigation lists Alex Seyfarth at $425K. Treat as a published media roster valuation, not an official NRL cap ledger value." }]
+      "salaryEstimates": [
+        {
+          "season": 2026,
+          "estimateType": "reported_exact",
+          "claimShape": "salary_cap_value",
+          "amountCents": 42500000,
+          "confidenceScore": 42,
+          "confidenceBand": "low",
+          "sources": [
+            "dt-rich-list-2026"
+          ],
+          "reasoning": "Daily Telegraph/Code Sports roster-value investigation lists Alex Seyfarth at $425K. Use as a backup baseline until a player-focused salary or contract article confirms the selected-season value.",
+          "evidenceRole": "backup_baseline"
+        }
+      ]
     },
     {
       "name": "Apisai Koroisau",
       "position": "Hooker",
       "profileUrl": "https://www.weststigers.com.au/teams/nrl-premiership/wests-tigers/apisai-koroisau/",
-      "contractYears": [2026, 2027, 2028],
+      "contractYears": [
+        2026,
+        2027,
+        2028
+      ],
       "rosterCategory": "top30",
-      "salaryEstimates": [{ "season": 2026, "estimateType": "reported_exact", "claimShape": "salary_cap_value", "amountCents": 65000000, "confidenceScore": 72, "confidenceBand": "medium", "sources": ["dt-rich-list-2026"], "reasoning": "Daily Telegraph/Code Sports roster-value investigation lists Api Koroisau at $650K. Treat as a published media roster valuation, not an official NRL cap ledger value." }]
+      "salaryEstimates": [
+        {
+          "season": 2026,
+          "estimateType": "reported_exact",
+          "claimShape": "salary_cap_value",
+          "amountCents": 65000000,
+          "confidenceScore": 62,
+          "confidenceBand": "medium",
+          "sources": [
+            "dt-rich-list-2026"
+          ],
+          "reasoning": "Daily Telegraph/Code Sports roster-value investigation lists Api Koroisau at $650K. Use as a backup baseline until a player-focused salary or contract article confirms the selected-season value.",
+          "evidenceRole": "cross_referenced_baseline"
+        }
+      ]
     },
     {
       "name": "Bunty Afoa",
       "position": "Prop",
       "profileUrl": "https://www.weststigers.com.au/teams/nrl-premiership/wests-tigers/bunty-afoa/",
-      "contractYears": [2026],
+      "contractYears": [
+        2026
+      ],
       "rosterCategory": "top30",
-      "salaryEstimates": [{ "season": 2026, "estimateType": "unknown", "claimShape": "unknown", "confidenceScore": 10, "confidenceBand": "unknown", "sources": ["wests-tigers-teams", "nrl-signings-tracker"], "reasoning": "Listed as a 2026 gain and current club profile; no salary figure found." }]
+      "salaryEstimates": [
+        {
+          "season": 2026,
+          "estimateType": "unknown",
+          "claimShape": "unknown",
+          "confidenceScore": 10,
+          "confidenceBand": "unknown",
+          "sources": [
+            "wests-tigers-teams",
+            "nrl-signings-tracker"
+          ],
+          "reasoning": "Listed as a 2026 gain and current club profile; no salary figure found.",
+          "evidenceRole": "open_unknown"
+        }
+      ]
     },
     {
       "name": "Fonua Pole",
       "position": "Prop",
       "profileUrl": "https://www.weststigers.com.au/teams/nrl-premiership/wests-tigers/fonua-pole/",
-      "contractYears": [2026, 2027],
+      "contractYears": [
+        2026,
+        2027
+      ],
       "rosterCategory": "top30",
-      "salaryEstimates": [{ "season": 2026, "estimateType": "reported_exact", "claimShape": "salary_cap_value", "amountCents": 66500000, "confidenceScore": 72, "confidenceBand": "medium", "sources": ["dt-rich-list-2026"], "reasoning": "Daily Telegraph/Code Sports roster-value investigation lists Fonua Pole at $665K. Treat as a published media roster valuation, not an official NRL cap ledger value." }]
+      "salaryEstimates": [
+        {
+          "season": 2026,
+          "estimateType": "reported_exact",
+          "claimShape": "salary_cap_value",
+          "amountCents": 66500000,
+          "confidenceScore": 42,
+          "confidenceBand": "low",
+          "sources": [
+            "dt-rich-list-2026"
+          ],
+          "reasoning": "Daily Telegraph/Code Sports roster-value investigation lists Fonua Pole at $665K. Use as a backup baseline until a player-focused salary or contract article confirms the selected-season value.",
+          "evidenceRole": "backup_baseline"
+        }
+      ]
     },
     {
       "name": "Heamasi Makasini",
       "position": "Centre",
       "profileUrl": "https://www.weststigers.com.au/teams/nrl-premiership/wests-tigers/heamasi-makasini/",
-      "contractYears": [2026, 2027, 2028, 2029],
+      "contractYears": [
+        2026,
+        2027,
+        2028,
+        2029
+      ],
       "rosterCategory": "top30",
-      "salaryEstimates": [{ "season": 2026, "estimateType": "reported_exact", "claimShape": "salary_cap_value", "amountCents": 35000000, "confidenceScore": 72, "confidenceBand": "medium", "sources": ["dt-rich-list-2026"], "reasoning": "Daily Telegraph/Code Sports roster-value investigation lists Heamasi Makasini at $350K. Treat as a published media roster valuation, not an official NRL cap ledger value." }]
+      "salaryEstimates": [
+        {
+          "season": 2026,
+          "estimateType": "reported_exact",
+          "claimShape": "salary_cap_value",
+          "amountCents": 35000000,
+          "confidenceScore": 62,
+          "confidenceBand": "medium",
+          "sources": [
+            "dt-rich-list-2026"
+          ],
+          "reasoning": "Daily Telegraph/Code Sports roster-value investigation lists Heamasi Makasini at $350K. Use as a backup baseline until a player-focused salary or contract article confirms the selected-season value.",
+          "evidenceRole": "cross_referenced_baseline"
+        }
+      ]
     },
     {
       "name": "Heath Mason",
       "position": "Fullback",
       "profileUrl": "https://www.weststigers.com.au/teams/nrl-premiership/wests-tigers/heath-mason/",
-      "contractYears": [2026],
+      "contractYears": [
+        2026
+      ],
       "rosterCategory": "top30",
-      "salaryEstimates": [{ "season": 2026, "estimateType": "unknown", "claimShape": "unknown", "confidenceScore": 10, "confidenceBand": "unknown", "sources": ["nrl-signings-tracker"], "reasoning": "Contract year known; no salary figure found." }]
+      "salaryEstimates": [
+        {
+          "season": 2026,
+          "estimateType": "unknown",
+          "claimShape": "unknown",
+          "confidenceScore": 10,
+          "confidenceBand": "unknown",
+          "sources": [
+            "nrl-signings-tracker"
+          ],
+          "reasoning": "Contract year known; no salary figure found.",
+          "evidenceRole": "open_unknown"
+        }
+      ]
     },
     {
       "name": "Jahream Bula",
       "position": "Fullback",
       "profileUrl": "https://www.weststigers.com.au/teams/nrl-premiership/wests-tigers/jahream-bula/",
-      "contractYears": [2026, 2027, 2028, 2029, 2030],
+      "contractYears": [
+        2026,
+        2027,
+        2028,
+        2029,
+        2030
+      ],
       "rosterCategory": "top30",
-      "salaryEstimates": [{ "season": 2026, "estimateType": "reported_exact", "claimShape": "salary_cap_value", "amountCents": 81500000, "confidenceScore": 72, "confidenceBand": "medium", "sources": ["dt-rich-list-2026"], "reasoning": "Daily Telegraph/Code Sports roster-value investigation lists Jahream Bula at $815K. Treat as a published media roster valuation, not an official NRL cap ledger value." }]
+      "salaryEstimates": [
+        {
+          "season": 2026,
+          "estimateType": "reported_exact",
+          "claimShape": "salary_cap_value",
+          "amountCents": 81500000,
+          "confidenceScore": 62,
+          "confidenceBand": "medium",
+          "sources": [
+            "dt-rich-list-2026"
+          ],
+          "reasoning": "Daily Telegraph/Code Sports roster-value investigation lists Jahream Bula at $815K. Use as a backup baseline until a player-focused salary or contract article confirms the selected-season value.",
+          "evidenceRole": "cross_referenced_baseline"
+        }
+      ]
     },
     {
       "name": "Jarome Luai",
       "position": "Halfback",
       "profileUrl": "https://www.weststigers.com.au/teams/nrl-premiership/wests-tigers/jarome-luai/",
-      "contractYears": [2026],
+      "contractYears": [
+        2026
+      ],
       "rosterCategory": "top30",
-      "salaryEstimates": [{ "season": 2026, "estimateType": "reported_exact", "claimShape": "salary_cap_value", "amountCents": 100000000, "confidenceScore": 72, "confidenceBand": "medium", "sources": ["dt-rich-list-2026"], "reasoning": "Daily Telegraph/Code Sports roster-value investigation lists Jarome Luai at $1.0M in the Wests roster value table. Other reporting references his $1.2M Tigers/PNG contract context; keep that as context, not the selected 2026 value." }]
+      "salaryEstimates": [
+        {
+          "season": 2026,
+          "estimateType": "reported_exact",
+          "claimShape": "salary_cap_value",
+          "amountCents": 100000000,
+          "confidenceScore": 62,
+          "confidenceBand": "medium",
+          "sources": [
+            "dt-rich-list-2026"
+          ],
+          "reasoning": "Daily Telegraph/Code Sports roster-value investigation lists Jarome Luai at $1.0M in the Wests roster value table. Other reporting references his $1.2M Tigers/PNG contract context; keep that as context, not the selected 2026 value.",
+          "evidenceRole": "cross_referenced_baseline"
+        }
+      ]
     },
     {
       "name": "Javon Andrews",
       "position": "Five-Eighth",
       "profileUrl": "https://www.weststigers.com.au/teams/nrl-premiership/wests-tigers/javon-andrews/",
-      "contractYears": [2026, 2027, 2028],
+      "contractYears": [
+        2026,
+        2027,
+        2028
+      ],
       "rosterCategory": "top30",
-      "salaryEstimates": [{ "season": 2026, "estimateType": "unknown", "claimShape": "unknown", "confidenceScore": 10, "confidenceBand": "unknown", "sources": ["wests-tigers-teams", "nrl-signings-tracker"], "reasoning": "Current club profile and listed 2026 gain; no salary figure found." }]
+      "salaryEstimates": [
+        {
+          "season": 2026,
+          "estimateType": "unknown",
+          "claimShape": "unknown",
+          "confidenceScore": 10,
+          "confidenceBand": "unknown",
+          "sources": [
+            "wests-tigers-teams",
+            "nrl-signings-tracker"
+          ],
+          "reasoning": "Current club profile and listed 2026 gain; no salary figure found.",
+          "evidenceRole": "open_unknown"
+        }
+      ]
     },
     {
       "name": "Jeral Skelton",
       "position": "Winger",
       "profileUrl": "https://www.weststigers.com.au/teams/nrl-premiership/wests-tigers/jeral-skelton/",
-      "contractYears": [2026],
+      "contractYears": [
+        2026
+      ],
       "rosterCategory": "top30",
-      "salaryEstimates": [{ "season": 2026, "estimateType": "unknown", "claimShape": "unknown", "confidenceScore": 18, "confidenceBand": "unknown", "sources": ["nrl-signings-tracker"], "reasoning": "Daily Telegraph groups Jeral Skelton in 'the rest' rather than giving an individual number; no direct individual salary claim retained." }]
+      "salaryEstimates": [
+        {
+          "season": 2026,
+          "estimateType": "unknown",
+          "claimShape": "unknown",
+          "confidenceScore": 18,
+          "confidenceBand": "unknown",
+          "sources": [
+            "nrl-signings-tracker"
+          ],
+          "reasoning": "Daily Telegraph groups Jeral Skelton in 'the rest' rather than giving an individual number; no direct individual salary claim retained.",
+          "evidenceRole": "bucket_unknown"
+        }
+      ]
     },
     {
       "name": "Jock Madden",
       "position": "Halfback",
       "profileUrl": "https://www.weststigers.com.au/teams/nrl-premiership/wests-tigers/jock-madden/",
-      "contractYears": [2026, 2027],
+      "contractYears": [
+        2026,
+        2027
+      ],
       "rosterCategory": "top30",
-      "salaryEstimates": [{ "season": 2026, "estimateType": "reported_exact", "claimShape": "salary_cap_value", "amountCents": 25000000, "confidenceScore": 72, "confidenceBand": "medium", "sources": ["dt-rich-list-2026"], "reasoning": "Daily Telegraph/Code Sports roster-value investigation lists Jock Madden at $250K. Treat as a published media roster valuation, not an official NRL cap ledger value." }]
+      "salaryEstimates": [
+        {
+          "season": 2026,
+          "estimateType": "reported_exact",
+          "claimShape": "salary_cap_value",
+          "amountCents": 25000000,
+          "confidenceScore": 42,
+          "confidenceBand": "low",
+          "sources": [
+            "dt-rich-list-2026"
+          ],
+          "reasoning": "Daily Telegraph/Code Sports roster-value investigation lists Jock Madden at $250K. Use as a backup baseline until a player-focused salary or contract article confirms the selected-season value.",
+          "evidenceRole": "backup_baseline"
+        }
+      ]
     },
     {
       "name": "Kai Pearce-Paul",
       "position": "2nd Row",
       "profileUrl": "https://www.weststigers.com.au/teams/nrl-premiership/wests-tigers/kai-pearce-paul/",
-      "contractYears": [2026, 2027, 2028],
+      "contractYears": [
+        2026,
+        2027,
+        2028
+      ],
       "rosterCategory": "top30",
-      "salaryEstimates": [{ "season": 2026, "estimateType": "reported_exact", "claimShape": "salary_cap_value", "amountCents": 70000000, "confidenceScore": 72, "confidenceBand": "medium", "sources": ["dt-rich-list-2026"], "reasoning": "Daily Telegraph/Code Sports roster-value investigation lists Kai Pearce-Paul at $700K. Treat as a published media roster valuation, not an official NRL cap ledger value." }]
+      "salaryEstimates": [
+        {
+          "season": 2026,
+          "estimateType": "reported_exact",
+          "claimShape": "salary_cap_value",
+          "amountCents": 70000000,
+          "confidenceScore": 62,
+          "confidenceBand": "medium",
+          "sources": [
+            "dt-rich-list-2026"
+          ],
+          "reasoning": "Daily Telegraph/Code Sports roster-value investigation lists Kai Pearce-Paul at $700K. Use as a backup baseline until a player-focused salary or contract article confirms the selected-season value.",
+          "evidenceRole": "cross_referenced_baseline"
+        }
+      ]
     },
     {
       "name": "Kit Laulilii",
       "position": "Lock",
       "profileUrl": "https://www.weststigers.com.au/teams/nrl-premiership/wests-tigers/kit-laulilii/",
-      "contractYears": [2026],
+      "contractYears": [
+        2026
+      ],
       "rosterCategory": "top30",
-      "salaryEstimates": [{ "season": 2026, "estimateType": "unknown", "claimShape": "unknown", "confidenceScore": 10, "confidenceBand": "unknown", "sources": ["nrl-signings-tracker"], "reasoning": "Contract year known; NRL tracker lists Perth move from 2027; no 2026 salary figure found." }]
+      "salaryEstimates": [
+        {
+          "season": 2026,
+          "estimateType": "unknown",
+          "claimShape": "unknown",
+          "confidenceScore": 10,
+          "confidenceBand": "unknown",
+          "sources": [
+            "nrl-signings-tracker"
+          ],
+          "reasoning": "Contract year known; NRL tracker lists Perth move from 2027; no 2026 salary figure found.",
+          "evidenceRole": "open_unknown"
+        }
+      ]
     },
     {
       "name": "Latu Fainu",
       "position": "Five-Eighth",
       "profileUrl": "https://www.weststigers.com.au/teams/nrl-premiership/wests-tigers/latu-fainu/",
-      "contractYears": [2026, 2027],
+      "contractYears": [
+        2026,
+        2027
+      ],
       "rosterCategory": "top30",
-      "salaryEstimates": [{ "season": 2026, "estimateType": "unknown", "claimShape": "unknown", "confidenceScore": 18, "confidenceBand": "unknown", "sources": ["nrl-signings-tracker"], "reasoning": "Daily Telegraph groups Latu Fainu in 'the rest' rather than giving an individual number; no direct individual salary claim retained." }]
+      "salaryEstimates": [
+        {
+          "season": 2026,
+          "estimateType": "unknown",
+          "claimShape": "unknown",
+          "confidenceScore": 18,
+          "confidenceBand": "unknown",
+          "sources": [
+            "nrl-signings-tracker"
+          ],
+          "reasoning": "Daily Telegraph groups Latu Fainu in 'the rest' rather than giving an individual number; no direct individual salary claim retained.",
+          "evidenceRole": "bucket_unknown"
+        }
+      ]
     },
     {
       "name": "Mavrik Geyer",
       "position": "2nd Row",
       "profileUrl": "https://www.weststigers.com.au/teams/nrl-premiership/wests-tigers/mavrik-geyer/",
-      "contractYears": [2026],
+      "contractYears": [
+        2026
+      ],
       "rosterCategory": "top30",
-      "salaryEstimates": [{ "season": 2026, "estimateType": "unknown", "claimShape": "unknown", "confidenceScore": 10, "confidenceBand": "unknown", "sources": ["nrl-signings-tracker"], "reasoning": "Contract year known; NRL tracker lists Perth move from 2027; no 2026 salary figure found." }]
+      "salaryEstimates": [
+        {
+          "season": 2026,
+          "estimateType": "unknown",
+          "claimShape": "unknown",
+          "confidenceScore": 10,
+          "confidenceBand": "unknown",
+          "sources": [
+            "nrl-signings-tracker"
+          ],
+          "reasoning": "Contract year known; NRL tracker lists Perth move from 2027; no 2026 salary figure found.",
+          "evidenceRole": "open_unknown"
+        }
+      ]
     },
     {
       "name": "Patrick Herbert",
       "position": "Centre",
       "profileUrl": "https://www.weststigers.com.au/teams/nrl-premiership/wests-tigers/patrick-herbert/",
-      "contractYears": [2026, 2027],
+      "contractYears": [
+        2026,
+        2027
+      ],
       "rosterCategory": "top30",
-      "salaryEstimates": [{ "season": 2026, "estimateType": "unknown", "claimShape": "unknown", "confidenceScore": 10, "confidenceBand": "unknown", "sources": ["nrl-signings-tracker"], "reasoning": "Contract years known; no direct individual salary/value claim found." }]
+      "salaryEstimates": [
+        {
+          "season": 2026,
+          "estimateType": "unknown",
+          "claimShape": "unknown",
+          "confidenceScore": 10,
+          "confidenceBand": "unknown",
+          "sources": [
+            "nrl-signings-tracker"
+          ],
+          "reasoning": "Contract years known; no direct individual salary/value claim found.",
+          "evidenceRole": "open_unknown"
+        }
+      ]
     },
     {
       "name": "Royce Hunt",
       "position": "Prop",
       "profileUrl": "https://www.weststigers.com.au/teams/nrl-premiership/wests-tigers/royce-hunt/",
-      "contractYears": [2026, 2027],
+      "contractYears": [
+        2026,
+        2027
+      ],
       "rosterCategory": "top30",
-      "salaryEstimates": [{ "season": 2026, "estimateType": "reported_exact", "claimShape": "salary_cap_value", "amountCents": 42500000, "confidenceScore": 72, "confidenceBand": "medium", "sources": ["dt-rich-list-2026"], "reasoning": "Daily Telegraph/Code Sports roster-value investigation lists Royce Hunt at $425K. Treat as a published media roster valuation, not an official NRL cap ledger value." }]
+      "salaryEstimates": [
+        {
+          "season": 2026,
+          "estimateType": "reported_exact",
+          "claimShape": "salary_cap_value",
+          "amountCents": 42500000,
+          "confidenceScore": 42,
+          "confidenceBand": "low",
+          "sources": [
+            "dt-rich-list-2026"
+          ],
+          "reasoning": "Daily Telegraph/Code Sports roster-value investigation lists Royce Hunt at $425K. Use as a backup baseline until a player-focused salary or contract article confirms the selected-season value.",
+          "evidenceRole": "backup_baseline"
+        }
+      ]
     },
     {
       "name": "Samuela Fainu",
       "position": "2nd Row",
       "profileUrl": "https://www.weststigers.com.au/teams/nrl-premiership/wests-tigers/samuela-fainu/",
-      "contractYears": [2026, 2027],
+      "contractYears": [
+        2026,
+        2027
+      ],
       "rosterCategory": "top30",
-      "salaryEstimates": [{ "season": 2026, "estimateType": "reported_exact", "claimShape": "salary_cap_value", "amountCents": 65000000, "confidenceScore": 72, "confidenceBand": "medium", "sources": ["dt-rich-list-2026"], "reasoning": "Daily Telegraph/Code Sports roster-value investigation lists Samuela Fainu at $650K. Treat as a published media roster valuation, not an official NRL cap ledger value." }]
+      "salaryEstimates": [
+        {
+          "season": 2026,
+          "estimateType": "reported_exact",
+          "claimShape": "salary_cap_value",
+          "amountCents": 65000000,
+          "confidenceScore": 62,
+          "confidenceBand": "medium",
+          "sources": [
+            "dt-rich-list-2026"
+          ],
+          "reasoning": "Daily Telegraph/Code Sports roster-value investigation lists Samuela Fainu at $650K. Use as a backup baseline until a player-focused salary or contract article confirms the selected-season value.",
+          "evidenceRole": "cross_referenced_baseline"
+        }
+      ]
     },
     {
       "name": "Sione Fainu",
       "position": "Prop",
       "profileUrl": "https://www.weststigers.com.au/teams/nrl-premiership/wests-tigers/sione-fainu/",
-      "contractYears": [2026, 2027, 2028, 2029],
+      "contractYears": [
+        2026,
+        2027,
+        2028,
+        2029
+      ],
       "rosterCategory": "top30",
-      "salaryEstimates": [{ "season": 2026, "estimateType": "reported_exact", "claimShape": "salary_cap_value", "amountCents": 40500000, "confidenceScore": 76, "confidenceBand": "medium", "sources": ["dt-rich-list-2026"], "reasoning": "Daily Telegraph/Code Sports roster-value investigation lists Sione Fainu at $405K for the roster value table. SMH separately reports his three-year extension at $1.1M, which supports future-year AAV context." }]
+      "salaryEstimates": [
+        {
+          "season": 2026,
+          "estimateType": "reported_exact",
+          "claimShape": "salary_cap_value",
+          "amountCents": 40500000,
+          "confidenceScore": 62,
+          "confidenceBand": "medium",
+          "sources": [
+            "dt-rich-list-2026"
+          ],
+          "reasoning": "Daily Telegraph/Code Sports roster-value investigation lists Sione Fainu at $405K for the roster value table. SMH separately reports his three-year extension at $1.1M, which supports future-year AAV context.",
+          "evidenceRole": "cross_referenced_baseline"
+        }
+      ]
     },
     {
       "name": "Solomone Saukuru",
       "position": "Centre",
       "profileUrl": "https://www.weststigers.com.au/teams/nrl-premiership/wests-tigers/solomone-saukuru/",
-      "contractYears": [2026],
+      "contractYears": [
+        2026
+      ],
       "rosterCategory": "top30",
-      "salaryEstimates": [{ "season": 2026, "estimateType": "unknown", "claimShape": "unknown", "confidenceScore": 10, "confidenceBand": "unknown", "sources": ["nrl-signings-tracker"], "reasoning": "Contract year known; no salary figure found." }]
+      "salaryEstimates": [
+        {
+          "season": 2026,
+          "estimateType": "unknown",
+          "claimShape": "unknown",
+          "confidenceScore": 10,
+          "confidenceBand": "unknown",
+          "sources": [
+            "nrl-signings-tracker"
+          ],
+          "reasoning": "Contract year known; no salary figure found.",
+          "evidenceRole": "open_unknown"
+        }
+      ]
     },
     {
       "name": "Starford To'a",
       "position": "Centre",
       "profileUrl": "https://www.weststigers.com.au/teams/nrl-premiership/wests-tigers/starford-toa/",
-      "contractYears": [2026],
+      "contractYears": [
+        2026
+      ],
       "rosterCategory": "top30",
-      "salaryEstimates": [{ "season": 2026, "estimateType": "reported_exact", "claimShape": "salary_cap_value", "amountCents": 37500000, "confidenceScore": 72, "confidenceBand": "medium", "sources": ["dt-rich-list-2026"], "reasoning": "Daily Telegraph/Code Sports roster-value investigation lists Starford To'a at $375K. Treat as a published media roster valuation, not an official NRL cap ledger value." }]
+      "salaryEstimates": [
+        {
+          "season": 2026,
+          "estimateType": "reported_exact",
+          "claimShape": "salary_cap_value",
+          "amountCents": 37500000,
+          "confidenceScore": 42,
+          "confidenceBand": "low",
+          "sources": [
+            "dt-rich-list-2026"
+          ],
+          "reasoning": "Daily Telegraph/Code Sports roster-value investigation lists Starford To'a at $375K. Use as a backup baseline until a player-focused salary or contract article confirms the selected-season value.",
+          "evidenceRole": "backup_baseline"
+        }
+      ]
     },
     {
       "name": "Sunia Turuva",
       "position": "Winger",
       "profileUrl": "https://www.weststigers.com.au/teams/nrl-premiership/wests-tigers/sunia-turuva/",
-      "contractYears": [2026, 2027, 2028, 2029, 2030],
+      "contractYears": [
+        2026,
+        2027,
+        2028,
+        2029,
+        2030
+      ],
       "rosterCategory": "top30",
-      "salaryEstimates": [{ "season": 2026, "estimateType": "reported_exact", "claimShape": "salary_cap_value", "amountCents": 50000000, "confidenceScore": 72, "confidenceBand": "medium", "sources": ["dt-rich-list-2026"], "reasoning": "Daily Telegraph/Code Sports roster-value investigation lists Sunia Turuva at $500K. Treat as a published media roster valuation, not an official NRL cap ledger value." }]
+      "salaryEstimates": [
+        {
+          "season": 2026,
+          "estimateType": "reported_exact",
+          "claimShape": "salary_cap_value",
+          "amountCents": 50000000,
+          "confidenceScore": 42,
+          "confidenceBand": "low",
+          "sources": [
+            "dt-rich-list-2026"
+          ],
+          "reasoning": "Daily Telegraph/Code Sports roster-value investigation lists Sunia Turuva at $500K. Use as a backup baseline until a player-focused salary or contract article confirms the selected-season value.",
+          "evidenceRole": "backup_baseline"
+        }
+      ]
     },
     {
       "name": "Taylan May",
       "position": "Centre",
       "profileUrl": "https://www.weststigers.com.au/teams/nrl-premiership/wests-tigers/taylan-may/",
-      "contractYears": [2026, 2027, 2028, 2029, 2030],
+      "contractYears": [
+        2026,
+        2027,
+        2028,
+        2029,
+        2030
+      ],
       "rosterCategory": "top30",
-      "salaryEstimates": [{ "season": 2026, "estimateType": "reported_exact", "claimShape": "salary_cap_value", "amountCents": 55000000, "confidenceScore": 72, "confidenceBand": "medium", "sources": ["dt-rich-list-2026"], "reasoning": "Daily Telegraph/Code Sports roster-value investigation lists Taylan May at $550K. Treat as a published media roster valuation, not an official NRL cap ledger value." }]
+      "salaryEstimates": [
+        {
+          "season": 2026,
+          "estimateType": "reported_exact",
+          "claimShape": "salary_cap_value",
+          "amountCents": 55000000,
+          "confidenceScore": 42,
+          "confidenceBand": "low",
+          "sources": [
+            "dt-rich-list-2026"
+          ],
+          "reasoning": "Daily Telegraph/Code Sports roster-value investigation lists Taylan May at $550K. Use as a backup baseline until a player-focused salary or contract article confirms the selected-season value.",
+          "evidenceRole": "backup_baseline"
+        }
+      ]
     },
     {
       "name": "Terrell May",
       "position": "Prop",
       "profileUrl": "https://www.weststigers.com.au/teams/nrl-premiership/wests-tigers/terrell-may/",
-      "contractYears": [2026, 2027, 2028, 2029, 2030],
+      "contractYears": [
+        2026,
+        2027,
+        2028,
+        2029,
+        2030
+      ],
       "rosterCategory": "top30",
-      "salaryEstimates": [{ "season": 2026, "estimateType": "reported_exact", "claimShape": "salary_cap_value", "amountCents": 88500000, "confidenceScore": 72, "confidenceBand": "medium", "sources": ["dt-rich-list-2026"], "reasoning": "Daily Telegraph/Code Sports roster-value investigation lists Terrell May at $885K. Treat as a published media roster valuation, not an official NRL cap ledger value." }]
+      "salaryEstimates": [
+        {
+          "season": 2026,
+          "estimateType": "reported_exact",
+          "claimShape": "salary_cap_value",
+          "amountCents": 88500000,
+          "confidenceScore": 62,
+          "confidenceBand": "medium",
+          "sources": [
+            "dt-rich-list-2026"
+          ],
+          "reasoning": "Daily Telegraph/Code Sports roster-value investigation lists Terrell May at $885K. Use as a backup baseline until a player-focused salary or contract article confirms the selected-season value.",
+          "evidenceRole": "cross_referenced_baseline"
+        }
+      ]
     },
     {
       "name": "Tony Sukkar",
       "position": "2nd Row",
       "profileUrl": "https://www.weststigers.com.au/teams/nrl-premiership/wests-tigers/tony-sukkar/",
-      "contractYears": [2026],
+      "contractYears": [
+        2026
+      ],
       "rosterCategory": "top30",
-      "salaryEstimates": [{ "season": 2026, "estimateType": "unknown", "claimShape": "unknown", "confidenceScore": 10, "confidenceBand": "unknown", "sources": ["nrl-signings-tracker"], "reasoning": "Contract year known; no salary figure found." }]
+      "salaryEstimates": [
+        {
+          "season": 2026,
+          "estimateType": "unknown",
+          "claimShape": "unknown",
+          "confidenceScore": 10,
+          "confidenceBand": "unknown",
+          "sources": [
+            "nrl-signings-tracker"
+          ],
+          "reasoning": "Contract year known; no salary figure found.",
+          "evidenceRole": "open_unknown"
+        }
+      ]
     },
     {
       "name": "Tristan Hope",
       "position": "Hooker",
       "profileUrl": "https://www.weststigers.com.au/teams/nrl-premiership/wests-tigers/tristan-hope/",
-      "contractYears": [2026],
+      "contractYears": [
+        2026
+      ],
       "rosterCategory": "top30",
-      "salaryEstimates": [{ "season": 2026, "estimateType": "unknown", "claimShape": "unknown", "confidenceScore": 10, "confidenceBand": "unknown", "sources": ["nrl-signings-tracker"], "reasoning": "Contract year known; no salary figure found." }]
+      "salaryEstimates": [
+        {
+          "season": 2026,
+          "estimateType": "unknown",
+          "claimShape": "unknown",
+          "confidenceScore": 10,
+          "confidenceBand": "unknown",
+          "sources": [
+            "nrl-signings-tracker"
+          ],
+          "reasoning": "Contract year known; no salary figure found.",
+          "evidenceRole": "open_unknown"
+        }
+      ]
     },
     {
       "name": "Faaletino Tavana",
-      "aliases": ["Tino Tavana"],
+      "aliases": [
+        "Tino Tavana"
+      ],
       "position": "Fullback",
       "profileUrl": "https://www.weststigers.com.au/teams/nrl-premiership/wests-tigers/faaletino-tavana/",
-      "contractYears": [2026, 2027, 2028, 2029],
+      "contractYears": [
+        2026,
+        2027,
+        2028,
+        2029
+      ],
       "rosterCategory": "top30",
-      "salaryEstimates": [{ "season": 2026, "estimateType": "unknown", "claimShape": "unknown", "confidenceScore": 10, "confidenceBand": "unknown", "sources": ["nrl-signings-tracker", "wests-tigers-teams"], "reasoning": "NRL tracker uses Tino Tavana; club profile uses Faaletino Tavana. Contract years known; no salary figure found." }]
+      "salaryEstimates": [
+        {
+          "season": 2026,
+          "estimateType": "unknown",
+          "claimShape": "unknown",
+          "confidenceScore": 10,
+          "confidenceBand": "unknown",
+          "sources": [
+            "nrl-signings-tracker",
+            "wests-tigers-teams"
+          ],
+          "reasoning": "NRL tracker uses Tino Tavana; club profile uses Faaletino Tavana. Contract years known; no salary figure found.",
+          "evidenceRole": "open_unknown"
+        }
+      ]
     },
     {
       "name": "William Craig",
-      "aliases": ["Will Craig"],
+      "aliases": [
+        "Will Craig"
+      ],
       "position": "Winger",
       "profileUrl": "https://www.weststigers.com.au/teams/nrl-premiership/wests-tigers/will-craig/",
-      "contractYears": [2026],
+      "contractYears": [
+        2026
+      ],
       "rosterCategory": "top30",
-      "salaryEstimates": [{ "season": 2026, "estimateType": "unknown", "claimShape": "unknown", "confidenceScore": 10, "confidenceBand": "unknown", "sources": ["nrl-signings-tracker", "wests-tigers-teams"], "reasoning": "NRL tracker uses Will Craig; club profile uses William Craig. Contract year known; no salary figure found." }]
+      "salaryEstimates": [
+        {
+          "season": 2026,
+          "estimateType": "unknown",
+          "claimShape": "unknown",
+          "confidenceScore": 10,
+          "confidenceBand": "unknown",
+          "sources": [
+            "nrl-signings-tracker",
+            "wests-tigers-teams"
+          ],
+          "reasoning": "NRL tracker uses Will Craig; club profile uses William Craig. Contract year known; no salary figure found.",
+          "evidenceRole": "open_unknown"
+        }
+      ]
     }
   ],
   "excludedOrMonitor": [
-    { "name": "Jake Averillo", "reason": "Future 2027 gain, not current 2026 Top 30." },
-    { "name": "Junior Tupou", "reason": "2027 train-and-trial note, not current 2026 Top 30." },
-    { "name": "Ethan Roberts", "reason": "Club article says development deal in 2026 before Top 30 in 2027." },
-    { "name": "Luke Laulilii", "reason": "NRL tracker records mid-season release to Warriors." },
-    { "name": "Charlie Murray", "reason": "Club NRL profile exists but not in NRL tracker current contract list." },
-    { "name": "Jared Haywood", "reason": "Club NRL profile exists but not in NRL tracker current contract list." },
-    { "name": "Josese Lanyon", "reason": "Club NRL profile exists but not in NRL tracker current contract list." },
-    { "name": "Lachlan Broederlow", "reason": "Club NRL profile exists but not in NRL tracker current contract list." },
-    { "name": "Peter Taateo", "reason": "Club NRL profile exists but not in NRL tracker current contract list." }
+    {
+      "name": "Jake Averillo",
+      "reason": "Future 2027 gain, not current 2026 Top 30."
+    },
+    {
+      "name": "Junior Tupou",
+      "reason": "2027 train-and-trial note, not current 2026 Top 30."
+    },
+    {
+      "name": "Ethan Roberts",
+      "reason": "Club article says development deal in 2026 before Top 30 in 2027."
+    },
+    {
+      "name": "Luke Laulilii",
+      "reason": "NRL tracker records mid-season release to Warriors."
+    },
+    {
+      "name": "Charlie Murray",
+      "reason": "Club NRL profile exists but not in NRL tracker current contract list."
+    },
+    {
+      "name": "Jared Haywood",
+      "reason": "Club NRL profile exists but not in NRL tracker current contract list."
+    },
+    {
+      "name": "Josese Lanyon",
+      "reason": "Club NRL profile exists but not in NRL tracker current contract list."
+    },
+    {
+      "name": "Lachlan Broederlow",
+      "reason": "Club NRL profile exists but not in NRL tracker current contract list."
+    },
+    {
+      "name": "Peter Taateo",
+      "reason": "Club NRL profile exists but not in NRL tracker current contract list."
+    }
   ]
 }

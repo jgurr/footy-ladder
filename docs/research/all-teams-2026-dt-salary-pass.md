@@ -5,13 +5,14 @@
 
 ## Scope
 
-This pass scales the salary-cap dataset from the Wests Tigers pilot to all 17 NRL clubs using the Daily Telegraph roster-value investigation as the first all-club salary/value source.
+This pass scales the salary-cap dataset from the Wests Tigers pilot to all 17 NRL clubs using the Daily Telegraph roster-value investigation as a league-wide backup baseline only.
 
 ## Source Policy
 
-- [Daily Telegraph: NRL Rich List / true roster value investigation](https://www.dailytelegraph.com.au/sport/nrl/the-true-value-of-every-nrl-roster-revealed-and-the-clubs-breaking-the-salary-cap/news-story/a4bafaad73cb13efaa7b8c292800cd52) is used for individual roster values and grouped rest-bucket totals.
+- [Daily Telegraph: NRL Rich List / true roster value investigation](https://www.dailytelegraph.com.au/sport/nrl/the-true-value-of-every-nrl-roster-revealed-and-the-clubs-breaking-the-salary-cap/news-story/a4bafaad73cb13efaa7b8c292800cd52) is retained for individual roster values and grouped rest-bucket totals, but it is no longer treated as the primary source for a player where no player-focused reporting has been reviewed.
 - [NRL 2026 Signings Tracker](https://www.nrl.com/news/2026/01/01/2026-nrl-signings-tracker-the-latest-from-all-17-clubs/) was consulted for movement/contract context, but the generated non-Wests records still need a player-by-player contract-length deep pass.
 - Daily Telegraph values remain labelled as media roster valuations, not official NRL salary-cap ledger salaries.
+- Primary salary evidence should come from player-focused major-media articles, official/club contract-term reporting, or multiple authoritative articles cross-referenced to the same player.
 
 ## Coverage
 
@@ -19,10 +20,10 @@ This pass scales the salary-cap dataset from the Wests Tigers pilot to all 17 NR
 |--------|------:|
 | Clubs | 17 |
 | Player records | 481 |
-| Direct individual DT valuation records | 289 |
+| Backup baseline DT valuation records | 289 |
 | Grouped / unknown individual records | 192 |
 
-Each club has 17 individually valued players from the Daily Telegraph table. Remaining named players come from the article's grouped rest bucket and should not be assigned an individual salary until a direct article or official source supports it.
+Each club has 17 individually valued players from the Daily Telegraph table. Those values are marked `backup_baseline` unless an individual player article has been captured and cross-referenced. Remaining named players come from the article's grouped rest bucket and should not be assigned an individual salary until a direct article or official source supports it.
 
 ## Contract-Year Caveat
 
@@ -32,8 +33,9 @@ Wests Tigers retain the richer contract-year pilot data. For the other 16 clubs,
 
 The Cap Board now shows qualitative source badges rather than repeated numeric scores:
 
-- `Layered` - current value plus corroborating historical/future article context.
-- `Direct` - direct individual media roster valuation.
+- `Primary` - player-focused article directly supports the selected salary estimate.
+- `Cross-ref` - backup baseline cross-referenced with player-focused contract or salary reporting.
+- `Backup` - league-wide roster valuation only; needs a player-focused primary article.
 - `Bucket` - player is named only in a grouped rest bucket.
 - `Open` - no individual salary claim found.
 

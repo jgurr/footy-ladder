@@ -64,7 +64,11 @@
       "recommendedAmountCents": 72500000,
       "salaryConfidence": "medium",
       "contractLengthConfidence": "high",
-      "sources": ["daily-telegraph-rich-list-2026", "nine-doueihi-lowball", "wests-doueihi-extension"]
+      "sources": [
+        "daily-telegraph-rich-list-2026",
+        "nine-doueihi-lowball",
+        "wests-doueihi-extension"
+      ]
     },
     {
       "name": "Sione Fainu",
@@ -75,7 +79,12 @@
       "recommendedFutureAavCents": 36666700,
       "salaryConfidence": "medium",
       "contractLengthConfidence": "high",
-      "sources": ["daily-telegraph-rich-list-2026", "smh-sione-fainu-extension", "nine-sione-fainu-extension", "wests-sione-fainu-extension"]
+      "sources": [
+        "daily-telegraph-rich-list-2026",
+        "smh-sione-fainu-extension",
+        "nine-sione-fainu-extension",
+        "wests-sione-fainu-extension"
+      ]
     },
     {
       "name": "Bunty Afoa",
@@ -84,7 +93,11 @@
       "recommendedValueType": "derived_range",
       "salaryConfidence": "low",
       "contractLengthConfidence": "medium",
-      "sources": ["wests-bunty-signing", "wests-signings-tracker", "nrl-salary-cap-rules"]
+      "sources": [
+        "wests-bunty-signing",
+        "wests-signings-tracker",
+        "nrl-salary-cap-rules"
+      ]
     },
     {
       "name": "Javon Andrews",
@@ -93,7 +106,11 @@
       "recommendedValueType": "derived_range",
       "salaryConfidence": "low",
       "contractLengthConfidence": "medium",
-      "sources": ["wests-signings-tracker", "nrl-signings-tracker", "nrl-salary-cap-rules"]
+      "sources": [
+        "wests-signings-tracker",
+        "nrl-signings-tracker",
+        "nrl-salary-cap-rules"
+      ]
     },
     {
       "name": "Patrick Herbert",
@@ -102,7 +119,10 @@
       "recommendedValueType": "derived_range",
       "salaryConfidence": "low",
       "contractLengthConfidence": "medium",
-      "sources": ["wests-patrick-herbert", "wests-signings-tracker"]
+      "sources": [
+        "wests-patrick-herbert",
+        "wests-signings-tracker"
+      ]
     },
     {
       "name": "Faaletino Tavana",
@@ -111,7 +131,10 @@
       "recommendedValueType": "derived_range",
       "salaryConfidence": "low",
       "contractLengthConfidence": "medium",
-      "sources": ["wests-tino-tavana", "wests-signings-tracker"]
+      "sources": [
+        "wests-tino-tavana",
+        "wests-signings-tracker"
+      ]
     },
     {
       "name": "Alex Seyfarth",
@@ -121,7 +144,11 @@
       "recommendedAmountCents": 42500000,
       "salaryConfidence": "medium",
       "contractLengthConfidence": "high",
-      "sources": ["daily-telegraph-rich-list-2026", "wests-seyfarth-extension", "nrl-signings-tracker"]
+      "sources": [
+        "daily-telegraph-rich-list-2026",
+        "wests-seyfarth-extension",
+        "nrl-signings-tracker"
+      ]
     },
     {
       "name": "Fonua Pole",
@@ -131,7 +158,10 @@
       "recommendedAmountCents": 66500000,
       "salaryConfidence": "medium",
       "contractLengthConfidence": "high",
-      "sources": ["daily-telegraph-rich-list-2026", "nrl-signings-tracker"]
+      "sources": [
+        "daily-telegraph-rich-list-2026",
+        "nrl-signings-tracker"
+      ]
     },
     {
       "name": "Heamasi Makasini",
@@ -141,7 +171,11 @@
       "recommendedAmountCents": 35000000,
       "salaryConfidence": "medium",
       "contractLengthConfidence": "high",
-      "sources": ["daily-telegraph-rich-list-2026", "nrl-signings-tracker", "wests-signings-topic"]
+      "sources": [
+        "daily-telegraph-rich-list-2026",
+        "nrl-signings-tracker",
+        "wests-signings-topic"
+      ]
     },
     {
       "name": "Heath Mason",
@@ -150,7 +184,9 @@
       "recommendedValueType": "derived_range",
       "salaryConfidence": "low",
       "contractLengthConfidence": "high",
-      "sources": ["wests-heath-mason"]
+      "sources": [
+        "wests-heath-mason"
+      ]
     },
     {
       "name": "Jock Madden",
@@ -160,7 +196,10 @@
       "recommendedAmountCents": 25000000,
       "salaryConfidence": "medium",
       "contractLengthConfidence": "high",
-      "sources": ["daily-telegraph-rich-list-2026", "wests-jock-madden"]
+      "sources": [
+        "daily-telegraph-rich-list-2026",
+        "wests-jock-madden"
+      ]
     },
     {
       "name": "Kit Laulilii",
@@ -169,7 +208,9 @@
       "recommendedValueType": "derived_range",
       "salaryConfidence": "low",
       "contractLengthConfidence": "high",
-      "sources": ["nrl-signings-tracker"]
+      "sources": [
+        "nrl-signings-tracker"
+      ]
     },
     {
       "name": "Mavrik Geyer",
@@ -178,7 +219,10 @@
       "recommendedValueType": "derived_range",
       "salaryConfidence": "low",
       "contractLengthConfidence": "high",
-      "sources": ["wests-mavrik-geyer", "nrl-signings-tracker"]
+      "sources": [
+        "wests-mavrik-geyer",
+        "nrl-signings-tracker"
+      ]
     },
     {
       "name": "Royce Hunt",
@@ -188,7 +232,10 @@
       "recommendedAmountCents": 42500000,
       "salaryConfidence": "medium",
       "contractLengthConfidence": "high",
-      "sources": ["daily-telegraph-rich-list-2026", "nrl-signings-tracker"]
+      "sources": [
+        "daily-telegraph-rich-list-2026",
+        "nrl-signings-tracker"
+      ]
     },
     {
       "name": "Solomone Saukuru",
@@ -197,7 +244,10 @@
       "recommendedValueType": "derived_range",
       "salaryConfidence": "low",
       "contractLengthConfidence": "medium",
-      "sources": ["nrl-signings-tracker", "wests-signings-tracker"]
+      "sources": [
+        "nrl-signings-tracker",
+        "wests-signings-tracker"
+      ]
     },
     {
       "name": "Starford To'a",
@@ -207,7 +257,11 @@
       "recommendedAmountCents": 37500000,
       "salaryConfidence": "medium",
       "contractLengthConfidence": "high",
-      "sources": ["daily-telegraph-rich-list-2026", "sea-eagles-toa", "nrl-signings-tracker"]
+      "sources": [
+        "daily-telegraph-rich-list-2026",
+        "sea-eagles-toa",
+        "nrl-signings-tracker"
+      ]
     },
     {
       "name": "Tony Sukkar",
@@ -216,7 +270,10 @@
       "recommendedValueType": "derived_range",
       "salaryConfidence": "low",
       "contractLengthConfidence": "medium",
-      "sources": ["nrl-signings-tracker", "wests-tony-sukkar-profile"]
+      "sources": [
+        "nrl-signings-tracker",
+        "wests-tony-sukkar-profile"
+      ]
     },
     {
       "name": "Tristan Hope",
@@ -225,7 +282,10 @@
       "recommendedValueType": "derived_range",
       "salaryConfidence": "low",
       "contractLengthConfidence": "high",
-      "sources": ["wests-hope-murray", "wests-tristan-hope-development"]
+      "sources": [
+        "wests-hope-murray",
+        "wests-tristan-hope-development"
+      ]
     },
     {
       "name": "William Craig",
@@ -234,7 +294,10 @@
       "recommendedValueType": "derived_range",
       "salaryConfidence": "low",
       "contractLengthConfidence": "medium",
-      "sources": ["nrl-signings-tracker", "wests-signings-tracker"]
+      "sources": [
+        "nrl-signings-tracker",
+        "wests-signings-tracker"
+      ]
     }
   ],
   "derivedRangePolicy": {

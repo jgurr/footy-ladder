@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Archive,
   Check,
   ChevronDown,
   CircleHelp,
@@ -32,6 +33,12 @@ type SalaryEstimate = {
   highAmountCents?: number;
   confidenceScore: number;
   confidenceBand: "high" | "medium" | "low" | "unknown";
+  evidenceRole?:
+    | "primary_individual_report"
+    | "cross_referenced_baseline"
+    | "backup_baseline"
+    | "bucket_unknown"
+    | "open_unknown";
   sources?: string[];
   reasoning: string;
 };
@@ -121,7 +128,9 @@ function getEvidenceBadge({
   historicalClaims: HistoricalClaim[];
 }) {
   if (estimate.estimateType === "unknown") {
-    const isGroupedBucket = estimate.reasoning.toLowerCase().includes("rest");
+    const isGroupedBucket =
+      estimate.evidenceRole === "bucket_unknown" ||
+      estimate.reasoning.toLowerCase().includes("rest");
     return {
       label: isGroupedBucket ? "Bucket" : "Open",
       detail: isGroupedBucket
@@ -132,18 +141,39 @@ function getEvidenceBadge({
     };
   }
 
-  if (historicalClaims.length > 0) {
+  if (
+    estimate.evidenceRole === "cross_referenced_baseline" ||
+    historicalClaims.length > 0
+  ) {
     return {
-      label: "Layered",
-      detail: "Current valuation plus corroborating contract or historical article context",
+      label: "Cross-ref",
+      detail: "Backup baseline cross-referenced with player-focused contract or salary reporting",
       Icon: Layers,
       color: "#22c55e",
     };
   }
 
+  if (estimate.evidenceRole === "backup_baseline") {
+    return {
+      label: "Backup",
+      detail: "League-wide roster valuation only; needs a player-focused primary article",
+      Icon: Archive,
+      color: "#fb7185",
+    };
+  }
+
+  if (estimate.evidenceRole === "primary_individual_report") {
+    return {
+      label: "Primary",
+      detail: "Player-focused article directly supports the selected salary estimate",
+      Icon: ShieldCheck,
+      color: "#22c55e",
+    };
+  }
+
   return {
-    label: "Direct",
-    detail: "Single direct media roster valuation",
+    label: "Review",
+    detail: "Sourced value needs evidence-role review",
     Icon: ShieldCheck,
     color: "#f59e0b",
   };
@@ -465,6 +495,7 @@ export function SalaryCapBoard() {
           Contracted
         </span>
         <span>UNK=No individual salary claim</span>
+        <span>Backup=roster-list baseline only</span>
       </div>
     </section>
   );

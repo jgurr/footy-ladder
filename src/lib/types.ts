@@ -187,6 +187,13 @@ export type SalaryClaimShape =
 
 export type ConfidenceBand = "high" | "medium" | "low" | "unknown";
 
+export type SalaryEvidenceRole =
+  | "primary_individual_report"
+  | "cross_referenced_baseline"
+  | "backup_baseline"
+  | "bucket_unknown"
+  | "open_unknown";
+
 export type SalarySourceTier =
   | "official"
   | "major_media"
@@ -229,6 +236,7 @@ export interface SalaryEstimate {
   highAmountCents: number | null;
   confidenceScore: number;
   confidenceBand: ConfidenceBand;
+  evidenceRole: SalaryEvidenceRole;
   annualizationMethod: string | null;
   includesAllowances: boolean | null;
   includesBonuses: boolean | null;
