@@ -70,3 +70,55 @@ export function validateSalaryEstimateValue(input: {
     throw new Error("Salary estimate lowAmountCents cannot exceed highAmountCents");
   }
 }
+
+type DisplaySalaryEstimate = {
+  season: number;
+  estimateType: string;
+  claimShape: string;
+  amountCents?: number;
+  lowAmountCents?: number;
+  highAmountCents?: number;
+  confidenceScore: number;
+  confidenceBand: ConfidenceBand;
+  evidenceRole?: string;
+  sources?: string[];
+  reasoning: string;
+};
+
+const credibleSalaryEvidenceRoles = new Set([
+  "primary_individual_report",
+  "cross_referenced_baseline",
+]);
+
+export function hasCredibleSalaryArticleEvidence(
+  estimate: Pick<DisplaySalaryEstimate, "estimateType" | "evidenceRole">
+): boolean {
+  return (
+    estimate.estimateType !== "unknown" &&
+    Boolean(estimate.evidenceRole) &&
+    credibleSalaryEvidenceRoles.has(estimate.evidenceRole as string)
+  );
+}
+
+export function normalizeSalaryEstimateForDisplay<T extends DisplaySalaryEstimate>(
+  estimate: T
+): T {
+  if (estimate.estimateType === "unknown" || hasCredibleSalaryArticleEvidence(estimate)) {
+    return estimate;
+  }
+
+  return {
+    ...estimate,
+    estimateType: "unknown",
+    claimShape: "unknown",
+    amountCents: undefined,
+    lowAmountCents: undefined,
+    highAmountCents: undefined,
+    confidenceScore: 10,
+    confidenceBand: "unknown",
+    evidenceRole: "open_unknown",
+    sources: [],
+    reasoning:
+      "No credible player-specific salary article has been captured for this player yet, so roster valuation and derived bucket figures are hidden as unknown.",
+  };
+}

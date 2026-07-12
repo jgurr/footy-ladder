@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { Fragment, useMemo, useState } from "react";
 import allTeamsSalaryData from "@/data/salary-cap/all-teams-2026.json";
+import { normalizeSalaryEstimateForDisplay } from "@/lib/salary-cap";
 import { useTheme } from "./ThemeProvider";
 
 type SalarySource = {
@@ -120,10 +121,11 @@ function formatEstimate(estimate: SalaryEstimate): string {
 }
 
 function getPrimaryEstimate(player: SalaryPlayer): SalaryEstimate {
-  return (
+  const estimate =
     player.salaryEstimates.find((estimate) => estimate.season === salaryData.season) ||
-    player.salaryEstimates[0]
-  );
+    player.salaryEstimates[0];
+
+  return normalizeSalaryEstimateForDisplay(estimate);
 }
 
 function getClaimPlayers(claim: HistoricalClaim): string[] {
@@ -217,8 +219,14 @@ function getEvidenceBadge({
 
 function sortPlayersBySeason(players: SalaryPlayer[], season: number): SalaryPlayer[] {
   return [...players].sort((a, b) => {
-    const aEstimate = a.salaryEstimates.find((estimate) => estimate.season === season);
-    const bEstimate = b.salaryEstimates.find((estimate) => estimate.season === season);
+    const aEstimate = normalizeSalaryEstimateForDisplay(
+      a.salaryEstimates.find((estimate) => estimate.season === season) ||
+        a.salaryEstimates[0]
+    );
+    const bEstimate = normalizeSalaryEstimateForDisplay(
+      b.salaryEstimates.find((estimate) => estimate.season === season) ||
+        b.salaryEstimates[0]
+    );
     const aAmount = estimateMidpoint(aEstimate);
     const bAmount = estimateMidpoint(bEstimate);
 
@@ -249,42 +257,44 @@ export function SalaryCapBoard() {
 
   return (
     <section className="space-y-4">
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <div
-            className="mb-1 flex items-center gap-2 text-xs font-semibold uppercase"
-            style={{ color: palette.textMuted }}
-          >
-            <WalletCards size={14} />
-            Salary Cap Sample
-          </div>
-          <h2 className="text-xl font-bold" style={{ color: palette.text }}>
-            {data.teamName}
-          </h2>
+      <label
+        className="flex flex-col gap-2 rounded-lg border p-3 text-xs font-semibold uppercase sm:flex-row sm:items-center sm:justify-between sm:gap-4"
+        style={{ borderColor: palette.border, background: "rgba(255,255,255,0.035)" }}
+      >
+        <span style={{ color: palette.textMuted }}>Team</span>
+        <select
+          value={selectedTeamId}
+          onChange={(event) => {
+            setSelectedTeamId(event.target.value);
+            setExpandedPlayer(null);
+          }}
+          aria-label="Salary cap team"
+          className="w-full rounded-md px-3 py-2 text-sm font-semibold normal-case sm:max-w-72"
+          style={{
+            background: "rgba(255,255,255,0.08)",
+            border: `1px solid ${palette.border}`,
+            color: palette.text,
+          }}
+        >
+          {teams.map((team) => (
+            <option key={team.teamId} value={team.teamId}>
+              {team.teamName}
+            </option>
+          ))}
+        </select>
+      </label>
+
+      <div>
+        <div
+          className="mb-1 flex items-center gap-2 text-xs font-semibold uppercase"
+          style={{ color: palette.textMuted }}
+        >
+          <WalletCards size={14} />
+          Salary Cap Sample
         </div>
-        <label className="flex flex-col gap-1 text-xs font-semibold uppercase sm:min-w-64">
-          <span style={{ color: palette.textMuted }}>Team</span>
-          <select
-            value={selectedTeamId}
-            onChange={(event) => {
-              setSelectedTeamId(event.target.value);
-              setExpandedPlayer(null);
-            }}
-            aria-label="Salary cap team"
-            className="w-full rounded-md px-3 py-2 text-sm font-semibold normal-case"
-            style={{
-              background: "rgba(255,255,255,0.08)",
-              border: `1px solid ${palette.border}`,
-              color: palette.text,
-            }}
-          >
-            {teams.map((team) => (
-              <option key={team.teamId} value={team.teamId}>
-                {team.teamName}
-              </option>
-            ))}
-          </select>
-        </label>
+        <h2 className="text-xl font-bold" style={{ color: palette.text }}>
+          {data.teamName}
+        </h2>
       </div>
 
       <div
@@ -297,7 +307,7 @@ export function SalaryCapBoard() {
               Estimated 2026 spend
             </div>
             <div className="mt-1 text-sm" style={{ color: palette.text }}>
-              Reported values plus low-confidence derived ranges
+              Credible player-specific salary reports only
             </div>
           </div>
           <div className="text-right font-mono">
@@ -395,7 +405,7 @@ export function SalaryCapBoard() {
                       {TIMELINE_YEARS.map((year) => {
                         const isContracted = player.contractYears.includes(year);
                         const isEstimateYear = year === estimate.season;
-                        const hasAmount = estimate.amountCents !== undefined;
+                        const hasAmount = estimateMidpoint(estimate) > 0;
 
                         return (
                           <td key={year} className="px-1 py-3 text-center">

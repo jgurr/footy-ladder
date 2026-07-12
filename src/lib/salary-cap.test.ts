@@ -3,6 +3,8 @@ import assert from "node:assert/strict";
 import {
   dollarsToCents,
   getConfidenceBand,
+  hasCredibleSalaryArticleEvidence,
+  normalizeSalaryEstimateForDisplay,
   validateSalaryEstimateValue,
 } from "./salary-cap";
 
@@ -70,4 +72,75 @@ test("validateSalaryEstimateValue rejects false precision", () => {
       highAmountCents: 50000000,
     })
   );
+});
+
+test("hasCredibleSalaryArticleEvidence only accepts player-specific evidence roles", () => {
+  assert.equal(
+    hasCredibleSalaryArticleEvidence({
+      estimateType: "reported_exact",
+      evidenceRole: "primary_individual_report",
+    }),
+    true
+  );
+  assert.equal(
+    hasCredibleSalaryArticleEvidence({
+      estimateType: "reported_exact",
+      evidenceRole: "cross_referenced_baseline",
+    }),
+    true
+  );
+  assert.equal(
+    hasCredibleSalaryArticleEvidence({
+      estimateType: "reported_exact",
+      evidenceRole: "backup_baseline",
+    }),
+    false
+  );
+  assert.equal(
+    hasCredibleSalaryArticleEvidence({
+      estimateType: "derived_range",
+      evidenceRole: "derived_bucket_range",
+    }),
+    false
+  );
+});
+
+test("normalizeSalaryEstimateForDisplay hides unsupported salary values as unknown", () => {
+  const estimate = normalizeSalaryEstimateForDisplay({
+    season: 2026,
+    estimateType: "derived_range",
+    claimShape: "market_estimate",
+    lowAmountCents: 20000000,
+    highAmountCents: 65000000,
+    confidenceScore: 42,
+    confidenceBand: "low",
+    evidenceRole: "derived_bucket_range",
+    sources: ["league-wide-roster-value"],
+    reasoning: "Residual bucket estimate.",
+  });
+
+  assert.equal(estimate.estimateType, "unknown");
+  assert.equal(estimate.claimShape, "unknown");
+  assert.equal(estimate.lowAmountCents, undefined);
+  assert.equal(estimate.highAmountCents, undefined);
+  assert.equal(estimate.confidenceBand, "unknown");
+  assert.deepEqual(estimate.sources, []);
+});
+
+test("normalizeSalaryEstimateForDisplay preserves supported article-backed values", () => {
+  const estimate = normalizeSalaryEstimateForDisplay({
+    season: 2026,
+    estimateType: "reported_exact",
+    claimShape: "annual_salary",
+    amountCents: 75000000,
+    confidenceScore: 65,
+    confidenceBand: "medium",
+    evidenceRole: "cross_referenced_baseline",
+    sources: ["player-focused-contract-report"],
+    reasoning: "Player-specific report cross-references the value.",
+  });
+
+  assert.equal(estimate.estimateType, "reported_exact");
+  assert.equal(estimate.amountCents, 75000000);
+  assert.deepEqual(estimate.sources, ["player-focused-contract-report"]);
 });
