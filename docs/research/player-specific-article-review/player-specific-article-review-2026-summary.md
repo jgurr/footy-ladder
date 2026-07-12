@@ -1,45 +1,47 @@
 # Player-Specific Article Review 2026
 
-Generated: 2026-07-12T04:39:46.361Z
+Generated: 2026-07-12T04:58:16.776Z
 
 ## Scope
 
 - Every player in `src/data/salary-cap/all-teams-2026.json` was searched individually by name.
-- The canonical pass uses Bing News RSS against direct salary, contract, signed-extension, publisher-site, NRL.com, and club-domain query families.
+- The combined review includes the per-player Bing News RSS pass plus an official club Signings-topic crawl through reader-mirrored club pages.
+- The per-player pass searches direct salary, contract, signed-extension, publisher-site, NRL.com, and club-domain query families.
+- The official club pass fetches club article pages and matches current squad player names against the article text.
 - Context-only team articles are excluded from candidate counts by default.
 - Salary evidence remains scarce because NRL salaries are private and usually appear only in major-media reporting.
 
 ## Totals
 
 - Players searched: 481
-- Player-specific candidate links: 671
+- Player-specific candidate links: 807
 - Players with salary candidate: 36 (7.5%)
-- Players with contract candidate: 163 (33.9%)
-- Players with profile-only candidate: 120 (24.9%)
-- Players with preferred primary-source candidate: 107 (22.2%)
-- Players with any player-specific candidate: 208 (43.2%)
-- Players still needing manual/credentialed search: 273 (56.8%)
+- Players with contract candidate: 185 (38.5%)
+- Players with profile-only candidate: 169 (35.1%)
+- Players with preferred primary-source candidate: 177 (36.8%)
+- Players with any player-specific candidate: 255 (53.0%)
+- Players still needing manual/credentialed search: 226 (47.0%)
 
 ## Team Coverage
 
 | Team | Players | Candidates | Salary | Contract | Profile | Still Missing |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| Brisbane Broncos | 28 | 90 | 8 | 14 | 14 | 10 |
-| Canberra Raiders | 29 | 10 | 0 | 5 | 3 | 21 |
-| Canterbury-Bankstown Bulldogs | 30 | 34 | 3 | 7 | 7 | 19 |
-| Cronulla-Sutherland Sharks | 28 | 16 | 0 | 7 | 4 | 18 |
+| Brisbane Broncos | 28 | 92 | 8 | 14 | 14 | 10 |
+| Canberra Raiders | 29 | 34 | 0 | 8 | 15 | 11 |
+| Canterbury-Bankstown Bulldogs | 30 | 43 | 3 | 10 | 12 | 15 |
+| Cronulla-Sutherland Sharks | 28 | 20 | 0 | 8 | 4 | 17 |
 | Dolphins | 28 | 52 | 4 | 12 | 11 | 10 |
-| Gold Coast Titans | 29 | 26 | 1 | 9 | 4 | 19 |
-| Manly Warringah Sea Eagles | 27 | 17 | 1 | 6 | 4 | 18 |
-| Melbourne Storm | 28 | 23 | 1 | 9 | 4 | 17 |
-| New Zealand Warriors | 29 | 40 | 2 | 10 | 5 | 19 |
-| Newcastle Knights | 28 | 41 | 2 | 12 | 7 | 15 |
-| North Queensland Cowboys | 27 | 56 | 3 | 12 | 12 | 11 |
-| Parramatta Eels | 28 | 55 | 0 | 10 | 9 | 16 |
-| Penrith Panthers | 26 | 37 | 2 | 11 | 6 | 14 |
+| Gold Coast Titans | 29 | 29 | 1 | 10 | 4 | 18 |
+| Manly Warringah Sea Eagles | 27 | 36 | 1 | 10 | 12 | 10 |
+| Melbourne Storm | 28 | 32 | 1 | 9 | 10 | 14 |
+| New Zealand Warriors | 29 | 44 | 2 | 10 | 5 | 19 |
+| Newcastle Knights | 28 | 51 | 2 | 12 | 7 | 15 |
+| North Queensland Cowboys | 27 | 60 | 3 | 13 | 12 | 10 |
+| Parramatta Eels | 28 | 66 | 0 | 11 | 13 | 13 |
+| Penrith Panthers | 26 | 54 | 2 | 15 | 7 | 9 |
 | South Sydney Rabbitohs | 29 | 38 | 2 | 10 | 9 | 15 |
-| St George Illawarra Dragons | 29 | 32 | 3 | 9 | 5 | 20 |
-| Sydney Roosters | 28 | 52 | 2 | 8 | 6 | 18 |
+| St George Illawarra Dragons | 29 | 41 | 3 | 11 | 12 | 13 |
+| Sydney Roosters | 28 | 63 | 2 | 10 | 12 | 14 |
 | Wests Tigers | 30 | 52 | 2 | 12 | 10 | 13 |
 
 ## Example Salary / Contract Candidates
@@ -47,6 +49,7 @@ Generated: 2026-07-12T04:39:46.361Z
 - Brisbane Broncos: Reece Walsh — player_specific_salary_candidate — 7news.com.au — [Reece Walsh signs monster new Brisbane Broncos contract until 2029](https://7news.com.au/sport/rugby-league/reece-walsh-signs-monster-new-brisbane-broncos-contract-until-2029-c-16589716)
 - Brisbane Broncos: Reece Walsh — player_specific_contract_candidate — 7news.com.au — [Broncos superstar Reece Walsh agrees to multi-million dollar contract extension](https://7news.com.au/sport/rugby-league/broncos-superstar-reece-walsh-agrees-to-multi-million-dollar-contract-extension-c-16162034)
 - Brisbane Broncos: Grant Anderson — player_specific_contract_candidate — rnz.co.nz — [NRL: NZ Warriors sign Grant Anderson in Brisbane Broncos exchange for Mitch Barnett](https://www.rnz.co.nz/news/sport/592595/nrl-nz-warriors-sign-grant-anderson-in-brisbane-broncos-exchange-for-mitch-barnett)
+- Brisbane Broncos: Grant Anderson — player_specific_contract_candidate — broncos.com.au — [Barnett Signs with Broncos as Club Supports Anderson Release](https://www.broncos.com.au/news/2026/04/16/barnett-signs-with-broncos-as-club-supports-anderson-release/)
 - Brisbane Broncos: Kotoni Staggs — player_specific_contract_candidate — geelongadvertiser.com.au — [Saint, Sinner, Shoosh: Kotoni Staggs wants to join Broncos exodus; Alex Johnston in rival sights](https://www.geelongadvertiser.com.au/sport/nrl/saint-sinner-shoosh-kotoni-staggs-wants-to-join-broncos-exodus-paul-mcgregor-dragons-future/news-story/4da3d1f9dc35dac2b87987c04e98079e)
 - Brisbane Broncos: Gehamat Shibasaki — player_specific_salary_candidate — au.sports.yahoo.com — [Perth Bears table $1 million deal to Broncos off-contract centre](https://au.sports.yahoo.com/perth-bears-table-1-million-025505590.html)
 - Brisbane Broncos: Gehamat Shibasaki — player_specific_contract_candidate — goldcoastbulletin.com.au — [Gehamat Shibasaki may fall victim to Broncos salary cap squeeze after latest offer falls short](https://www.goldcoastbulletin.com.au/sport/nrl/gehamat-shibasaki-may-fall-victim-to-broncos-salary-cap-squeeze-after-latest-offer-falls-short/news-story/2d9a60be0cd66cc591fafd90e353d7a5)
@@ -73,7 +76,6 @@ Generated: 2026-07-12T04:39:46.361Z
 - Brisbane Broncos: Jesse Arthars — player_specific_salary_candidate — dailytelegraph.com.au — [Gold Coast Titans withdraw $600k offer for Jesse Arthars after Broncos winger missed deadline](https://www.dailytelegraph.com.au/sport/nrl/gold-coast-titans-withdraw-600k-offer-for-jesse-arthars-after-broncos-winger-missed-deadline/news-story/193e268e548cf57a65e3fd91a9fdaa20)
 - Brisbane Broncos: Jesse Arthars — player_specific_contract_candidate — dailytelegraph.com.au — [Jesse Arthars to leave Broncos at end of 2026 season, Sharks extend Sam Stonestreet](https://www.dailytelegraph.com.au/sport/nrl/jesse-arthars-to-leave-broncos-at-end-of-2026-season-amid-salary-cap-pressures/news-story/36664c6089176c5167538c6e9ebf24bd)
 - Brisbane Broncos: Jesse Arthars — player_specific_contract_candidate — goldcoastbulletin.com.au — [Jesse Arthars to leave Broncos at end of 2026 season, Sharks extend Sam Stonestreet](https://www.goldcoastbulletin.com.au/sport/nrl/jesse-arthars-to-leave-broncos-at-end-of-2026-season-amid-salary-cap-pressures/news-story/36664c6089176c5167538c6e9ebf24bd)
-- Brisbane Broncos: Josiah Karapani — player_specific_contract_candidate — msn.com — [Broncos winger Josiah Karapani stood down after alleged drink driving, traffic offences](https://www.msn.com/en-au/news/australia/broncos-winger-josiah-karapani-stood-down-after-alleged-drink-driving-traffic-offences/ar-AA26LHGM)
 
 ## Remaining Gap List
 
@@ -87,35 +89,21 @@ Generated: 2026-07-12T04:39:46.361Z
 - Brisbane Broncos: Hayze Perham (Unknown)
 - Brisbane Broncos: Jaiyden Hunt (Unknown)
 - Brisbane Broncos: Josh Rogers (Unknown)
-- Canberra Raiders: Kaeo Weekes (Fullback)
-- Canberra Raiders: Savelio Tamale (Winger)
 - Canberra Raiders: Matthew Timoko (Centre)
-- Canberra Raiders: Sebastian Kris (Centre)
-- Canberra Raiders: Xavier Savage (Winger)
-- Canberra Raiders: Ethan Strange (Five-Eighth)
 - Canberra Raiders: Josh Papali'i (Prop)
 - Canberra Raiders: Noah Martin (2nd Row)
-- Canberra Raiders: Corey Horsburgh (Lock)
-- Canberra Raiders: Jayden Brailey (Interchange)
-- Canberra Raiders: Zac Hosking (Interchange)
-- Canberra Raiders: Morgan Smithies (Interchange)
 - Canberra Raiders: Ata Mariota (Unknown)
 - Canberra Raiders: Chevy Stewart (Unknown)
 - Canberra Raiders: Jake Clydesdale (Unknown)
-- Canberra Raiders: Matty Nicholson (Unknown)
 - Canberra Raiders: Michael Asomua (Unknown)
 - Canberra Raiders: Myles Martin (Unknown)
 - Canberra Raiders: Owen Pattie (Unknown)
 - Canberra Raiders: Sione Finau (Unknown)
 - Canberra Raiders: Vena Patuki-Case (Unknown)
-- Canterbury-Bankstown Bulldogs: Connor Tracey (Fullback)
 - Canterbury-Bankstown Bulldogs: Max King (Prop)
 - Canterbury-Bankstown Bulldogs: Bailey Hayward (Hooker)
-- Canterbury-Bankstown Bulldogs: Leo Thompson (Prop)
-- Canterbury-Bankstown Bulldogs: Jaeman Salmon (Lock)
 - Canterbury-Bankstown Bulldogs: Kurt Mann (Interchange)
 - Canterbury-Bankstown Bulldogs: Sitili Tupouniua (Interchange)
-- Canterbury-Bankstown Bulldogs: Josh Curran (Interchange)
 - Canterbury-Bankstown Bulldogs: Samuel Hughes (Interchange)
 - Canterbury-Bankstown Bulldogs: Finau Latu (Unknown)
 - Canterbury-Bankstown Bulldogs: Harry Hayes (Unknown)
@@ -127,7 +115,6 @@ Generated: 2026-07-12T04:39:46.361Z
 - Canterbury-Bankstown Bulldogs: Patrick Young (Unknown)
 - Canterbury-Bankstown Bulldogs: Sean O'Sullivan (Unknown)
 - Canterbury-Bankstown Bulldogs: Zyon Maiu’u (Unknown)
-- Cronulla-Sutherland Sharks: Sione Katoa (Winger)
 - Cronulla-Sutherland Sharks: Ronaldo Mulitalo (Winger)
 - Cronulla-Sutherland Sharks: Nicho Hynes (Halfback)
 - Cronulla-Sutherland Sharks: Tom Hazleton (Prop)
@@ -163,7 +150,6 @@ Generated: 2026-07-12T04:39:46.361Z
 - Gold Coast Titans: Chris Randall (Lock)
 - Gold Coast Titans: Luke Sommerton (Interchange)
 - Gold Coast Titans: Jaimin Joliffe (Interchange)
-- Gold Coast Titans: Kurtis Morrin (Interchange)
 - Gold Coast Titans: Adam Christensen (Unknown)
 - Gold Coast Titans: Allan Fitzgibbon (Unknown)
 - Gold Coast Titans: Brock Gray (Unknown)
@@ -174,18 +160,10 @@ Generated: 2026-07-12T04:39:46.361Z
 - Gold Coast Titans: Siale Faeamani (Unknown)
 - Gold Coast Titans: Tuki Simpkins (Unknown)
 - Gold Coast Titans: Tony Francis (Unknown)
-- Manly Warringah Sea Eagles: Jason Saab (Winger)
-- Manly Warringah Sea Eagles: Tolutau Koula (Centre)
 - Manly Warringah Sea Eagles: Reuben Garrick (Centre)
-- Manly Warringah Sea Eagles: Lehi Hopoate (Winger)
 - Manly Warringah Sea Eagles: Luke Brooks (Five-Eighth)
-- Manly Warringah Sea Eagles: Taniela Paseka (Prop)
-- Manly Warringah Sea Eagles: Jake Simpkin (Hooker)
 - Manly Warringah Sea Eagles: Siosiua Taukeiaho (Interchange)
 - Manly Warringah Sea Eagles: Ethan Bullemor (Interchange)
-- Manly Warringah Sea Eagles: Aaron Schoupp (Unknown)
-- Manly Warringah Sea Eagles: Blake Wilson (Unknown)
-- Manly Warringah Sea Eagles: Caleb Navale (Unknown)
 - Manly Warringah Sea Eagles: Navren Willett (Unknown)
 - Manly Warringah Sea Eagles: Onitoni Large (Unknown)
 - Manly Warringah Sea Eagles: Paul Bryan (Unknown)
@@ -194,7 +172,6 @@ Generated: 2026-07-12T04:39:46.361Z
 - Manly Warringah Sea Eagles: Zaidas Muagututia (Unknown)
 - Melbourne Storm: Sualauvi Fa’alogo (Fullback)
 - Melbourne Storm: Jack Howarth (Centre)
-- Melbourne Storm: Josh King (Prop)
 - Melbourne Storm: Joe Chan (2nd Row)
 - Melbourne Storm: Trent Loiero (Lock)
 - Melbourne Storm: Tyran Wishart (Interchange)
@@ -203,10 +180,8 @@ Generated: 2026-07-12T04:39:46.361Z
 - Melbourne Storm: Davvy Moale (Unknown)
 - Melbourne Storm: Gabriel Satrick (Unknown)
 - Melbourne Storm: Jack Hetherington (Unknown)
-- Melbourne Storm: Josiah Pahulu (Unknown)
 - Melbourne Storm: Manaia Waitere (Unknown)
 - Melbourne Storm: Marion Seve (Unknown)
-- Melbourne Storm: Moses Leo (Unknown)
 - Melbourne Storm: Siulagi Tuimalata-Brown (Unknown)
 - Melbourne Storm: Trent Toelau (Unknown)
 - New Zealand Warriors: Rocco Berry (Centre)
@@ -250,7 +225,6 @@ Generated: 2026-07-12T04:39:46.361Z
 - North Queensland Cowboys: Jaxson Paulo (Unknown)
 - North Queensland Cowboys: Kai O'Donnell (Unknown)
 - North Queensland Cowboys: Mason Kira (Unknown)
-- North Queensland Cowboys: Soni Luke (Unknown)
 - North Queensland Cowboys: Thomas Mikaele (Unknown)
 - North Queensland Cowboys: Viliami Vailea (Unknown)
 - North Queensland Cowboys: Zac Herdegen (Unknown)
@@ -259,14 +233,11 @@ Generated: 2026-07-12T04:39:46.361Z
 - Parramatta Eels: Sean Russell (Centre)
 - Parramatta Eels: Ryley Smith (Hooker)
 - Parramatta Eels: Kitione Kautoga (2nd Row)
-- Parramatta Eels: Jack Williams (Lock)
 - Parramatta Eels: Tallyn Da Silva (Interchange)
 - Parramatta Eels: Matt Doorey (Interchange)
 - Parramatta Eels: Brian Kelly (Unknown)
 - Parramatta Eels: Jake Tago (Unknown)
-- Parramatta Eels: Joash Papalii (Unknown)
 - Parramatta Eels: Jordan Samrani (Unknown)
-- Parramatta Eels: Luca Moretti (Unknown)
 - Parramatta Eels: Richard Penisini (Unknown)
 - Parramatta Eels: Sam Tuivaiti (Unknown)
 - Parramatta Eels: Toni Mataele (Unknown)
@@ -277,13 +248,8 @@ Generated: 2026-07-12T04:39:46.361Z
 - Penrith Panthers: Isaiah Papali'i (2nd Row)
 - Penrith Panthers: Luke Garner (Interchange)
 - Penrith Panthers: Liam Henry (Interchange)
-- Penrith Panthers: Billy Scott (Unknown)
-- Penrith Panthers: Jack Cogger (Unknown)
 - Penrith Panthers: Jaxen Edgar (Unknown)
 - Penrith Panthers: John Fonua (Unknown)
-- Penrith Panthers: Kalani Going (Unknown)
-- Penrith Panthers: Luron Patea (Unknown)
-- Penrith Panthers: Tom Ale (Unknown)
 - South Sydney Rabbitohs: Jye Gray (Fullback)
 - South Sydney Rabbitohs: Campbell Graham (Winger)
 - South Sydney Rabbitohs: Tevita Tatola (Prop)
@@ -300,42 +266,31 @@ Generated: 2026-07-12T04:39:46.361Z
 - South Sydney Rabbitohs: Max McCarthy (Unknown)
 - South Sydney Rabbitohs: Thomas Fletcher (Unknown)
 - St George Illawarra Dragons: Christian Tuipulotu (Winger)
-- St George Illawarra Dragons: Setu Tu (Winger)
 - St George Illawarra Dragons: Kyle Flanagan (Five-Eighth)
 - St George Illawarra Dragons: Daniel Atkinson (Halfback)
 - St George Illawarra Dragons: Toby Couchman (Prop)
-- St George Illawarra Dragons: Hamish Stewart (Lock)
-- St George Illawarra Dragons: Jacob Liddle (Interchange)
-- St George Illawarra Dragons: Josh Kerr (Interchange)
-- St George Illawarra Dragons: Dylan Egan (Interchange)
 - St George Illawarra Dragons: Ryan Couchman (Interchange)
 - St George Illawarra Dragons: Hame Sele (Unknown)
 - St George Illawarra Dragons: Mat Feagai (Unknown)
 - St George Illawarra Dragons: Lyhkan King-Togia (Unknown)
 - St George Illawarra Dragons: Loko Pasifiki-Tonga (Unknown)
-- St George Illawarra Dragons: David Fale (Unknown)
 - St George Illawarra Dragons: Hayden Buchanan (Unknown)
 - St George Illawarra Dragons: Jacob Halangahu (Unknown)
 - St George Illawarra Dragons: Leeroy Weatherall (Unknown)
 - St George Illawarra Dragons: Nathan Lawson (Unknown)
-- St George Illawarra Dragons: Nick Tsougranis (Unknown)
-- Sydney Roosters: Daniel Tupou (Winger)
 - Sydney Roosters: Billy Smith (Centre)
 - Sydney Roosters: Robert Toia (Centre)
 - Sydney Roosters: Reece Robson (Hooker)
 - Sydney Roosters: Lindsay Collins (Prop)
 - Sydney Roosters: Siua Wong (2nd Row)
 - Sydney Roosters: Victor Radley (Lock)
-- Sydney Roosters: Egan Butcher (Interchange)
 - Sydney Roosters: Nat Butcher (Interchange)
 - Sydney Roosters: Benaiah Ioelu (Unknown)
 - Sydney Roosters: Blake Steep (Unknown)
 - Sydney Roosters: Cody Ramsey (Unknown)
 - Sydney Roosters: De La Salle Va’a (Unknown)
-- Sydney Roosters: Junior Pauga (Unknown)
 - Sydney Roosters: Jake Elliott (Unknown)
 - Sydney Roosters: Salesi Foketi (Unknown)
-- Sydney Roosters: Taylor Losalu (Unknown)
 - Sydney Roosters: Toby Rodwell (Unknown)
 - Wests Tigers: Alex Seyfarth (2nd Row)
 - Wests Tigers: Apisai Koroisau (Hooker)

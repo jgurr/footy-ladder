@@ -18,7 +18,7 @@ for (let i = 2; i < process.argv.length; i += 1) {
 const inputPath = path.resolve(
   process.cwd(),
   args.get("--input") ??
-    "docs/research/player-specific-article-review/player-specific-article-review-2026.json",
+    "docs/research/player-specific-article-review/combined-player-specific-article-review-2026.json",
 );
 const outputDir = path.join(process.cwd(), "docs/research/player-specific-article-review");
 const outputPath = path.join(outputDir, "player-specific-article-review-2026-summary.md");
@@ -104,7 +104,9 @@ const lines = [
   "## Scope",
   "",
   "- Every player in `src/data/salary-cap/all-teams-2026.json` was searched individually by name.",
-  "- The canonical pass uses Bing News RSS against direct salary, contract, signed-extension, publisher-site, NRL.com, and club-domain query families.",
+  "- The combined review includes the per-player Bing News RSS pass plus an official club Signings-topic crawl through reader-mirrored club pages.",
+  "- The per-player pass searches direct salary, contract, signed-extension, publisher-site, NRL.com, and club-domain query families.",
+  "- The official club pass fetches club article pages and matches current squad player names against the article text.",
   "- Context-only team articles are excluded from candidate counts by default.",
   "- Salary evidence remains scarce because NRL salaries are private and usually appear only in major-media reporting.",
   "",
