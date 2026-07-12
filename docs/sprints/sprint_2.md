@@ -16,9 +16,9 @@
 
 ## Current Status
 
-**Branch:** `main`
+**Branch:** `codex/salary-cap-roster-depth`
 
-**Status:** Active - Wests Tigers pilot and deep-pass audit complete, ready to scale research workflow
+**Status:** Active - Wests Tigers pilot complete; all-team scale-up is blocked on equal-depth research, verified contract terms, and player-specific salary-source review
 
 **Depends on:** Sprint 1 foundation data model and team metadata
 
@@ -44,6 +44,23 @@ Delivery order:
 2. Research one team first as a pilot.
 3. Scale the research workflow to all 17 teams.
 4. Build the UI and visualization using the completed dataset.
+
+### Sprint Correction: Equal Depth Is Mandatory
+
+The generated all-team dataset is not production-quality. It is a research scaffold only.
+
+The user review identified three blockers:
+
+- Contract years outside the Wests Tigers pilot are mostly generated `[2026]` placeholders, not researched terms.
+- The league-wide Daily Telegraph roster-value article can be retained as a backup baseline, but it must not be the primary source for most players.
+- Every club needs the same depth as Wests Tigers: individual player searches across Daily Telegraph, SMH, Nine, Fox Sports, NRL.com, club sites, and other reputable sources, with direct links to each article supporting a salary or contract claim.
+
+New enforcement:
+
+- `npm run audit:salary-cap:equal-depth` fails while any club has placeholder contract terms, weak roster-size reconciliation, or backup-baseline salary evidence standing in as primary evidence.
+- `docs/research/individual-source-review/player-source-review-2026.json` is candidate discovery only. It does not promote figures until articles are reviewed and direct player claims are captured.
+- Expansion clubs are now in scope through `src/data/salary-cap/expansion-teams-confirmed-contracts.json`.
+- Confirmed contract news is monitored daily through `npm run harvest:contract-news` and `.github/workflows/confirmed-contract-news.yml`.
 
 ---
 
@@ -318,26 +335,63 @@ npm run build
 - [ ] Normalize player names and aliases.
 - [ ] Generate cross-club coverage report.
 - [ ] Flag low-confidence teams and players.
+- [ ] Replace all generated `[2026]` contract-year placeholders with official/club-sourced term records or explicit unknown-term records.
+- [ ] Promote salary values only after player-specific article review; keep the league-wide roster-value article as backup/corroborating evidence.
+- [ ] Create per-club research audit notes matching the Wests Tigers depth standard.
 
 **Acceptance Criteria:**
 
 - [ ] All 17 clubs have a current active Top 30 roster snapshot.
 - [ ] All Top 30 players have contract status and salary estimate state.
 - [ ] 100% of non-unknown salary values have sources.
+- [ ] 0 generated contract-year placeholders remain in the production dataset.
+- [ ] Most players with salary values use player-focused primary or cross-referenced evidence, not a single roster-value article.
+- [ ] Daily Telegraph and SMH candidates have been credential-reviewed where search discovered relevant salary/contract articles.
 - [ ] Coverage report shows exact/range/unknown counts by team.
 - [ ] Data import is reproducible.
 
 **Eval Commands:**
 
 ```bash
-node scripts/salary-cap/audit-all.mjs --season 2026
-node scripts/salary-cap/coverage.mjs --season 2026
+npm run audit:salary-cap:all
+npm run audit:salary-cap:equal-depth
 npm run build
 ```
 
 **Learnings:**
 
-- TBD
+- Current all-team file is useful for UI prototyping but not for analysis. Every non-Wests club still needs a contract-term pass, because generated `[2026]` values hide unknown end years.
+- Candidate link discovery found authoritative leads for many players, but candidates are not article review. Paid Daily Telegraph/SMH articles need direct credentialed review before promotion.
+- The equal-depth audit should remain red until all clubs meet the same sourcing standard.
+
+### Phase 2.3A: Daily Confirmed Contract Intake
+
+**Autonomy:** [x] Autonomous | [ ] Requires User Input
+
+**Tasks:**
+
+- [x] Add official-source harvester for confirmed contract/signing news.
+- [x] Add scheduled GitHub Action for daily contract-news intake.
+- [ ] Map reviewed confirmed deals into player contract records.
+- [ ] Add alert/report flow for newly confirmed signed deals.
+
+**Acceptance Criteria:**
+
+- [x] Harvester scans official NRL signings topic/tracker sources.
+- [x] Harvester filters speculative language and stores only confirmed signed/announced candidates.
+- [x] Daily workflow can run on schedule and manual dispatch.
+- [ ] Confirmed deal promotion updates contract years only after manual player/team mapping.
+
+**Eval Commands:**
+
+```bash
+npm run harvest:contract-news -- --date 2026-07-02
+npm run harvest:contract-news -- --all
+```
+
+**Learnings:**
+
+- Use official NRL.com signings pages first for daily intake. Media reports remain useful for salary values, but contract-term ingestion should be conservative and signed-only.
 
 ---
 
@@ -431,12 +485,15 @@ npm run dev
 
 - Never use the original `/Users/jeffgurr/nrl-ladder` project as a data source.
 - Prefer official NRL and club pages for roster membership and contract length.
+- Do not show generated contract years as researched facts. Unknown term is better than a fake `[2026]` span.
 - Prefer primary publisher pages over syndicated copies.
 - Store article URL, publisher, author if available, published date, accessed date, and the specific claim being used.
 - Do not store a salary figure without explaining whether it is annual, total contract value, approximate, or inferred.
 - When sources conflict, preserve both and explain the selected value/range.
 - Unknown is acceptable. False precision is not.
 - Every displayed team total must disclose how much is exact, ranged, derived, and unknown.
+- For expansion teams, track Top 30/main-squad, development, and train-and-trial contracts separately.
+- Daily contract intake must include only confirmed signed/announced deals, not speculation, interest, targets, or negotiation rumours.
 
 ---
 

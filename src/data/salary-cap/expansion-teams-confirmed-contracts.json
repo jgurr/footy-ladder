@@ -1,0 +1,265 @@
+{
+  "asOfDate": "2026-07-12",
+  "status": "confirmed_official_contract_ledger",
+  "sourcePolicy": "Only official NRL.com, club, or expansion-team media-release reporting is promoted here. Salary figures are intentionally absent unless a direct salary claim is found elsewhere.",
+  "teams": [
+    {
+      "teamId": "per",
+      "teamName": "Perth Bears",
+      "entrySeason": 2027,
+      "players": [
+        {
+          "name": "Toby Sexton",
+          "rosterCategory": "top30",
+          "contractYears": [2027, 2028],
+          "termStatus": "confirmed_term",
+          "sources": ["perth-first-signings"]
+        },
+        {
+          "name": "Harry Newman",
+          "rosterCategory": "top30",
+          "contractYears": [2027, 2028],
+          "termStatus": "confirmed_term",
+          "sources": ["perth-first-signings"]
+        },
+        {
+          "name": "Luke Smith",
+          "rosterCategory": "top30",
+          "contractYears": [2027, 2028],
+          "termStatus": "confirmed_term",
+          "sources": ["perth-first-signings"]
+        },
+        {
+          "name": "Emarly Bitungane",
+          "rosterCategory": "top30",
+          "contractYears": [2027, 2028],
+          "termStatus": "confirmed_term",
+          "sources": ["perth-first-signings"]
+        },
+        {
+          "name": "Tyran Wishart",
+          "rosterCategory": "top30",
+          "contractYears": [2027, 2028, 2029, 2030, 2031],
+          "termStatus": "confirmed_term",
+          "sources": ["perth-wishart-meaney"]
+        },
+        {
+          "name": "Nick Meaney",
+          "rosterCategory": "top30",
+          "contractYears": [2027, 2028, 2029],
+          "termStatus": "confirmed_term",
+          "sources": ["perth-wishart-meaney"]
+        },
+        {
+          "name": "Josh Curran",
+          "rosterCategory": "top30",
+          "contractYears": [2027],
+          "termStatus": "start_confirmed_term_unconfirmed",
+          "sources": ["perth-wishart-meaney"]
+        },
+        {
+          "name": "Liam Henry",
+          "rosterCategory": "top30",
+          "contractYears": [2027],
+          "termStatus": "start_confirmed_term_unconfirmed",
+          "sources": ["perth-wishart-meaney"]
+        },
+        {
+          "name": "Sean Russell",
+          "rosterCategory": "top30",
+          "contractYears": [2027],
+          "termStatus": "start_confirmed_term_unconfirmed",
+          "sources": ["perth-wishart-meaney"]
+        },
+        {
+          "name": "Isaza Fa'asuamaleaui",
+          "rosterCategory": "top30",
+          "contractYears": [2027],
+          "termStatus": "start_confirmed_term_unconfirmed",
+          "sources": ["perth-wishart-meaney"]
+        },
+        {
+          "name": "Te Hurinui Apatwidle",
+          "aliases": ["Apa Twidle"],
+          "rosterCategory": "top30",
+          "contractYears": [2027, 2028, 2029],
+          "termStatus": "confirmed_term",
+          "sources": ["perth-apa-kit"]
+        },
+        {
+          "name": "Kit Laulilii",
+          "rosterCategory": "top30",
+          "contractYears": [2027, 2028],
+          "termStatus": "confirmed_term",
+          "sources": ["perth-apa-kit"]
+        },
+        {
+          "name": "Mikolaj Oledzki",
+          "rosterCategory": "top30",
+          "contractYears": [2027, 2028, 2029],
+          "termStatus": "confirmed_term",
+          "sources": ["perth-oledzki"]
+        },
+        {
+          "name": "Scott Sorensen",
+          "rosterCategory": "top30",
+          "contractYears": [2027, 2028],
+          "termStatus": "confirmed_term",
+          "sources": ["perth-sorensen"]
+        },
+        {
+          "name": "Mavrik Geyer",
+          "rosterCategory": "top30",
+          "contractYears": [2027, 2028],
+          "termStatus": "confirmed_term",
+          "sources": ["nrl-signings-tracker"]
+        },
+        {
+          "name": "Mason Barber",
+          "rosterCategory": "top30",
+          "contractYears": [2027, 2028, 2029],
+          "termStatus": "confirmed_term",
+          "sources": ["nrl-signings-tracker"]
+        },
+        {
+          "name": "AJ Gudgeon",
+          "rosterCategory": "trainTrial",
+          "contractYears": [2027],
+          "termStatus": "train_trial_offer_confirmed",
+          "sources": ["perth-gudgeon"]
+        }
+      ]
+    },
+    {
+      "teamId": "png",
+      "teamName": "PNG Chiefs",
+      "entrySeason": 2028,
+      "players": [
+        {
+          "name": "Jarome Luai",
+          "rosterCategory": "top30",
+          "contractYears": [2028, 2029],
+          "optionYears": [2030],
+          "termStatus": "confirmed_term_with_option",
+          "sources": ["png-luai"]
+        },
+        {
+          "name": "Alex Johnston",
+          "rosterCategory": "top30",
+          "contractYears": [2028],
+          "termStatus": "confirmed_term",
+          "sources": ["png-alex-johnston"]
+        },
+        {
+          "name": "Connor Watson",
+          "rosterCategory": "top30",
+          "contractYears": [2028, 2029],
+          "termStatus": "confirmed_term",
+          "sources": ["png-connor-watson"]
+        },
+        {
+          "name": "Matty Lees",
+          "rosterCategory": "top30",
+          "contractYears": [2028],
+          "termStatus": "start_confirmed_term_unconfirmed",
+          "sources": ["png-matty-lees"]
+        },
+        {
+          "name": "Gairo Voro",
+          "rosterCategory": "development",
+          "contractYears": [2028, 2029],
+          "termStatus": "confirmed_development_term",
+          "sources": ["png-development-deals"]
+        },
+        {
+          "name": "Morea Morea",
+          "rosterCategory": "development",
+          "contractYears": [2028, 2029],
+          "termStatus": "confirmed_development_term",
+          "sources": ["png-development-deals"]
+        },
+        {
+          "name": "Finley Glare",
+          "rosterCategory": "development",
+          "contractYears": [2028, 2029],
+          "termStatus": "confirmed_development_term",
+          "sources": ["png-development-deals"]
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "id": "nrl-signings-tracker",
+      "title": "2026 NRL Signings Tracker",
+      "publisher": "NRL.com",
+      "url": "https://www.nrl.com/news/2026/01/01/2026-nrl-signings-tracker-the-latest-from-all-17-clubs/"
+    },
+    {
+      "id": "perth-first-signings",
+      "title": "Sexton, Newman confirmed as Perth Bears' first signings",
+      "publisher": "NRL.com / Perth Bears",
+      "url": "https://www.nrl.com/news/2025/12/02/sexton-newman-confirmed-as-perth-bears-first-signings/"
+    },
+    {
+      "id": "perth-wishart-meaney",
+      "title": "Wishart and Meaney sign with Perth Bears",
+      "publisher": "NRL.com",
+      "url": "https://www.nrl.com/news/2026/01/10/wishart-and-meaney-sign-with-perth-bears/"
+    },
+    {
+      "id": "perth-apa-kit",
+      "title": "Boom youngsters Te Hurinui Apatwidle and Kit Laulilii sign with Perth Bears",
+      "publisher": "NRL.com",
+      "url": "https://www.nrl.com/news/2026/05/01/boom-youngsters-te-hurinuiapatwidle-and-kit-laulilii-sign-with-perth-bears/"
+    },
+    {
+      "id": "perth-oledzki",
+      "title": "Polish-born international to join Perth Bears",
+      "publisher": "NRL.com",
+      "url": "https://www.nrl.com/news/2026/03/17/polish-born-international-to-join-perth-bears/"
+    },
+    {
+      "id": "perth-sorensen",
+      "title": "Four-time premiership winner Scott Sorensen signs with Perth Bears",
+      "publisher": "NRL.com",
+      "url": "https://www.nrl.com/news/2026/02/25/four-time-premiership-winner-scott-sorensen-signs-with-perth-bears/"
+    },
+    {
+      "id": "perth-gudgeon",
+      "title": "Perth-born Norths Bears back comes full circle",
+      "publisher": "NRL.com",
+      "url": "https://www.nrl.com/news/2026/06/11/perth-born-norths-bears-back-comes-full-circle/"
+    },
+    {
+      "id": "png-luai",
+      "title": "PNG Chiefs officially sign Jarome Luai as their inaugural player #001",
+      "publisher": "NRL.com",
+      "url": "https://www.nrl.com/news/2026/04/29/png-chiefs-officially-sign-jarome-luai-as-their-inaugural-player-001/"
+    },
+    {
+      "id": "png-alex-johnston",
+      "title": "Coming home: PNG land national hero Alex Johnston for inaugural season",
+      "publisher": "NRL.com",
+      "url": "https://www.nrl.com/news/2026/05/06/coming-home-png-land-national-hero-alex-johnston-for-inaugural-season/"
+    },
+    {
+      "id": "png-connor-watson",
+      "title": "PNG Chiefs secure Connor Watson as signing #003",
+      "publisher": "NRL.com",
+      "url": "https://www.nrl.com/news/2026/06/02/png-chiefs-secure-connor-watson-as-signing-003/"
+    },
+    {
+      "id": "png-matty-lees",
+      "title": "England prop Matty Lees signs with PNG Chiefs",
+      "publisher": "NRL.com",
+      "url": "https://www.nrl.com/news/2026/06/02/england-prop-matty-lees-signs-with-png-chiefs/"
+    },
+    {
+      "id": "png-development-deals",
+      "title": "Chiefs announce development deals for rising PNG talent",
+      "publisher": "NRL.com / PNG Chiefs",
+      "url": "https://www.nrl.com/news/2026/07/02/chiefs-announce-development-deals-for-rising-png-talent/"
+    }
+  ]
+}

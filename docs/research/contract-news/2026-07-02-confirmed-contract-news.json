@@ -1,0 +1,32 @@
+{
+  "checkedAt": "2026-07-12T03:40:45.781Z",
+  "targetDateAustraliaSydney": "2026-07-02",
+  "sourcePolicy": "Official NRL signings topic and tracker only. This harvester records confirmed signed/announced deals for manual promotion; speculation language is filtered out.",
+  "sourceUrls": [
+    "https://www.nrl.com/news/topic/signings/",
+    "https://www.nrl.com/news/2026/01/01/2026-nrl-signings-tracker-the-latest-from-all-17-clubs/"
+  ],
+  "scannedArticles": 1,
+  "confirmedDeals": [
+    {
+      "sourceUrl": "https://www.nrl.com/news/2026/07/02/chiefs-announce-development-deals-for-rising-png-talent/",
+      "sourceTitle": "Chiefs announce development deals for rising PNG talent",
+      "publisher": "NRL.com",
+      "publishedAt": "2026-07-02T00:04:10+00:00",
+      "publishedDateAustraliaSydney": "2026-07-02",
+      "authors": [
+        "PNG Chiefs Media Release"
+      ],
+      "players": [
+        "Gairo Voro",
+        "Morea Morea",
+        "Finley Glare"
+      ],
+      "extractedContractYears": [],
+      "dealStatus": "confirmed_signed_or_announced",
+      "confidence": "official_nrl_or_club_media_release",
+      "reviewStatus": "needs_manual_player_mapping_before_data_promotion",
+      "snippet": "RLWC2026: Papua New Guinea Chiefs announce development deals for rising PNG talent | NRL.com Skip to main content Main News Watch Travel Draw Ladder Players Stats Fantasy Tipping More About Us Accommodation Careers Child Safety Clubs Community Competitions Hall of Fame Integrity Indigenous Judiciary and Match Review Media Releases Memorabilia NRL Pacific Operations Play Rugby League Watch Overseas Wellbeing and Education Membership Tickets Hospitality Shop Search Log In You have skipped the navigation, tab for page content Signings Chiefs announce development deals for rising PNG talent Author PNG Chiefs Media Release Timestamp Thu 2 Jul 2026, 10:04 AM Share on social media Share via Facebook Share via Twitter Share via Whats-app Share via Reddit Share via Email PNG Chiefs have continued to build for the future with the announcement of Papua New Guinea talents Gairo Voro, Morea Morea and"
+    }
+  ]
+}

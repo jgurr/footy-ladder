@@ -12,12 +12,14 @@
     "test:salary-cap": "npx tsx --test src/lib/salary-cap.test.ts",
     "audit:salary-cap:wst": "node scripts/salary-cap/audit-team.mjs --team WST --season 2026",
     "audit:salary-cap:all": "node scripts/salary-cap/audit-all-teams.mjs",
+    "audit:salary-cap:equal-depth": "node scripts/salary-cap/audit-equal-depth.mjs",
     "audit:salary-cap:wst-deep": "node scripts/salary-cap/audit-deep-pass.mjs",
     "export:salary-cap:source-queue": "node scripts/salary-cap/export-individual-source-queue.mjs",
     "refresh:elo-history": "node scripts/fetch-elo-history.mjs",
     "sync:official-ladder": "npx tsx scripts/sync-official-ladder.ts",
     "sync:official-games": "npx tsx scripts/sync-official-games.ts",
     "harvest:salary-cap:sources": "node scripts/salary-cap/harvest-individual-player-sources.mjs",
+    "harvest:contract-news": "node scripts/salary-cap/harvest-confirmed-contract-news.mjs",
     "merge:salary-cap:sources": "node scripts/salary-cap/merge-individual-player-source-reviews.mjs"
   },
   "dependencies": {

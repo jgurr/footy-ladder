@@ -1,0 +1,36 @@
+name: Confirmed contract news
+
+on:
+  schedule:
+    - cron: "30 20 * * *"
+  workflow_dispatch:
+    inputs:
+      date:
+        description: Australia/Sydney date to scan, YYYY-MM-DD
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  harvest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Harvest confirmed NRL contract news
+        run: |
+          if [ -n "${{ inputs.date }}" ]; then
+            node scripts/salary-cap/harvest-confirmed-contract-news.mjs --date "${{ inputs.date }}"
+          else
+            node scripts/salary-cap/harvest-confirmed-contract-news.mjs
+          fi
+
+      - name: Upload contract news artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: confirmed-contract-news
+          path: docs/research/contract-news/

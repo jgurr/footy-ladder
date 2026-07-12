@@ -1,0 +1,124 @@
+{
+  "checkedAt": "2026-07-12T03:41:26.323Z",
+  "targetDateAustraliaSydney": "2026-07-12",
+  "mode": "all_official_topic_backfill",
+  "sourcePolicy": "Official NRL signings topic and tracker only. This harvester records confirmed signed/announced deals for manual promotion; speculation language is filtered out.",
+  "sourceUrls": [
+    "https://www.nrl.com/news/topic/signings/",
+    "https://www.nrl.com/news/2026/01/01/2026-nrl-signings-tracker-the-latest-from-all-17-clubs/"
+  ],
+  "scannedArticles": 23,
+  "confirmedDeals": [
+    {
+      "sourceUrl": "https://www.nrl.com/news/2026/01/01/2026-nrl-signings-tracker-the-latest-from-all-17-clubs/",
+      "sourceTitle": "2026 NRL Signings Tracker: Luai to depart Wests Tigers at season's end; Storm snare Xerri",
+      "publisher": "NRL.com",
+      "publishedAt": "2025-12-31T19:01:12+00:00",
+      "publishedDateAustraliaSydney": "2026-01-01",
+      "authors": [
+        "NRL.com"
+      ],
+      "players": [],
+      "extractedContractYears": [],
+      "dealStatus": "confirmed_signed_or_announced",
+      "confidence": "official_nrl_or_club_media_release",
+      "reviewStatus": "live_tracker_needs_manual_daily_diff_before_data_promotion",
+      "snippet": "NRL 2026, Signings tracker, contracts, player movement | NRL.com Skip to main content Main News Watch Travel Draw Ladder Players Stats Fantasy Tipping More About Us Accommodation Careers Child Safety Clubs Community Competitions Hall of Fame Integrity Indigenous Judiciary and Match Review Media Releases Memorabilia NRL Pacific Operations Play Rugby League Watch Overseas Wellbeing and Education Membership Tickets Hospitality Shop Search Log In You have skipped the navigation, tab for page content Signings 2026 NRL Signings Tracker: Luai to depart Wests Tigers at season's end; Storm snare Xerri Author NRL.com Timestamp Sat 11 Jul 2026, 10:14 PM Share on social media Share via Facebook Share via Twitter Share via Whats-app Share via Reddit Share via Email The Wests Tigers have confirmed Jarome Luai will depart the club at the conclusion of the 2026 NRL season. Luai – originally contracted t"
+    },
+    {
+      "sourceUrl": "https://www.nrl.com/news/2026/07/02/chiefs-announce-development-deals-for-rising-png-talent/",
+      "sourceTitle": "Chiefs announce development deals for rising PNG talent",
+      "publisher": "NRL.com",
+      "publishedAt": "2026-07-02T00:04:10+00:00",
+      "publishedDateAustraliaSydney": "2026-07-02",
+      "authors": [
+        "PNG Chiefs Media Release"
+      ],
+      "players": [
+        "Gairo Voro",
+        "Morea Morea",
+        "Finley Glare"
+      ],
+      "extractedContractYears": [],
+      "dealStatus": "confirmed_signed_or_announced",
+      "confidence": "official_nrl_or_club_media_release",
+      "reviewStatus": "needs_manual_player_mapping_before_data_promotion",
+      "snippet": "RLWC2026: Papua New Guinea Chiefs announce development deals for rising PNG talent | NRL.com Skip to main content Main News Watch Travel Draw Ladder Players Stats Fantasy Tipping More About Us Accommodation Careers Child Safety Clubs Community Competitions Hall of Fame Integrity Indigenous Judiciary and Match Review Media Releases Memorabilia NRL Pacific Operations Play Rugby League Watch Overseas Wellbeing and Education Membership Tickets Hospitality Shop Search Log In You have skipped the navigation, tab for page content Signings Chiefs announce development deals for rising PNG talent Author PNG Chiefs Media Release Timestamp Thu 2 Jul 2026, 10:04 AM Share on social media Share via Facebook Share via Twitter Share via Whats-app Share via Reddit Share via Email PNG Chiefs have continued to build for the future with the announcement of Papua New Guinea talents Gairo Voro, Morea Morea and"
+    },
+    {
+      "sourceUrl": "https://www.nrl.com/news/2026/06/02/png-chiefs-secure-connor-watson-as-signing-003/",
+      "sourceTitle": "PNG Chiefs secure Connor Watson as signing #003",
+      "publisher": "NRL.com",
+      "publishedAt": "2026-06-02T04:16:06+00:00",
+      "publishedDateAustraliaSydney": "2026-06-02",
+      "authors": [
+        "PNG Chiefs Media Release"
+      ],
+      "players": [
+        "Connor Watson"
+      ],
+      "extractedContractYears": [],
+      "dealStatus": "confirmed_signed_or_announced",
+      "confidence": "official_nrl_or_club_media_release",
+      "reviewStatus": "needs_manual_player_mapping_before_data_promotion",
+      "snippet": "NRL 2026, PNG Chiefs, Connor Watson, signing #003, 2028 | NRL.com Skip to main content Main News Watch Travel Draw Ladder Players Stats Fantasy Tipping More About Us Accommodation Careers Child Safety Clubs Community Competitions Hall of Fame Integrity Indigenous Judiciary and Match Review Media Releases Memorabilia NRL Pacific Operations Play Rugby League Watch Overseas Wellbeing and Education Membership Tickets Hospitality Shop Search Log In You have skipped the navigation, tab for page content NRL News PNG Chiefs secure Connor Watson as signing #003 Author PNG Chiefs Media Release Timestamp Tue 2 Jun 2026, 02:16 PM Share on social media Share via Facebook Share via Twitter Share via Whats-app Share via Reddit Share via Email The PNG Chiefs are proud to announce the signing of Connor Watson, who becomes signing #003 for the club ahead of its entry into the NRL in 2028. Watson has agree"
+    },
+    {
+      "sourceUrl": "https://www.nrl.com/news/2026/02/08/hass-to-leave-broncos-for-souths-in-one-of-games-biggest-recruitment-coup/",
+      "sourceTitle": "Haas to leave Broncos for Souths in one of game's biggest coups",
+      "publisher": "NRL.com",
+      "publishedAt": "2026-02-08T04:41:11+00:00",
+      "publishedDateAustraliaSydney": "2026-02-08",
+      "authors": [
+        "Brad Walter"
+      ],
+      "players": [
+        "Payne Haas"
+      ],
+      "extractedContractYears": [
+        2027,
+        2028,
+        2029
+      ],
+      "dealStatus": "confirmed_signed_or_announced",
+      "confidence": "official_nrl_or_club_media_release",
+      "reviewStatus": "needs_manual_player_mapping_before_data_promotion",
+      "snippet": "NRL 2026: Samoan superstar Payne Haas to leave Brisbane Broncos for South Sydney Rabbitohs in one of game's biggest recruitment coup | NRL.com Skip to main content Main News Watch Travel Draw Ladder Players Stats Fantasy Tipping More About Us Accommodation Careers Child Safety Clubs Community Competitions Hall of Fame Integrity Indigenous Judiciary and Match Review Media Releases Memorabilia NRL Pacific Operations Play Rugby League Watch Overseas Wellbeing and Education Membership Tickets Hospitality Shop Search Log In You have skipped the navigation, tab for page content Signings Haas to leave Broncos for Souths in one of game's biggest coups Author Brad Walter NRL Senior Reporter Timestamp Sun 8 Feb 2026, 03:41 PM Share on social media Share via Facebook Share via Twitter Share via Whats-app Share via Reddit Share via Email South Sydney are set to pull off one of the game's biggest rec"
+    },
+    {
+      "sourceUrl": "https://www.nrl.com/news/2026/01/10/wishart-and-meaney-sign-with-perth-bears/",
+      "sourceTitle": "Wishart and Meaney sign with Perth Bears",
+      "publisher": "NRL.com",
+      "publishedAt": "2026-01-10T06:14:28+00:00",
+      "publishedDateAustraliaSydney": "2026-01-10",
+      "authors": [
+        "Perth Bears"
+      ],
+      "players": [
+        "Tyran Wishart",
+        "Nick Meaney"
+      ],
+      "extractedContractYears": [],
+      "dealStatus": "confirmed_signed_or_announced",
+      "confidence": "official_nrl_or_club_media_release",
+      "reviewStatus": "needs_manual_player_mapping_before_data_promotion",
+      "snippet": "NRL 2026: Melbourne Storm stars Tyran Wishart and Nick Meaney sign with Perth Bears | NRL.com Skip to main content Main News Watch Travel Draw Ladder Players Stats Fantasy Tipping More About Us Accommodation Careers Child Safety Clubs Community Competitions Hall of Fame Integrity Indigenous Judiciary and Match Review Media Releases Memorabilia NRL Pacific Operations Play Rugby League Watch Overseas Wellbeing and Education Membership Tickets Hospitality Shop Search Log In You have skipped the navigation, tab for page content Media Release Wishart and Meaney sign with Perth Bears Author Perth Bears Timestamp Sat 10 Jan 2026, 05:14 PM Share on social media Share via Facebook Share via Twitter Share via Whats-app Share via Reddit Share via Email The Perth Bears are delighted to announce Tyran Wishart and Nick Meaney have agreed to join the club on long-term deals to start in 2027. Wishart ha"
+    },
+    {
+      "sourceUrl": "https://www.nrl.com/news/2025/11/20/grant-inks-new-storm-contract/",
+      "sourceTitle": "Grant inks new Storm contract",
+      "publisher": "NRL.com",
+      "publishedAt": "2025-11-19T23:57:09+00:00",
+      "publishedDateAustraliaSydney": "2025-11-20",
+      "authors": [],
+      "players": [
+        "Harry Grant"
+      ],
+      "extractedContractYears": [],
+      "dealStatus": "confirmed_signed_or_announced",
+      "confidence": "official_nrl_or_club_media_release",
+      "reviewStatus": "needs_manual_player_mapping_before_data_promotion",
+      "snippet": "Grant inks new Storm contract | NRL.com Skip to main content Main News Watch Travel Draw Ladder Players Stats Fantasy Tipping More About Us Accommodation Careers Child Safety Clubs Community Competitions Hall of Fame Integrity Indigenous Judiciary and Match Review Media Releases Memorabilia NRL Pacific Operations Play Rugby League Watch Overseas Wellbeing and Education Membership Tickets Hospitality Shop Search Log In You have skipped the navigation, tab for page content --> 599\", \">809\", \">959\"]' data-eqio-prefix=\"video-post-screen\" ref=\"root\" > Up Next / Cancel Replay Play Next --> Storm Grant inks new Storm contract Melbourne Storm Captain and star hooker Harry Grant has signed a two-year contract extension, keeping him in purple until the end of the 2028 season. Wed 19 Nov, 2025 Share on social media Share via Facebook Share via Twitter Share via Whats-app Share via Reddit Share via "
+    }
+  ]
+}
