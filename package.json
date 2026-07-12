@@ -21,6 +21,7 @@
     "harvest:salary-cap:sources": "node scripts/salary-cap/harvest-individual-player-sources.mjs",
     "harvest:salary-cap:player-articles": "node scripts/salary-cap/harvest-player-specific-articles.mjs",
     "harvest:salary-cap:official-club-signings": "node scripts/salary-cap/harvest-official-club-signing-articles.mjs",
+    "harvest:salary-cap:zerotackle-contracts": "node scripts/salary-cap/harvest-zerotackle-player-contracts.mjs",
     "merge:salary-cap:player-articles": "node scripts/salary-cap/merge-player-article-review-layers.mjs",
     "summarize:salary-cap:player-articles": "node scripts/salary-cap/summarize-player-specific-article-review.mjs",
     "apply:salary-cap:terms-ranges": "node scripts/salary-cap/apply-official-terms-and-ranges.mjs",

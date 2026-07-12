@@ -5,6 +5,8 @@ import path from "node:path";
 const outputDir = path.join(process.cwd(), "docs/research/player-specific-article-review");
 const basePath = path.join(outputDir, "player-specific-article-review-2026.json");
 const officialPath = path.join(outputDir, "official-club-signing-articles-2026.json");
+const bingHtmlPath = path.join(outputDir, "player-specific-article-review-2026-bing-html-lite-full.json");
+const zeroTacklePath = path.join(outputDir, "zerotackle-player-contracts-2026.json");
 const outputPath = path.join(outputDir, "combined-player-specific-article-review-2026.json");
 const outputCsvPath = path.join(outputDir, "combined-player-specific-article-review-2026.csv");
 
@@ -19,12 +21,32 @@ function candidateKey(candidate) {
 
 const base = JSON.parse(await readFile(basePath, "utf8"));
 const official = JSON.parse(await readFile(officialPath, "utf8"));
+let bingHtml = { records: [] };
+try {
+  bingHtml = JSON.parse(await readFile(bingHtmlPath, "utf8"));
+} catch {
+  bingHtml = { records: [] };
+}
+let zeroTackle = { records: [] };
+try {
+  zeroTackle = JSON.parse(await readFile(zeroTacklePath, "utf8"));
+} catch {
+  zeroTackle = { records: [] };
+}
 const officialByKey = new Map(
   official.records.map((record) => [`${record.teamId}::${record.player}`, record]),
+);
+const bingHtmlByKey = new Map(
+  (bingHtml.records ?? []).map((record) => [`${record.teamId}::${record.player}`, record]),
+);
+const zeroTackleByKey = new Map(
+  (zeroTackle.records ?? []).map((record) => [`${record.teamId}::${record.player}`, record]),
 );
 
 const records = base.records.map((record) => {
   const officialRecord = officialByKey.get(`${record.teamId}::${record.player}`);
+  const bingHtmlRecord = bingHtmlByKey.get(`${record.teamId}::${record.player}`);
+  const zeroTackleRecord = zeroTackleByKey.get(`${record.teamId}::${record.player}`);
   const candidates = [...record.candidates];
   const seen = new Set(candidates.map(candidateKey));
   for (const match of officialRecord?.matches ?? []) {
@@ -49,6 +71,41 @@ const records = base.records.map((record) => {
       seen.add(candidateKey(candidate));
     }
   }
+  for (const match of bingHtmlRecord?.candidates ?? []) {
+    if (match.articleUse === "context_only") continue;
+    const candidate = {
+      ...match,
+      providers: [...new Set([...(match.providers ?? []), "bing-html-lite"])],
+      foundBy: [...new Set([...(match.foundBy ?? []), "bing_html_lite"])],
+      supplementalSearchSource: true,
+    };
+    if (!seen.has(candidateKey(candidate))) {
+      candidates.push(candidate);
+      seen.add(candidateKey(candidate));
+    }
+  }
+  if (zeroTackleRecord?.matched) {
+    const candidate = {
+      articleUse: "player_specific_contract_candidate",
+      domain: "zerotackle.com",
+      reputable: true,
+      primaryPreferred: false,
+      score: 70,
+      signals: ["contract_or_signing_language", "contract_table"],
+      providers: ["zerotackle-direct-player-profile"],
+      foundBy: ["zerotackle_direct_slug"],
+      publishedAt: "",
+      sourceName: "Zero Tackle",
+      title: zeroTackleRecord.title,
+      url: zeroTackleRecord.url,
+      snippet: zeroTackleRecord.contractSnippet,
+      zeroTackleProfileSource: true,
+    };
+    if (!seen.has(candidateKey(candidate))) {
+      candidates.push(candidate);
+      seen.add(candidateKey(candidate));
+    }
+  }
   const summary = {
     totalCandidates: candidates.length,
     playerSpecificSalaryCandidates: candidates.filter(
@@ -63,6 +120,10 @@ const records = base.records.map((record) => {
     preferredPrimaryCandidates: candidates.filter((candidate) => candidate.primaryPreferred).length,
     reputableCandidates: candidates.filter((candidate) => candidate.reputable).length,
     officialClubCandidates: candidates.filter((candidate) => candidate.officialClubSource).length,
+    supplementalSearchCandidates: candidates.filter((candidate) => candidate.supplementalSearchSource)
+      .length,
+    zeroTackleProfileCandidates: candidates.filter((candidate) => candidate.zeroTackleProfileSource)
+      .length,
   };
   return {
     ...record,
@@ -80,6 +141,8 @@ const totals = records.reduce(
     if (record.summary.playerSpecificProfileCandidates > 0) acc.playersWithProfileCandidate += 1;
     if (record.summary.preferredPrimaryCandidates > 0) acc.playersWithPreferredPrimaryCandidate += 1;
     if (record.summary.officialClubCandidates > 0) acc.playersWithOfficialClubCandidate += 1;
+    if (record.summary.supplementalSearchCandidates > 0) acc.playersWithSupplementalSearchCandidate += 1;
+    if (record.summary.zeroTackleProfileCandidates > 0) acc.playersWithZeroTackleProfileCandidate += 1;
     if (record.summary.totalCandidates === 0) acc.playersWithNoCandidate += 1;
     return acc;
   },
@@ -91,13 +154,15 @@ const totals = records.reduce(
     playersWithProfileCandidate: 0,
     playersWithPreferredPrimaryCandidate: 0,
     playersWithOfficialClubCandidate: 0,
+    playersWithSupplementalSearchCandidate: 0,
+    playersWithZeroTackleProfileCandidate: 0,
     playersWithNoCandidate: 0,
   },
 );
 
 const output = {
   checkedAt: new Date().toISOString(),
-  sourceLayers: [basePath, officialPath],
+  sourceLayers: [basePath, officialPath, bingHtmlPath, zeroTacklePath],
   totals,
   records,
 };
@@ -113,6 +178,8 @@ const rows = [[
   "articleUse",
   "domain",
   "officialClubSource",
+  "supplementalSearchSource",
+  "zeroTackleProfileSource",
   "signals",
   "providers",
   "publishedAt",
@@ -138,6 +205,8 @@ for (const record of records) {
       "",
       "",
       "",
+      "",
+      "",
     ]);
     continue;
   }
@@ -151,6 +220,8 @@ for (const record of records) {
       candidate.articleUse,
       candidate.domain,
       candidate.officialClubSource ?? false,
+      candidate.supplementalSearchSource ?? false,
+      candidate.zeroTackleProfileSource ?? false,
       candidate.signals,
       candidate.providers,
       candidate.publishedAt,

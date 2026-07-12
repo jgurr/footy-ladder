@@ -83,6 +83,10 @@ const reputableDomains = [
   "au.sports.yahoo.com",
   "au.news.yahoo.com",
   "zerotackle.com",
+  "sportingnews.com",
+  "racingandsports.com.au",
+  "centralwesterndaily.com.au",
+  "theqldr.com.au",
   "loverugbyleague.com",
   "rugby-league.com",
   "nrl.com",
@@ -121,6 +125,26 @@ const clubDomains = new Map([
   ["wst", "weststigers.com.au"],
 ]);
 
+const teamSearchAliases = new Map([
+  ["bri", ["Broncos"]],
+  ["can", ["Raiders", "Canberra"]],
+  ["cby", ["Bulldogs", "Canterbury"]],
+  ["cro", ["Sharks", "Cronulla"]],
+  ["dol", ["Dolphins"]],
+  ["gld", ["Titans", "Gold Coast"]],
+  ["man", ["Sea Eagles", "Manly"]],
+  ["mel", ["Storm", "Melbourne"]],
+  ["new", ["Knights", "Newcastle"]],
+  ["nql", ["Cowboys", "North Queensland"]],
+  ["nzl", ["Warriors"]],
+  ["par", ["Eels", "Parramatta"]],
+  ["pen", ["Panthers", "Penrith"]],
+  ["sou", ["Rabbitohs", "South Sydney"]],
+  ["sti", ["Dragons", "St George Illawarra"]],
+  ["syd", ["Roosters", "Sydney Roosters"]],
+  ["wst", ["Tigers", "Wests Tigers"]],
+]);
+
 let knownPlayerNames = [];
 
 function sleep(ms) {
@@ -146,6 +170,9 @@ function decodeHtml(input) {
     .replaceAll("&#x27;", "'")
     .replaceAll("&#39;", "'")
     .replaceAll("&apos;", "'")
+    .replaceAll("&nbsp;", " ")
+    .replaceAll("&#0183;", " ")
+    .replaceAll("&#32;", " ")
     .replaceAll("&lt;", "<")
     .replaceAll("&gt;", ">")
     .replace(/<script[\s\S]*?<\/script>/gi, " ")
@@ -187,10 +214,19 @@ function isPreferredPrimaryDomain(domain) {
 function decodeWrappedUrl(url) {
   try {
     const parsed = new URL(url.startsWith("//") ? `https:${url}` : url);
+    const bingWrapped = parsed.searchParams.get("u");
+    if (parsed.hostname.endsWith("bing.com") && bingWrapped) {
+      const encoded = bingWrapped.startsWith("a1") ? bingWrapped.slice(2) : bingWrapped;
+      try {
+        return Buffer.from(encoded, "base64url").toString("utf8");
+      } catch {
+        return bingWrapped;
+      }
+    }
     return (
       parsed.searchParams.get("uddg") ||
       parsed.searchParams.get("url") ||
-      parsed.searchParams.get("u") ||
+      bingWrapped ||
       url
     );
   } catch {
@@ -424,6 +460,33 @@ function parseBingWebResults(xml, player, teamId, maxResults) {
   return results.sort((a, b) => b.score - a.score).slice(0, maxResults);
 }
 
+function parseBingHtmlResults(html, player, teamId, maxResults) {
+  const chunks = html.split('<li class="b_algo"').slice(1);
+  const results = [];
+  for (const chunk of chunks) {
+    const h2 = chunk.match(/<h2[^>]*>([\s\S]*?)<\/h2>/i)?.[1] ?? "";
+    const h2Anchor = h2.match(/<a[^>]+href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/i);
+    if (!h2Anchor) continue;
+    const title = decodeHtml(h2Anchor[2]);
+    const resultUrl = decodeHtml(h2Anchor[1]);
+    const url = canonicalizeUrl(resultUrl);
+    if (!url.startsWith("http")) continue;
+    const snippet = decodeHtml(chunk.match(/<p[^>]*>([\s\S]*?)<\/p>/i)?.[1] ?? "");
+    const domain = getDomain(url);
+    const classification = classifyArticle({ title, snippet, domain, player, teamId });
+    results.push({
+      title,
+      url,
+      searchResultUrl: resultUrl,
+      domain,
+      snippet,
+      provider: "bing-html",
+      ...classification,
+    });
+  }
+  return results.sort((a, b) => b.score - a.score).slice(0, maxResults);
+}
+
 function parseGoogleNewsResults(xml, player, teamId, maxResults) {
   const results = [];
   const items = xml.split(/<item>/i).slice(1);
@@ -503,6 +566,20 @@ async function searchBingWeb(query, player, teamId) {
   };
 }
 
+async function searchBingHtml(query, player, teamId) {
+  const url = `https://www.bing.com/search?q=${encodeURIComponent(query)}&cc=au`;
+  const { response, body } = await fetchText(url, {
+    accept: "text/html,application/xhtml+xml",
+  });
+  return {
+    provider: "bing-html",
+    query,
+    searchUrl: url,
+    status: response.status,
+    results: parseBingHtmlResults(body, player, teamId, maxResultsPerSearch),
+  };
+}
+
 async function searchGoogleNews(query, player, teamId) {
   const url = `https://news.google.com/rss/search?q=${encodeURIComponent(query)}&hl=en-AU&gl=AU&ceid=AU:en`;
   const { response, body } = await fetchText(url, {
@@ -534,6 +611,7 @@ async function searchDuckDuckGo(query, player, teamId) {
 async function runProvider(provider, query, player, teamId) {
   if (provider === "bing-news-rss") return searchBingNews(query, player, teamId);
   if (provider === "bing-web-rss") return searchBingWeb(query, player, teamId);
+  if (provider === "bing-html") return searchBingHtml(query, player, teamId);
   if (provider === "google-news-rss") return searchGoogleNews(query, player, teamId);
   if (provider === "duckduckgo") return searchDuckDuckGo(query, player, teamId);
   throw new Error(`Unsupported provider: ${provider}`);
@@ -546,7 +624,12 @@ function siteQuery(domain, playerName, terms = "NRL contract salary worth deal e
 function buildQueries(team, player) {
   const playerName = player.name;
   const clubDomain = clubDomains.get(team.teamId);
+  const [primaryTeamAlias] = teamSearchAliases.get(team.teamId) ?? [team.teamName];
   const compactQueries = [
+    { type: "simple_alias_contract", query: `"${playerName}" NRL contract extension ${primaryTeamAlias}` },
+    { type: "simple_alias_signed", query: `"${playerName}" signed extension ${primaryTeamAlias}` },
+    { type: "simple_contract", query: `"${playerName}" NRL contract extension` },
+    { type: "simple_team_contract", query: `"${playerName}" "${team.teamName}" contract extension` },
     { type: "salary_contract", query: `"${playerName}" NRL contract salary worth deal extension` },
     { type: "team_contract", query: `"${playerName}" "${team.teamName}" NRL contract deal extension` },
     { type: "signed_until", query: `"${playerName}" NRL signed extension until contract expires` },
@@ -560,9 +643,43 @@ function buildQueries(team, player) {
 
   if (clubDomain) {
     compactQueries.push({
+      type: "club_news_exact",
+      query: `site:${clubDomain}/news "${playerName}"`,
+    });
+    compactQueries.push({
       type: "club",
       query: siteQuery(clubDomain, playerName, "contract signed extension"),
     });
+  }
+
+  if (querySet === "bing-html-lite") {
+    return compactQueries.filter((query) =>
+      ["simple_alias_contract", "simple_alias_signed", "club_news_exact"].includes(query.type),
+    );
+  }
+
+  if (querySet === "bing-html-source-sites") {
+    const queries = [
+      { type: "simple_alias_contract", query: `"${playerName}" NRL contract extension ${primaryTeamAlias}` },
+      { type: "source_zerotackle", query: `site:zerotackle.com "${playerName}" NRL contract` },
+      {
+        type: "source_sportingnews",
+        query: `site:sportingnews.com/au/rugby-league "${playerName}" NRL contract`,
+      },
+      {
+        type: "source_love_rugby_league",
+        query: `site:loverugbyleague.com "${playerName}" NRL contract`,
+      },
+      {
+        type: "source_foxsports",
+        query: `site:foxsports.com.au/nrl "${playerName}" contract salary`,
+      },
+      { type: "source_nrl", query: `site:nrl.com/news "${playerName}" contract signed` },
+    ];
+    if (clubDomain) {
+      queries.push({ type: "club_news_exact", query: `site:${clubDomain}/news "${playerName}"` });
+    }
+    return queries;
   }
 
   if (querySet === "compact") return compactQueries;
