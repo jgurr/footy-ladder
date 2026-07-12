@@ -170,7 +170,7 @@ const FOR_AGAINST_SORT_OPTIONS: SortOption<ForAgainstSortKey>[] = [
 
 const API_VERSION = "11";
 const SCORES_NEXT_ROUND_LEAD_MS = 48 * 60 * 60 * 1000;
-const MONTE_CARLO_STATUS_POLL_MS = 30_000;
+const SEASON_STATUS_POLL_MS = 30_000;
 
 function calculateGamesFromCut(entry: LadderEntry, cutTeam: LadderEntry): number {
   const cutEffectiveWins = cutTeam.wins + cutTeam.draws * 0.5;
@@ -292,6 +292,7 @@ export function LadderTable({
   );
   const skippedInitialBootstrap = useRef(false);
   const lastObservedMonteCarloSync = useRef<string | null>(null);
+  const lastObservedEloSync = useRef<string | null>(null);
 
   const [ladder, setLadder] = useState<LadderEntry[]>(initialLadder);
   const [next5Data, setNext5Data] = useState<Next5Data | null>(null);
@@ -309,6 +310,8 @@ export function LadderTable({
   const [monteCarloDataKey, setMonteCarloDataKey] = useState("");
   const [monteCarloSyncedAt, setMonteCarloSyncedAt] = useState<string | null>(null);
   const [eloHistoryData, setEloHistoryData] = useState<EloHistoryData | null>(null);
+  const [eloHistoryDataKey, setEloHistoryDataKey] = useState("");
+  const [eloSyncedAt, setEloSyncedAt] = useState<string | null>(null);
   const [season, setSeason] = useState(initialSeason);
   const [round, setRound] = useState<number>(initialRound);
   const [availableRounds, setAvailableRounds] = useState<number[]>(initialRounds);
@@ -385,6 +388,9 @@ export function LadderTable({
         setMonteCarloSyncedAt(null);
         lastObservedMonteCarloSync.current = null;
         setEloHistoryData(null);
+        setEloHistoryDataKey("");
+        setEloSyncedAt(null);
+        lastObservedEloSync.current = null;
         const nextRound = data.latestRound || rounds[0] || 1;
         loadedLadderKey.current = `${season}:${nextRound}`;
         setRound(nextRound);
@@ -560,10 +566,10 @@ export function LadderTable({
     fetchRunHome();
   }, [view, season, runHomeData]);
 
-  // Poll lightweight sync status while Ladder Sim is open. A changed sync
-  // timestamp invalidates the cached simulation so finished games are reflected.
+  // Poll lightweight sync status while model-driven views are open. A changed
+  // sync timestamp invalidates cached models so finished games are reflected.
   useEffect(() => {
-    if (view !== "monteCarlo") return;
+    if (view !== "monteCarlo" && view !== "elo") return;
 
     let cancelled = false;
 
@@ -580,15 +586,30 @@ export function LadderTable({
         if (cancelled) return;
 
         const nextSyncedAt = data.lastSyncedAt;
-        if (
-          lastObservedMonteCarloSync.current !== null &&
-          lastObservedMonteCarloSync.current !== nextSyncedAt
-        ) {
-          setMonteCarloData(null);
-          setMonteCarloDataKey("");
+
+        if (view === "monteCarlo") {
+          if (
+            lastObservedMonteCarloSync.current !== null &&
+            lastObservedMonteCarloSync.current !== nextSyncedAt
+          ) {
+            setMonteCarloData(null);
+            setMonteCarloDataKey("");
+          }
+          lastObservedMonteCarloSync.current = nextSyncedAt;
+          setMonteCarloSyncedAt(nextSyncedAt);
         }
-        lastObservedMonteCarloSync.current = nextSyncedAt;
-        setMonteCarloSyncedAt(nextSyncedAt);
+
+        if (view === "elo") {
+          if (
+            lastObservedEloSync.current !== null &&
+            lastObservedEloSync.current !== nextSyncedAt
+          ) {
+            setEloHistoryData(null);
+            setEloHistoryDataKey("");
+          }
+          lastObservedEloSync.current = nextSyncedAt;
+          setEloSyncedAt(nextSyncedAt);
+        }
       } catch (error) {
         console.error("Failed to fetch sync status:", error);
       }
@@ -597,7 +618,7 @@ export function LadderTable({
     fetchSeasonStatus();
     const intervalId = window.setInterval(
       fetchSeasonStatus,
-      MONTE_CARLO_STATUS_POLL_MS
+      SEASON_STATUS_POLL_MS
     );
 
     return () => {
@@ -634,16 +655,25 @@ export function LadderTable({
     fetchMonteCarlo();
   }, [view, season, monteCarloData, monteCarloDataKey, monteCarloSyncedAt]);
 
-  // Fetch Elo history when the graph view is opened.
+  // Fetch Elo history when the graph view is opened or season sync changes.
   useEffect(() => {
-    if (view !== "elo" || eloHistoryData?.season === season) return;
+    if (view !== "elo") return;
+
+    const dataKey = `${season}:${eloSyncedAt || "unknown"}`;
+    if (eloHistoryData?.season === season && eloHistoryDataKey === dataKey) return;
 
     async function fetchEloHistory() {
       setEloLoading(true);
       try {
-        const res = await fetch(`/api/elo-history?season=${season}&v=${API_VERSION}`);
+        const params = new URLSearchParams({
+          season: String(season),
+          v: API_VERSION,
+          syncedAt: eloSyncedAt || "unknown",
+        });
+        const res = await fetch(`/api/elo-history?${params}`, { cache: "no-store" });
         if (!res.ok) throw new Error(`Elo history returned ${res.status}`);
         setEloHistoryData(await res.json());
+        setEloHistoryDataKey(dataKey);
       } catch (error) {
         console.error("Failed to fetch Elo history:", error);
       } finally {
@@ -651,7 +681,7 @@ export function LadderTable({
       }
     }
     fetchEloHistory();
-  }, [view, season, eloHistoryData]);
+  }, [view, season, eloHistoryData, eloHistoryDataKey, eloSyncedAt]);
 
   // Handle team click - navigate to team view
   const handleTeamClick = (teamId: string) => {

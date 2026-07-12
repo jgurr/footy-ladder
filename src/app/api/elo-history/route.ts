@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSeasonCacheControl } from "@/lib/cache";
 import { calculateEloRatings, calculateEloRoundSnapshots, rankEloRatings } from "@/lib/elo";
 import { buildEloModelGames, HISTORICAL_ELO_SEASONS } from "@/lib/elo-history";
 import { getGamesBySeason } from "@/lib/queries";
 import { NRL_TEAMS } from "@/lib/teams";
+
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export async function GET(request: NextRequest) {
   try {
@@ -30,7 +32,7 @@ export async function GET(request: NextRequest) {
       })),
       snapshots,
     }, {
-      headers: { "Cache-Control": getSeasonCacheControl(season) },
+      headers: { "Cache-Control": "no-store, max-age=0" },
     });
   } catch (error) {
     console.error("Elo history API error:", error);

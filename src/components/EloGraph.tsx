@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { TeamFlag } from "./TeamFlag";
 import { useTheme } from "./ThemeProvider";
 
@@ -57,6 +57,7 @@ function fullTeamName(team: EloTeam): string {
 
 export function EloGraph({ data }: { data: EloHistoryData }) {
   const { palette } = useTheme();
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
   const defaultTeamIds = useMemo(
     () => data.teams.slice().sort((a, b) => a.powerRank - b.powerRank).slice(0, 6).map((team) => team.id),
     [data.teams]
@@ -90,6 +91,17 @@ export function EloGraph({ data }: { data: EloHistoryData }) {
     (snapshot, index) => index === 0 || data.snapshots[index - 1].season !== snapshot.season
   );
 
+  useEffect(() => {
+    const scrollArea = scrollAreaRef.current;
+    if (!scrollArea) return;
+
+    const frameId = window.requestAnimationFrame(() => {
+      scrollArea.scrollLeft = scrollArea.scrollWidth - scrollArea.clientWidth;
+    });
+
+    return () => window.cancelAnimationFrame(frameId);
+  }, [data.season, data.snapshots.length]);
+
   const toggleTeam = (teamId: string) => {
     setSelectedTeamIds((current) => {
       if (current.includes(teamId)) return current.filter((candidate) => candidate !== teamId);
@@ -120,10 +132,11 @@ export function EloGraph({ data }: { data: EloHistoryData }) {
         </div>
 
         <div
+          ref={scrollAreaRef}
           className="overflow-x-auto overflow-y-clip"
           style={{
             overscrollBehaviorX: "contain",
-            touchAction: "pan-y",
+            WebkitOverflowScrolling: "touch",
           }}
         >
           <svg
