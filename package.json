@@ -19,6 +19,7 @@
     "sync:official-ladder": "npx tsx scripts/sync-official-ladder.ts",
     "sync:official-games": "npx tsx scripts/sync-official-games.ts",
     "harvest:salary-cap:sources": "node scripts/salary-cap/harvest-individual-player-sources.mjs",
+    "apply:salary-cap:terms-ranges": "node scripts/salary-cap/apply-official-terms-and-ranges.mjs",
     "harvest:contract-news": "node scripts/salary-cap/harvest-confirmed-contract-news.mjs",
     "merge:salary-cap:sources": "node scripts/salary-cap/merge-individual-player-source-reviews.mjs"
   },

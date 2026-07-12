@@ -14,7 +14,7 @@ const outputPath = path.join(outputDir, "equal-depth-audit-2026.json");
 
 function hasPlaceholderContractYears(team, player) {
   return (
-    team.teamId !== "wst" &&
+    player.contractSourceStatus !== "official_nrl_tracker" &&
     Array.isArray(player.contractYears) &&
     player.contractYears.length === 1 &&
     player.contractYears[0] === 2026
@@ -88,7 +88,9 @@ const teamSummaries = data.teams.map((team) => {
       needsPlayerArticleReview:
         estimate?.evidenceRole === "backup_baseline" ||
         estimate?.evidenceRole === "bucket_unknown" ||
-        estimate?.evidenceRole === "open_unknown",
+        estimate?.evidenceRole === "open_unknown" ||
+        estimate?.evidenceRole === "derived_bucket_range" ||
+        estimate?.evidenceRole === "derived_cap_residual_range",
       needsContractTermReview: hasPlaceholderContractYears(team, player),
     };
   });
@@ -98,6 +100,9 @@ const teamSummaries = data.teams.map((team) => {
   const backupBaselinePlayers = playerSummaries.filter((player) => player.evidenceRole === "backup_baseline");
   const unknownSalaryPlayers = playerSummaries.filter((player) =>
     ["bucket_unknown", "open_unknown"].includes(player.evidenceRole)
+  );
+  const derivedRangePlayers = playerSummaries.filter((player) =>
+    ["derived_bucket_range", "derived_cap_residual_range"].includes(player.evidenceRole)
   );
   const playerFocusedCandidates = playerSummaries.filter(
     (player) => player.authoritativeExactCandidateLinks > 0
@@ -116,6 +121,11 @@ const teamSummaries = data.teams.map((team) => {
       `${backupBaselinePlayers.length} players still use league-wide roster-value article as primary salary evidence.`
     );
   }
+  if (derivedRangePlayers.length > Math.ceil(players.length * 0.5)) {
+    blockers.push(
+      `${derivedRangePlayers.length} players use derived ranges; needs more player-specific salary article review.`
+    );
+  }
   if (playerFocusedCandidates.length < Math.ceil(players.length * 0.6)) {
     blockers.push(
       `Only ${playerFocusedCandidates.length}/${players.length} players have authoritative exact-name candidate links; target is at least 60% before article review.`
@@ -130,6 +140,7 @@ const teamSummaries = data.teams.map((team) => {
     placeholderContractYears: placeholderContractPlayers.length,
     backupBaselinePlayers: backupBaselinePlayers.length,
     unknownSalaryPlayers: unknownSalaryPlayers.length,
+    derivedRangePlayers: derivedRangePlayers.length,
     authoritativeExactCandidatePlayers: playerFocusedCandidates.length,
     blockers,
     playerSummaries,
@@ -168,6 +179,7 @@ console.log(
         players: team.players,
         placeholderContractYears: team.placeholderContractYears,
         backupBaselinePlayers: team.backupBaselinePlayers,
+        derivedRangePlayers: team.derivedRangePlayers,
         authoritativeExactCandidatePlayers: team.authoritativeExactCandidatePlayers,
         blockers: team.blockers.length,
       })),

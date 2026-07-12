@@ -82,11 +82,22 @@ for (const team of data.teams) {
         assert.ok(estimate.sources?.length > 0, `${player.name} sourced estimate needs source ids`);
         for (const sourceId of estimate.sources) {
           assert.ok(sourceIds.has(sourceId), `${player.name} references missing source ${sourceId}`);
-          assert.equal(
-            sourcesById.get(sourceId)?.supportsDirectSalaryClaim,
-            true,
-            `${player.name} non-unknown salary estimate must reference a direct salary/value source`
-          );
+          if (
+            estimate.evidenceRole === "derived_bucket_range" ||
+            estimate.evidenceRole === "derived_cap_residual_range"
+          ) {
+            assert.equal(
+              estimate.estimateType,
+              "derived_range",
+              `${player.name} derived evidence role must use derived_range`
+            );
+          } else {
+            assert.equal(
+              sourcesById.get(sourceId)?.supportsDirectSalaryClaim,
+              true,
+              `${player.name} non-derived salary estimate must reference a direct salary/value source`
+            );
+          }
         }
       }
     }
@@ -106,6 +117,11 @@ for (const team of data.teams) {
     ).length,
     backupBaseline: team.players.filter((player) =>
       player.salaryEstimates.some((estimate) => estimate.evidenceRole === "backup_baseline")
+    ).length,
+    derivedRange: team.players.filter((player) =>
+      player.salaryEstimates.some((estimate) =>
+        ["derived_bucket_range", "derived_cap_residual_range"].includes(estimate.evidenceRole)
+      )
     ).length,
   });
 }

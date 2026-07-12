@@ -38,7 +38,9 @@ type SalaryEstimate = {
     | "cross_referenced_baseline"
     | "backup_baseline"
     | "bucket_unknown"
-    | "open_unknown";
+    | "open_unknown"
+    | "derived_bucket_range"
+    | "derived_cap_residual_range";
   sources?: string[];
   reasoning: string;
 };
@@ -93,6 +95,28 @@ function formatMoney(cents?: number): string {
   }
 
   return `$${Math.round(dollars / 1_000)}k`;
+}
+
+function estimateMidpoint(estimate?: SalaryEstimate): number {
+  if (!estimate) return -1;
+  if (estimate.amountCents !== undefined) return estimate.amountCents;
+  if (
+    estimate.lowAmountCents !== undefined &&
+    estimate.highAmountCents !== undefined
+  ) {
+    return Math.round((estimate.lowAmountCents + estimate.highAmountCents) / 2);
+  }
+  return -1;
+}
+
+function formatEstimate(estimate: SalaryEstimate): string {
+  if (
+    estimate.lowAmountCents !== undefined &&
+    estimate.highAmountCents !== undefined
+  ) {
+    return `${formatMoney(estimate.lowAmountCents)}-${formatMoney(estimate.highAmountCents)}`;
+  }
+  return formatMoney(estimate.amountCents);
 }
 
 function getPrimaryEstimate(player: SalaryPlayer): SalaryEstimate {
@@ -162,6 +186,18 @@ function getEvidenceBadge({
     };
   }
 
+  if (
+    estimate.evidenceRole === "derived_bucket_range" ||
+    estimate.evidenceRole === "derived_cap_residual_range"
+  ) {
+    return {
+      label: "Range",
+      detail: "Low-confidence derived range, not a player-specific reported salary",
+      Icon: Layers,
+      color: "#f59e0b",
+    };
+  }
+
   if (estimate.evidenceRole === "primary_individual_report") {
     return {
       label: "Primary",
@@ -183,8 +219,8 @@ function sortPlayersBySeason(players: SalaryPlayer[], season: number): SalaryPla
   return [...players].sort((a, b) => {
     const aEstimate = a.salaryEstimates.find((estimate) => estimate.season === season);
     const bEstimate = b.salaryEstimates.find((estimate) => estimate.season === season);
-    const aAmount = aEstimate?.amountCents ?? -1;
-    const bAmount = bEstimate?.amountCents ?? -1;
+    const aAmount = estimateMidpoint(aEstimate);
+    const bAmount = estimateMidpoint(bEstimate);
 
     return bAmount - aAmount || a.name.localeCompare(b.name);
   });
@@ -202,9 +238,9 @@ export function SalaryCapBoard() {
   const players = useMemo(() => sortPlayersBySeason(data.players, data.season), [data]);
   const knownSpendCents = players.reduce((total, player) => {
     const estimate = getPrimaryEstimate(player);
-    return total + (estimate.amountCents || 0);
+    return total + Math.max(estimateMidpoint(estimate), 0);
   }, 0);
-  const knownPlayerCount = players.filter((player) => getPrimaryEstimate(player).amountCents).length;
+  const knownPlayerCount = players.filter((player) => estimateMidpoint(getPrimaryEstimate(player)) > 0).length;
 
   const getHistoricalClaims = (player: SalaryPlayer) =>
     data.paidMediaSearch?.directHistoricalClaims?.filter((claim) =>
@@ -258,10 +294,10 @@ export function SalaryCapBoard() {
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <div className="text-xs font-semibold uppercase" style={{ color: palette.textMuted }}>
-              Known 2026 spend
+              Estimated 2026 spend
             </div>
             <div className="mt-1 text-sm" style={{ color: palette.text }}>
-              Public salary coverage from reviewed and backup sources
+              Reported values plus low-confidence derived ranges
             </div>
           </div>
           <div className="text-right font-mono">
@@ -293,7 +329,7 @@ export function SalaryCapBoard() {
                 {TIMELINE_YEARS.map((year) => (
                   <th
                     key={year}
-                    className={`${year === data.season ? "w-14" : "w-7"} px-1 py-3 text-center font-mono sm:w-16`}
+                    className={`${year === data.season ? "w-20" : "w-7"} px-1 py-3 text-center font-mono sm:w-16`}
                   >
                     <span className="sm:hidden">{String(year).slice(2)}</span>
                     <span className="hidden sm:inline">{year}</span>
@@ -367,7 +403,7 @@ export function SalaryCapBoard() {
                               <span
                                 className={`inline-flex items-center justify-center font-mono font-bold ${
                                   isEstimateYear
-                                    ? "min-h-7 w-full rounded px-1 text-[10px] sm:text-[11px]"
+                                    ? "min-h-7 w-full rounded px-1 text-[9px] sm:text-[11px]"
                                     : "mx-auto size-6 rounded-full"
                                 }`}
                                 style={{
@@ -387,7 +423,7 @@ export function SalaryCapBoard() {
                                 }}
                               >
                                 {isEstimateYear ? (
-                                  formatMoney(estimate.amountCents)
+                                  formatEstimate(estimate)
                                 ) : (
                                   <>
                                     <Check size={13} strokeWidth={3} />

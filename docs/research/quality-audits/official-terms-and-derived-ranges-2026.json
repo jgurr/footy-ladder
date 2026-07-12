@@ -1,0 +1,588 @@
+{
+  "checkedAt": "2026-07-12T03:57:17.935Z",
+  "nrlTrackerUrl": "https://www.nrl.com/news/2026/01/01/2026-nrl-signings-tracker-the-latest-from-all-17-clubs/",
+  "minimumSalaryCents": 14000000,
+  "top30BaseCapCents": 1155000000,
+  "teams": [
+    {
+      "teamId": "bri",
+      "teamName": "Brisbane Broncos",
+      "matchedContractYears": 27,
+      "unmatchedContractYears": [
+        "Ben Te Kura"
+      ],
+      "trackerOnly": [
+        {
+          "name": "Antonio Verhoeven",
+          "contractYears": [
+            2026,
+            2027,
+            2028,
+            2029
+          ],
+          "optionYears": []
+        },
+        {
+          "name": "Dane Gagai",
+          "contractYears": [
+            2027
+          ],
+          "optionYears": []
+        },
+        {
+          "name": "Jonah Pezet",
+          "contractYears": [
+            2027,
+            2028,
+            2029
+          ],
+          "optionYears": []
+        },
+        {
+          "name": "Phillip Coates",
+          "contractYears": [
+            2026,
+            2027
+          ],
+          "optionYears": []
+        },
+        {
+          "name": "VJ Semu",
+          "contractYears": [
+            2026,
+            2027,
+            2028
+          ],
+          "optionYears": []
+        }
+      ],
+      "newlyDerivedSalaryRanges": 0,
+      "totalDerivedSalaryRanges": 11
+    },
+    {
+      "teamId": "can",
+      "teamName": "Canberra Raiders",
+      "matchedContractYears": 29,
+      "unmatchedContractYears": [],
+      "trackerOnly": [
+        {
+          "name": "Jed Stuart",
+          "contractYears": [
+            2026
+          ],
+          "optionYears": []
+        }
+      ],
+      "newlyDerivedSalaryRanges": 0,
+      "totalDerivedSalaryRanges": 12
+    },
+    {
+      "teamId": "cby",
+      "teamName": "Canterbury-Bankstown Bulldogs",
+      "matchedContractYears": 29,
+      "unmatchedContractYears": [
+        "Daniel Suluka-Fifita"
+      ],
+      "trackerOnly": [
+        {
+          "name": "AJ Jones",
+          "contractYears": [
+            2027
+          ],
+          "optionYears": []
+        }
+      ],
+      "newlyDerivedSalaryRanges": 0,
+      "totalDerivedSalaryRanges": 13
+    },
+    {
+      "teamId": "cro",
+      "teamName": "Cronulla-Sutherland Sharks",
+      "matchedContractYears": 28,
+      "unmatchedContractYears": [],
+      "trackerOnly": [
+        {
+          "name": "Felix Fa'atili",
+          "contractYears": [
+            2027,
+            2028
+          ],
+          "optionYears": []
+        },
+        {
+          "name": "Owen Trout",
+          "contractYears": [
+            2027,
+            2028
+          ],
+          "optionYears": []
+        }
+      ],
+      "newlyDerivedSalaryRanges": 0,
+      "totalDerivedSalaryRanges": 11
+    },
+    {
+      "teamId": "dol",
+      "teamName": "Dolphins",
+      "matchedContractYears": 27,
+      "unmatchedContractYears": [
+        "Oryn Keeley"
+      ],
+      "trackerOnly": [],
+      "newlyDerivedSalaryRanges": 0,
+      "totalDerivedSalaryRanges": 11
+    },
+    {
+      "teamId": "gld",
+      "teamName": "Gold Coast Titans",
+      "matchedContractYears": 29,
+      "unmatchedContractYears": [],
+      "trackerOnly": [
+        {
+          "name": "Luke Hanson",
+          "contractYears": [
+            2027,
+            2028
+          ],
+          "optionYears": []
+        },
+        {
+          "name": "Mawene Hiroti",
+          "contractYears": [
+            2027,
+            2028
+          ],
+          "optionYears": []
+        },
+        {
+          "name": "Tyler Pereira",
+          "contractYears": [
+            2027,
+            2028,
+            2029
+          ],
+          "optionYears": []
+        }
+      ],
+      "newlyDerivedSalaryRanges": 0,
+      "totalDerivedSalaryRanges": 12
+    },
+    {
+      "teamId": "man",
+      "teamName": "Manly Warringah Sea Eagles",
+      "matchedContractYears": 27,
+      "unmatchedContractYears": [],
+      "trackerOnly": [
+        {
+          "name": "Corey Waddell",
+          "contractYears": [
+            2026,
+            2027
+          ],
+          "optionYears": []
+        },
+        {
+          "name": "Davvy Moale",
+          "contractYears": [
+            2027,
+            2028,
+            2029
+          ],
+          "optionYears": []
+        },
+        {
+          "name": "Josh Feledy",
+          "contractYears": [
+            2026,
+            2027,
+            2028
+          ],
+          "optionYears": []
+        },
+        {
+          "name": "Starford To'a",
+          "contractYears": [
+            2027,
+            2028
+          ],
+          "optionYears": []
+        }
+      ],
+      "newlyDerivedSalaryRanges": 0,
+      "totalDerivedSalaryRanges": 10
+    },
+    {
+      "teamId": "mel",
+      "teamName": "Melbourne Storm",
+      "matchedContractYears": 27,
+      "unmatchedContractYears": [
+        "Lazarus Vaalepu"
+      ],
+      "trackerOnly": [
+        {
+          "name": "Bronson Xerri",
+          "contractYears": [
+            2027,
+            2028,
+            2029
+          ],
+          "optionYears": []
+        },
+        {
+          "name": "Eliesa Katoa",
+          "contractYears": [
+            2026,
+            2027
+          ],
+          "optionYears": []
+        },
+        {
+          "name": "Jamayne Isaako",
+          "contractYears": [
+            2027,
+            2028
+          ],
+          "optionYears": []
+        },
+        {
+          "name": "Oryn Keeley",
+          "contractYears": [
+            2026,
+            2027,
+            2028
+          ],
+          "optionYears": []
+        }
+      ],
+      "newlyDerivedSalaryRanges": 0,
+      "totalDerivedSalaryRanges": 11
+    },
+    {
+      "teamId": "nzl",
+      "teamName": "New Zealand Warriors",
+      "matchedContractYears": 29,
+      "unmatchedContractYears": [],
+      "trackerOnly": [
+        {
+          "name": "Jason Salalilo",
+          "contractYears": [
+            2027,
+            2028,
+            2029
+          ],
+          "optionYears": []
+        },
+        {
+          "name": "Luke Laulilii",
+          "contractYears": [
+            2026
+          ],
+          "optionYears": []
+        },
+        {
+          "name": "Riley Price",
+          "contractYears": [
+            2027
+          ],
+          "optionYears": []
+        }
+      ],
+      "newlyDerivedSalaryRanges": 0,
+      "totalDerivedSalaryRanges": 12
+    },
+    {
+      "teamId": "new",
+      "teamName": "Newcastle Knights",
+      "matchedContractYears": 28,
+      "unmatchedContractYears": [],
+      "trackerOnly": [
+        {
+          "name": "Harrison Graham",
+          "contractYears": [
+            2027
+          ],
+          "optionYears": []
+        },
+        {
+          "name": "Kyle McCarthy Lachlan Crouch",
+          "contractYears": [
+            2026,
+            2027,
+            2028
+          ],
+          "optionYears": []
+        },
+        {
+          "name": "Toby Winter",
+          "contractYears": [
+            2028,
+            2029
+          ],
+          "optionYears": []
+        },
+        {
+          "name": "Tyson Gamble",
+          "contractYears": [
+            2026
+          ],
+          "optionYears": []
+        }
+      ],
+      "newlyDerivedSalaryRanges": 0,
+      "totalDerivedSalaryRanges": 11
+    },
+    {
+      "teamId": "nql",
+      "teamName": "North Queensland Cowboys",
+      "matchedContractYears": 26,
+      "unmatchedContractYears": [
+        "Harrison Edwards"
+      ],
+      "trackerOnly": [
+        {
+          "name": "Braidon Burns",
+          "contractYears": [
+            2026,
+            2027,
+            2028
+          ],
+          "optionYears": []
+        },
+        {
+          "name": "Tom Chester",
+          "contractYears": [
+            2026,
+            2027,
+            2028,
+            2029
+          ],
+          "optionYears": []
+        },
+        {
+          "name": "Jesse Ramien",
+          "contractYears": [
+            2027,
+            2028
+          ],
+          "optionYears": []
+        },
+        {
+          "name": "Sione Katoa",
+          "contractYears": [
+            2027,
+            2028
+          ],
+          "optionYears": []
+        }
+      ],
+      "newlyDerivedSalaryRanges": 0,
+      "totalDerivedSalaryRanges": 10
+    },
+    {
+      "teamId": "par",
+      "teamName": "Parramatta Eels",
+      "matchedContractYears": 27,
+      "unmatchedContractYears": [
+        "Richard Penisini"
+      ],
+      "trackerOnly": [
+        {
+          "name": "Harrison Edwards",
+          "contractYears": [
+            2026,
+            2027
+          ],
+          "optionYears": []
+        },
+        {
+          "name": "Richard Penisini Ronald Volkman",
+          "contractYears": [
+            2026
+          ],
+          "optionYears": []
+        },
+        {
+          "name": "Teancum Brown",
+          "contractYears": [
+            2027,
+            2028
+          ],
+          "optionYears": []
+        }
+      ],
+      "newlyDerivedSalaryRanges": 0,
+      "totalDerivedSalaryRanges": 11
+    },
+    {
+      "teamId": "pen",
+      "teamName": "Penrith Panthers",
+      "matchedContractYears": 26,
+      "unmatchedContractYears": [],
+      "trackerOnly": [
+        {
+          "name": "Billy Phillips",
+          "contractYears": [
+            2026,
+            2027,
+            2028,
+            2029
+          ],
+          "optionYears": []
+        },
+        {
+          "name": "Jack Cole",
+          "contractYears": [
+            2026
+          ],
+          "optionYears": []
+        },
+        {
+          "name": "Zakauri Clarke",
+          "contractYears": [
+            2026,
+            2027,
+            2028
+          ],
+          "optionYears": []
+        }
+      ],
+      "newlyDerivedSalaryRanges": 0,
+      "totalDerivedSalaryRanges": 9
+    },
+    {
+      "teamId": "sou",
+      "teamName": "South Sydney Rabbitohs",
+      "matchedContractYears": 28,
+      "unmatchedContractYears": [
+        "Jai Arrow"
+      ],
+      "trackerOnly": [
+        {
+          "name": "Moala Graham-Taufa",
+          "contractYears": [
+            2026
+          ],
+          "optionYears": []
+        },
+        {
+          "name": "Payne Haas",
+          "contractYears": [
+            2027,
+            2028
+          ],
+          "optionYears": []
+        }
+      ],
+      "newlyDerivedSalaryRanges": 0,
+      "totalDerivedSalaryRanges": 12
+    },
+    {
+      "teamId": "sti",
+      "teamName": "St George Illawarra Dragons",
+      "matchedContractYears": 28,
+      "unmatchedContractYears": [
+        "Setu Tu"
+      ],
+      "trackerOnly": [
+        {
+          "name": "Connor Watson",
+          "contractYears": [
+            2027
+          ],
+          "optionYears": []
+        },
+        {
+          "name": "Luke Metcalf",
+          "contractYears": [
+            2027,
+            2028,
+            2029
+          ],
+          "optionYears": []
+        },
+        {
+          "name": "Keaon Koloamatangi",
+          "contractYears": [
+            2027,
+            2028,
+            2029,
+            2030,
+            2031
+          ],
+          "optionYears": []
+        },
+        {
+          "name": "Scott Drinkwater",
+          "contractYears": [
+            2027,
+            2028,
+            2029
+          ],
+          "optionYears": []
+        },
+        {
+          "name": "Phil Sami",
+          "contractYears": [
+            2027,
+            2028,
+            2029
+          ],
+          "optionYears": []
+        }
+      ],
+      "newlyDerivedSalaryRanges": 0,
+      "totalDerivedSalaryRanges": 12
+    },
+    {
+      "teamId": "syd",
+      "teamName": "Sydney Roosters",
+      "matchedContractYears": 28,
+      "unmatchedContractYears": [],
+      "trackerOnly": [
+        {
+          "name": "Reuben Garrick",
+          "contractYears": [
+            2027,
+            2028,
+            2029
+          ],
+          "optionYears": []
+        },
+        {
+          "name": "Rex Bassingthwaite",
+          "contractYears": [
+            2026,
+            2027,
+            2028
+          ],
+          "optionYears": []
+        }
+      ],
+      "newlyDerivedSalaryRanges": 0,
+      "totalDerivedSalaryRanges": 11
+    },
+    {
+      "teamId": "wst",
+      "teamName": "Wests Tigers",
+      "matchedContractYears": 28,
+      "unmatchedContractYears": [
+        "Bunty Afoa",
+        "Javon Andrews"
+      ],
+      "trackerOnly": [
+        {
+          "name": "Jake Averillo",
+          "contractYears": [
+            2027,
+            2028,
+            2029,
+            2030
+          ],
+          "optionYears": []
+        }
+      ],
+      "newlyDerivedSalaryRanges": 0,
+      "totalDerivedSalaryRanges": 13
+    }
+  ]
+}
