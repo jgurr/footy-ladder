@@ -13248,6 +13248,47 @@
           "notes": "Credentialed source pass. Direct club section lists individual roster values for 17 players and a grouped rest value. Treat as major-media roster valuation, not official NRL cap ledger."
         },
         {
+          "id": "dt-tedesco-roosters-initial-2017",
+          "title": "James Tedesco signs with Sydney Roosters",
+          "publisher": "Daily Telegraph",
+          "url": "https://www.dailytelegraph.com.au/newslocal/macarthur/sport/james-tedesco-signs-with-sydney-roosters/news-story/8185ddb0631233de2233315ec7d5d816",
+          "sourceTier": "major_media",
+          "checkedAt": "2026-07-12",
+          "supportsDirectSalaryClaim": true,
+          "notes": "Player-focused source trail item for Tedesco's original Roosters contract. Use as historical context for initial contract path, not the selected 2026 value by itself."
+        },
+        {
+          "id": "dt-tedesco-roosters-extension-2024",
+          "title": "James Tedesco signs contract extension with Sydney Roosters: NRL Market Watch",
+          "publisher": "Daily Telegraph",
+          "url": "https://www.dailytelegraph.com.au/sport/nrl/james-tedesco-signs-contract-extension-with-sydney-roosters-nrl-market-watch/news-story/393ec29066dda3b2d0357f161e624a0a",
+          "sourceTier": "major_media",
+          "checkedAt": "2026-07-12",
+          "supportsDirectSalaryClaim": true,
+          "notes": "Player-focused extension article supplied for the Tedesco source chain. Use with later extension and club confirmation to support selected annual salary context."
+        },
+        {
+          "id": "dt-tedesco-roosters-extension-2025",
+          "title": "Market Watch: James Tedesco extends contract at Sydney Roosters by 12 months",
+          "publisher": "Daily Telegraph",
+          "url": "https://www.dailytelegraph.com.au/sport/nrl/market-watch-james-tedesco-extends-contract-at-sydney-roosters-by-12-months/news-story/9fbb555c60b8f014afd9694b554c6381",
+          "sourceTier": "major_media",
+          "checkedAt": "2026-07-12",
+          "supportsDirectSalaryClaim": true,
+          "notes": "Player-focused Market Watch extension source for the current 2027 term and reported value trail."
+        },
+        {
+          "id": "roosters-tedesco-2027-extension",
+          "title": "Sydney Roosters Captain James Tedesco Extends",
+          "publisher": "Sydney Roosters",
+          "url": "https://www.roosters.com.au/news/2025/11/20/sydney-roosters-captain-james-tedesco-extends/",
+          "sourceTier": "club",
+          "publishedAt": "2025-11-20",
+          "checkedAt": "2026-07-12",
+          "supportsDirectSalaryClaim": false,
+          "notes": "Official club confirmation that Tedesco extended with the Roosters until at least the end of 2027."
+        },
+        {
           "id": "nrl-signings-tracker",
           "title": "2026 NRL Signings Tracker",
           "publisher": "NRL.com",
@@ -13289,19 +13330,23 @@
             {
               "season": 2026,
               "estimateType": "reported_exact",
-              "claimShape": "salary_cap_value",
-              "amountCents": 120000000,
-              "confidenceScore": 42,
-              "confidenceBand": "low",
+              "claimShape": "annual_salary",
+              "amountCents": 110000000,
+              "confidenceScore": 86,
+              "confidenceBand": "high",
               "sources": [
+                "dt-tedesco-roosters-initial-2017",
+                "dt-tedesco-roosters-extension-2024",
+                "dt-tedesco-roosters-extension-2025",
                 "dt-rich-list-2026"
               ],
-              "reasoning": "Daily Telegraph roster-value investigation lists James Tedesco in the Sydney Roosters table at $1.2m. Use as a backup baseline until a player-focused salary or contract article confirms the selected-season value.",
-              "evidenceRole": "backup_baseline"
+              "reasoning": "Promoted from backup roster valuation to a player-specific source chain: Daily Telegraph initial-contract and extension articles support the reported Tedesco price trail. Selected display value is $1.1m per season through 2027; the Sydney Roosters official extension confirms term through 2027 via contractSourceIds, and the 2026 roster-value article is retained only as corroborating backup context.",
+              "evidenceRole": "primary_individual_report"
             }
           ],
-          "contractSourceStatus": "official_nrl_tracker",
+          "contractSourceStatus": "club_confirmed_extension",
           "contractSourceIds": [
+            "roosters-tedesco-2027-extension",
             "nrl-signings-tracker"
           ],
           "contractSourceName": "James Tedesco"

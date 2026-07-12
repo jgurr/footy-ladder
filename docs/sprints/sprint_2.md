@@ -337,6 +337,7 @@ npm run build
 - [ ] Flag low-confidence teams and players.
 - [ ] Replace all generated `[2026]` contract-year placeholders with official/club-sourced term records or explicit unknown-term records.
 - [ ] Promote salary values only after player-specific article review; keep the league-wide roster-value article as backup/corroborating evidence.
+- [ ] For each promoted player, capture the deepest available player-specific chain: initial contract article, extension/option article(s), official club or NRL term confirmation, and the exact URL that supports the displayed salary/value.
 - [ ] Create per-club research audit notes matching the Wests Tigers depth standard.
 
 **Acceptance Criteria:**
@@ -346,6 +347,7 @@ npm run build
 - [ ] 100% of non-unknown salary values have sources.
 - [ ] 0 generated contract-year placeholders remain in the production dataset.
 - [ ] Most players with salary values use player-focused primary or cross-referenced evidence, not a single roster-value article.
+- [ ] Known salary records show a specific current-season value/annualized value and contract-through year, not just a generic roster valuation.
 - [ ] Daily Telegraph and SMH candidates have been credential-reviewed where search discovered relevant salary/contract articles.
 - [ ] Coverage report shows exact/range/unknown counts by team.
 - [ ] Data import is reproducible.
@@ -489,6 +491,7 @@ npm run dev
 - Prefer primary publisher pages over syndicated copies.
 - Store article URL, publisher, author if available, published date, accessed date, and the specific claim being used.
 - Do not store a salary figure without explaining whether it is annual, total contract value, approximate, or inferred.
+- For high-value/promoted salary records, require player-specific articles where available: original signing, later extension or option coverage, and official club/NRL confirmation of current term. Example standard: James Tedesco's Daily Telegraph signing/extension trail plus Sydney Roosters confirmation through 2027.
 - When sources conflict, preserve both and explain the selected value/range.
 - Unknown is acceptable. False precision is not.
 - Every displayed team total must disclose how much is exact, ranged, derived, and unknown.

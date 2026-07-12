@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import salaryData from "@/data/salary-cap/all-teams-2026.json";
 import {
   dollarsToCents,
   getConfidenceBand,
@@ -143,4 +144,26 @@ test("normalizeSalaryEstimateForDisplay preserves supported article-backed value
   assert.equal(estimate.estimateType, "reported_exact");
   assert.equal(estimate.amountCents, 75000000);
   assert.deepEqual(estimate.sources, ["player-focused-contract-report"]);
+});
+
+test("James Tedesco salary record uses player-specific source chain through 2027", () => {
+  const roosters = salaryData.teams.find((team) => team.teamId === "syd");
+  assert.ok(roosters);
+  const tedesco = roosters.players.find((player) => player.name === "James Tedesco");
+  assert.ok(tedesco);
+
+  const estimate = normalizeSalaryEstimateForDisplay(
+    tedesco.salaryEstimates.find((candidate) => candidate.season === salaryData.season) ||
+      tedesco.salaryEstimates[0]
+  );
+
+  assert.equal(estimate.estimateType, "reported_exact");
+  assert.equal(estimate.amountCents, 110000000);
+  assert.equal(estimate.confidenceBand, "high");
+  assert.equal(estimate.evidenceRole, "primary_individual_report");
+  assert.deepEqual(tedesco.contractYears, [2026, 2027]);
+  assert.ok(estimate.sources.includes("dt-tedesco-roosters-initial-2017"));
+  assert.ok(estimate.sources.includes("dt-tedesco-roosters-extension-2024"));
+  assert.ok(estimate.sources.includes("dt-tedesco-roosters-extension-2025"));
+  assert.ok(tedesco.contractSourceIds.includes("roosters-tedesco-2027-extension"));
 });
