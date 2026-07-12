@@ -7,6 +7,7 @@ import { FixtureDifficulty } from "./FixtureDifficulty";
 import { EloGraph, type EloHistoryData } from "./EloGraph";
 import { MonteCarloTable } from "./MonteCarloTable";
 import { RunHomeTable } from "./RunHomeTable";
+import { SalaryCapBoard } from "./SalaryCapBoard";
 import { ViewNavigation, type AppView } from "./ViewNavigation";
 import type { MonteCarloData } from "@/lib/monte-carlo";
 import type { RunHomeData } from "@/lib/run-home";
@@ -682,7 +683,8 @@ export function LadderTable({
       view === "scores" ||
       view === "runHome" ||
       view === "monteCarlo" ||
-      view === "elo"
+      view === "elo" ||
+      view === "salaryCap"
     ) {
       return [...ladder].sort((a, b) => a.position - b.position);
     }
@@ -905,6 +907,9 @@ export function LadderTable({
       {view === "elo" && !eloLoading && eloHistoryData && (
         <EloGraph data={eloHistoryData} />
       )}
+
+      {/* Salary Cap View */}
+      {view === "salaryCap" && <SalaryCapBoard />}
 
       {/* Sort Chips */}
       {(view === "ladder" || view === "forAgainst") && (
@@ -1179,7 +1184,7 @@ export function LadderTable({
       )}
 
       {/* Table (for ladder/forAgainst/next5 views) */}
-      {view !== "scores" && view !== "team" && view !== "runHome" && view !== "monteCarlo" && view !== "elo" && !(view === "next5" && next5Loading) && (
+      {view !== "scores" && view !== "team" && view !== "runHome" && view !== "monteCarlo" && view !== "elo" && view !== "salaryCap" && !(view === "next5" && next5Loading) && (
         <div
           className="overflow-hidden rounded-lg border"
           style={{ borderColor: palette.border }}

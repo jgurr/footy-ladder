@@ -1,0 +1,272 @@
+{
+  "teamId": "wst",
+  "teamName": "Wests Tigers",
+  "season": 2026,
+  "asOfDate": "2026-07-11",
+  "purpose": "Second pass over the 19 players with unknown 2026 salary values in the pilot dataset, followed by a credentialed Daily Telegraph / SMH source pass.",
+  "top30Confidence": {
+    "overall": "medium",
+    "score": 68,
+    "summary": "The named roster is credible as a working NRL roster, but not fully reliable as a clean Top 30 because Wests Tigers' own tracker lists some players in both NRL Squad and NRL Development List contexts, while the NRL tracker omits Bunty Afoa from the current Wests Tigers list despite listing him as a 2026 gain/loss movement.",
+    "highConfidenceTop30Names": [
+      "Adam Doueihi",
+      "Alex Twal",
+      "Alex Seyfarth",
+      "Apisai Koroisau",
+      "Fonua Pole",
+      "Heamasi Makasini",
+      "Heath Mason",
+      "Jahream Bula",
+      "Jarome Luai",
+      "Jeral Skelton",
+      "Jock Madden",
+      "Kai Pearce-Paul",
+      "Kit Laulilii",
+      "Latu Fainu",
+      "Mavrik Geyer",
+      "Royce Hunt",
+      "Samuela Fainu",
+      "Sione Fainu",
+      "Solomone Saukuru",
+      "Starford To'a",
+      "Sunia Turuva",
+      "Taylan May",
+      "Terrell May",
+      "Tony Sukkar",
+      "Tristan Hope",
+      "William Craig"
+    ],
+    "ambiguousNames": [
+      {
+        "name": "Bunty Afoa",
+        "reason": "Wests Tigers tracker lists him in the NRL Development List for 2026; NRL tracker lists him as a 2026 movement to Wests Tigers but omits him from the current Wests Tigers contract table."
+      },
+      {
+        "name": "Javon Andrews",
+        "reason": "Wests Tigers tracker says he arrives on a Development deal, while NRL tracker lists 2026-2028 years in the Wests Tigers section."
+      },
+      {
+        "name": "Patrick Herbert",
+        "reason": "Club article says two-year NRL deal, but Wests Tigers tracker also lists him in the NRL Development List for 2026."
+      },
+      {
+        "name": "Faaletino Tavana",
+        "reason": "Club article says extension through 2029, but Wests Tigers tracker also lists Tino Tavana in the NRL Development List for 2026."
+      }
+    ]
+  },
+  "salaryFindings": [
+    {
+      "name": "Adam Doueihi",
+      "2026SalaryStatus": "media_roster_value_found",
+      "finding": "Daily Telegraph/Code Sports roster-value investigation lists Adam Doueihi at $725k. Found a separate older $150k near-minimum offer, but that related to an earlier short-term contract discussion rather than the 2026-2029 extension.",
+      "recommendedValueType": "reported_exact",
+      "recommendedAmountCents": 72500000,
+      "salaryConfidence": "medium",
+      "contractLengthConfidence": "high",
+      "sources": ["daily-telegraph-rich-list-2026", "nine-doueihi-lowball", "wests-doueihi-extension"]
+    },
+    {
+      "name": "Sione Fainu",
+      "2026SalaryStatus": "unresolved",
+      "finding": "Daily Telegraph/Code Sports roster-value investigation lists Sione Fainu at $405k. SMH separately reports a three-year, $1.1m extension, implying about $367k average annual value for the extension years. Treat the SMH figure as 2027-2029 extension context unless a source confirms it changes 2026.",
+      "recommendedValueType": "reported_exact",
+      "recommendedAmountCents": 40500000,
+      "recommendedFutureAavCents": 36666700,
+      "salaryConfidence": "medium",
+      "contractLengthConfidence": "high",
+      "sources": ["daily-telegraph-rich-list-2026", "smh-sione-fainu-extension", "nine-sione-fainu-extension", "wests-sione-fainu-extension"]
+    },
+    {
+      "name": "Bunty Afoa",
+      "2026SalaryStatus": "development_or_uncertain",
+      "finding": "Club source confirms 2026 signing; Wests tracker lists him under NRL Development List. If supplementary/development treatment applies, use the relevant NRL list salary bucket rather than Top 30 cap.",
+      "recommendedValueType": "derived_range",
+      "salaryConfidence": "low",
+      "contractLengthConfidence": "medium",
+      "sources": ["wests-bunty-signing", "wests-signings-tracker", "nrl-salary-cap-rules"]
+    },
+    {
+      "name": "Javon Andrews",
+      "2026SalaryStatus": "development_or_uncertain",
+      "finding": "Club tracker says Andrews joins on a Development deal; NRL tracker lists 2026-2028 in the Wests Tigers section. Salary not publicly reported.",
+      "recommendedValueType": "derived_range",
+      "salaryConfidence": "low",
+      "contractLengthConfidence": "medium",
+      "sources": ["wests-signings-tracker", "nrl-signings-tracker", "nrl-salary-cap-rules"]
+    },
+    {
+      "name": "Patrick Herbert",
+      "2026SalaryStatus": "development_or_top30_conflict",
+      "finding": "Official club article says two-year deal from 2026, while the club tracker also lists him under NRL Development List. No salary figure found.",
+      "recommendedValueType": "derived_range",
+      "salaryConfidence": "low",
+      "contractLengthConfidence": "medium",
+      "sources": ["wests-patrick-herbert", "wests-signings-tracker"]
+    },
+    {
+      "name": "Faaletino Tavana",
+      "2026SalaryStatus": "development_or_top30_conflict",
+      "finding": "Official club article confirms through 2029, while club tracker also lists Tino Tavana in NRL Development List for 2026. No salary figure found.",
+      "recommendedValueType": "derived_range",
+      "salaryConfidence": "low",
+      "contractLengthConfidence": "medium",
+      "sources": ["wests-tino-tavana", "wests-signings-tracker"]
+    },
+    {
+      "name": "Alex Seyfarth",
+      "2026SalaryStatus": "unresolved",
+      "finding": "Daily Telegraph/Code Sports roster-value investigation lists Alex Seyfarth at $425k. Official length through 2028 found.",
+      "recommendedValueType": "reported_exact",
+      "recommendedAmountCents": 42500000,
+      "salaryConfidence": "medium",
+      "contractLengthConfidence": "high",
+      "sources": ["daily-telegraph-rich-list-2026", "wests-seyfarth-extension", "nrl-signings-tracker"]
+    },
+    {
+      "name": "Fonua Pole",
+      "2026SalaryStatus": "unresolved",
+      "finding": "Daily Telegraph/Code Sports roster-value investigation lists Fonua Pole at $665k. Official/NRL tracker length through 2027 found.",
+      "recommendedValueType": "reported_exact",
+      "recommendedAmountCents": 66500000,
+      "salaryConfidence": "medium",
+      "contractLengthConfidence": "high",
+      "sources": ["daily-telegraph-rich-list-2026", "nrl-signings-tracker"]
+    },
+    {
+      "name": "Heamasi Makasini",
+      "2026SalaryStatus": "unresolved",
+      "finding": "Daily Telegraph/Code Sports roster-value investigation lists Heamasi Makasini at $350k. Official/NRL tracker length through 2029 found.",
+      "recommendedValueType": "reported_exact",
+      "recommendedAmountCents": 35000000,
+      "salaryConfidence": "medium",
+      "contractLengthConfidence": "high",
+      "sources": ["daily-telegraph-rich-list-2026", "nrl-signings-tracker", "wests-signings-topic"]
+    },
+    {
+      "name": "Heath Mason",
+      "2026SalaryStatus": "unresolved",
+      "finding": "Official club source says upgraded to Top 30 and extended to end of 2026; no salary figure found.",
+      "recommendedValueType": "derived_range",
+      "salaryConfidence": "low",
+      "contractLengthConfidence": "high",
+      "sources": ["wests-heath-mason"]
+    },
+    {
+      "name": "Jock Madden",
+      "2026SalaryStatus": "unresolved",
+      "finding": "Daily Telegraph/Code Sports roster-value investigation lists Jock Madden at $250k. Official club source confirms two-year deal from 2026.",
+      "recommendedValueType": "reported_exact",
+      "recommendedAmountCents": 25000000,
+      "salaryConfidence": "medium",
+      "contractLengthConfidence": "high",
+      "sources": ["daily-telegraph-rich-list-2026", "wests-jock-madden"]
+    },
+    {
+      "name": "Kit Laulilii",
+      "2026SalaryStatus": "unresolved",
+      "finding": "NRL tracker lists 2026 with Wests Tigers and 2027 move to Perth Bears; no 2026 salary figure found.",
+      "recommendedValueType": "derived_range",
+      "salaryConfidence": "low",
+      "contractLengthConfidence": "high",
+      "sources": ["nrl-signings-tracker"]
+    },
+    {
+      "name": "Mavrik Geyer",
+      "2026SalaryStatus": "unresolved",
+      "finding": "Official club source confirms 2026 signing; NRL tracker lists 2027 move to Perth Bears. No 2026 salary figure found.",
+      "recommendedValueType": "derived_range",
+      "salaryConfidence": "low",
+      "contractLengthConfidence": "high",
+      "sources": ["wests-mavrik-geyer", "nrl-signings-tracker"]
+    },
+    {
+      "name": "Royce Hunt",
+      "2026SalaryStatus": "unresolved",
+      "finding": "Daily Telegraph/Code Sports roster-value investigation lists Royce Hunt at $425k. Official movement/contract length found through 2027.",
+      "recommendedValueType": "reported_exact",
+      "recommendedAmountCents": 42500000,
+      "salaryConfidence": "medium",
+      "contractLengthConfidence": "high",
+      "sources": ["daily-telegraph-rich-list-2026", "nrl-signings-tracker"]
+    },
+    {
+      "name": "Solomone Saukuru",
+      "2026SalaryStatus": "unresolved",
+      "finding": "Contract year listed for 2026; no salary figure found.",
+      "recommendedValueType": "derived_range",
+      "salaryConfidence": "low",
+      "contractLengthConfidence": "medium",
+      "sources": ["nrl-signings-tracker", "wests-signings-tracker"]
+    },
+    {
+      "name": "Starford To'a",
+      "2026SalaryStatus": "unresolved",
+      "finding": "Daily Telegraph/Code Sports roster-value investigation lists Starford To'a at $375k. Official Manly source says he was released from final two Wests Tigers years to join Manly in 2027.",
+      "recommendedValueType": "reported_exact",
+      "recommendedAmountCents": 37500000,
+      "salaryConfidence": "medium",
+      "contractLengthConfidence": "high",
+      "sources": ["daily-telegraph-rich-list-2026", "sea-eagles-toa", "nrl-signings-tracker"]
+    },
+    {
+      "name": "Tony Sukkar",
+      "2026SalaryStatus": "unresolved",
+      "finding": "Contract through 2026 found; no salary figure found.",
+      "recommendedValueType": "derived_range",
+      "salaryConfidence": "low",
+      "contractLengthConfidence": "medium",
+      "sources": ["nrl-signings-tracker", "wests-tony-sukkar-profile"]
+    },
+    {
+      "name": "Tristan Hope",
+      "2026SalaryStatus": "unresolved",
+      "finding": "Official club source says 2026 extension/elevation; no salary figure found.",
+      "recommendedValueType": "derived_range",
+      "salaryConfidence": "low",
+      "contractLengthConfidence": "high",
+      "sources": ["wests-hope-murray", "wests-tristan-hope-development"]
+    },
+    {
+      "name": "William Craig",
+      "2026SalaryStatus": "unresolved",
+      "finding": "Contract year listed for 2026; no salary figure found.",
+      "recommendedValueType": "derived_range",
+      "salaryConfidence": "low",
+      "contractLengthConfidence": "medium",
+      "sources": ["nrl-signings-tracker", "wests-signings-tracker"]
+    }
+  ],
+  "derivedRangePolicy": {
+    "top30Minimum2026Cents": 14000000,
+    "supplementaryListCents": 8000000,
+    "notes": [
+      "The NRL salary cap rules page supports a 2026 Top 30 minimum salary floor derived from the 2023-2027 minimum salary progression.",
+      "The NRL operations page states Supplementary List players are entitled to $80,000 p.a.; Wests Tigers uses Development List wording, so these records need category confirmation before display.",
+      "For UI, show minimum/floor-derived values as a distinct low-confidence band, not as reported salary."
+    ]
+  },
+  "sources": {
+    "wests-signings-tracker": "https://www.weststigers.com.au/news/2025/10/29/wests-tigers-nrl-signings-tracker/",
+    "nrl-signings-tracker": "https://www.nrl.com/news/2026/01/01/2026-nrl-signings-tracker-the-latest-from-all-17-clubs/",
+    "nrl-salary-cap-rules": "https://www.nrl.com/operations/integrity/salary-cap/",
+    "daily-telegraph-rich-list-2026": "https://www.dailytelegraph.com.au/sport/nrl/the-true-value-of-every-nrl-roster-revealed-and-the-clubs-breaking-the-salary-cap/news-story/a4bafaad73cb13efaa7b8c292800cd52",
+    "smh-sione-fainu-extension": "https://www.smh.com.au/sport/nrl/nrl-around-the-clubs-preseason-week-one-20260202-p5nyxn.html",
+    "nine-doueihi-lowball": "https://www.nine.com.au/sport/nrl/news-2024-adam-doueihi-wests-tigers-contract-offer-reports-phil-gould-comments-20240513-p5jddw.html",
+    "wests-doueihi-extension": "https://www.weststigers.com.au/news/2026/03/13/doueihi-extends-stay-with-tigers-until-2029/",
+    "wests-seyfarth-extension": "https://www.weststigers.com.au/news/2025/02/14/seyfarth-extends-on-three-year-deal/",
+    "wests-bunty-signing": "https://www.weststigers.com.au/news/2025/10/10/bunty-afoa-to-join-wests-tigers-for-2026-season/",
+    "wests-heath-mason": "https://www.weststigers.com.au/news/2025/06/18/heath-mason-extended-and-upgraded-to-top-30/",
+    "wests-jock-madden": "https://www.weststigers.com.au/news/2025/07/25/jock-madden-returns-to-wests-tigers/",
+    "wests-mavrik-geyer": "https://www.weststigers.com.au/news/2025/08/06/mavrik-geyer-set-to-join-wests-tigers-for-2026-season/",
+    "wests-patrick-herbert": "https://www.weststigers.com.au/news/2026/02/18/patrick-herbert-joins-wests-tigers-on-a-two-year-deal/",
+    "wests-sione-fainu-extension": "https://www.weststigers.com.au/news/2026/02/11/sione-fainu-inks-three-year-contract-extension/",
+    "nine-sione-fainu-extension": "https://www.nine.com.au/sport/nrl/news-2026-sione-fainu-wests-tigers-contract-extension-samuela-latu-brothers-jahream-bula-future-20260203-p5nz10.html",
+    "sea-eagles-toa": "https://www.seaeagles.com.au/news/2026/06/22/starford-toa-to-join-sea-eagles/",
+    "wests-hope-murray": "https://www.weststigers.com.au/news/2025/07/18/hope-and-murray-sign-on-for-2026/",
+    "wests-tristan-hope-development": "https://www.weststigers.com.au/news/2025/03/04/tristan-hope-upgraded-to-development-deal/",
+    "wests-tino-tavana": "https://www.weststigers.com.au/news/2026/04/16/tino-tavana-confirmed-to-stay-with-the-wests-tigers-through-to-2029/",
+    "wests-signings-topic": "https://www.weststigers.com.au/news/topic/signings/",
+    "wests-tony-sukkar-profile": "https://www.weststigers.com.au/teams/nrl-premiership/wests-tigers/tony-sukkar/"
+  }
+}
