@@ -213,42 +213,56 @@ export function SalaryCapBoard() {
 
   return (
     <section className="space-y-4">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <div
+            className="mb-1 flex items-center gap-2 text-xs font-semibold uppercase"
+            style={{ color: palette.textMuted }}
+          >
+            <WalletCards size={14} />
+            Salary Cap Sample
+          </div>
+          <h2 className="text-xl font-bold" style={{ color: palette.text }}>
+            {data.teamName}
+          </h2>
+        </div>
+        <label className="flex flex-col gap-1 text-xs font-semibold uppercase sm:min-w-64">
+          <span style={{ color: palette.textMuted }}>Team</span>
+          <select
+            value={selectedTeamId}
+            onChange={(event) => {
+              setSelectedTeamId(event.target.value);
+              setExpandedPlayer(null);
+            }}
+            aria-label="Salary cap team"
+            className="w-full rounded-md px-3 py-2 text-sm font-semibold normal-case"
+            style={{
+              background: "rgba(255,255,255,0.08)",
+              border: `1px solid ${palette.border}`,
+              color: palette.text,
+            }}
+          >
+            {teams.map((team) => (
+              <option key={team.teamId} value={team.teamId}>
+                {team.teamName}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
+
       <div
         className="rounded-lg border p-4"
         style={{ borderColor: palette.border, background: "rgba(255,255,255,0.035)" }}
       >
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <div
-              className="mb-1 flex items-center gap-2 text-xs font-semibold uppercase"
-              style={{ color: palette.textMuted }}
-            >
-              <WalletCards size={14} />
-              Salary Cap Sample
+            <div className="text-xs font-semibold uppercase" style={{ color: palette.textMuted }}>
+              Known 2026 spend
             </div>
-            <h2 className="text-xl font-bold" style={{ color: palette.text }}>
-              {data.teamName}
-            </h2>
-            <select
-              value={selectedTeamId}
-              onChange={(event) => {
-                setSelectedTeamId(event.target.value);
-                setExpandedPlayer(null);
-              }}
-              aria-label="Salary cap team"
-              className="mt-3 w-full rounded-md px-3 py-2 text-sm font-semibold sm:w-auto"
-              style={{
-                background: "rgba(255,255,255,0.08)",
-                border: `1px solid ${palette.border}`,
-                color: palette.text,
-              }}
-            >
-              {teams.map((team) => (
-                <option key={team.teamId} value={team.teamId}>
-                  {team.teamName}
-                </option>
-              ))}
-            </select>
+            <div className="mt-1 text-sm" style={{ color: palette.text }}>
+              Public salary coverage from reviewed and backup sources
+            </div>
           </div>
           <div className="text-right font-mono">
             <div className="text-lg font-bold" style={{ color: palette.accent }}>
