@@ -29,6 +29,7 @@ function formatSyncedAt(value: string | null): string {
 export function Footer({ initialStatus }: FooterProps) {
   const { palette } = useTheme();
   const [status, setStatus] = useState<StatusData | null>(initialStatus || null);
+  const lastSyncedAt = status?.lastSyncedAt || null;
 
   useEffect(() => {
     let isMounted = true;
@@ -69,7 +70,12 @@ export function Footer({ initialStatus }: FooterProps) {
     >
       <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-3">
-          <span>Official NRL draw sync: {formatSyncedAt(status?.lastSyncedAt || null)}</span>
+          <span>
+            Official NRL draw sync:{" "}
+            <time dateTime={lastSyncedAt || undefined} suppressHydrationWarning>
+              {formatSyncedAt(lastSyncedAt)}
+            </time>
+          </span>
           <span>Latest final round: {status?.latestFinalRound || 15}</span>
           {status?.nextScheduledRound && (
             <span>Next scheduled round: {status.nextScheduledRound}</span>

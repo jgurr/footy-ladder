@@ -56,6 +56,7 @@ export function LiveScoreStrip({
   }, [season]);
 
   const liveGames = summary?.liveGames || [];
+  const lastSyncedAt = summary?.lastSyncedAt || null;
 
   if (liveGames.length === 0) {
     return null;
@@ -95,7 +96,10 @@ export function LiveScoreStrip({
             Official scores and ladder refresh automatically
           </span>
           <span className="hidden sm:inline">
-            · Last sync {formatSyncTime(summary?.lastSyncedAt || null)}
+            · Last sync{" "}
+            <time dateTime={lastSyncedAt || undefined} suppressHydrationWarning>
+              {formatSyncTime(lastSyncedAt)}
+            </time>
           </span>
         </div>
       </div>
