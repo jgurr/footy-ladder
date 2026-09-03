@@ -7,7 +7,7 @@
  * - Themes: Blues, Maroons, Kiwis, Aussies
  */
 
-// All 17 NRL teams with official colors (kept for team flags)
+// All 17 NRL teams with official colors (used by charts and team accents)
 export const TEAM_COLORS: Record<string, { name: string; primary: string; secondary: string }> = {
   bri: { name: "Broncos", primary: "#6B2C35", secondary: "#FDB813" },
   can: { name: "Raiders", primary: "#00A651", secondary: "#FFFFFF" },

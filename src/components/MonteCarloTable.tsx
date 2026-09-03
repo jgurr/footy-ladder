@@ -1,7 +1,7 @@
 "use client";
 
 import type { MonteCarloData, MonteCarloTeamResult } from "@/lib/monte-carlo";
-import { TeamFlag } from "./TeamFlag";
+import { TeamLogo } from "./TeamLogo";
 import { useTheme } from "./ThemeProvider";
 
 function fullTeamName(team: { location: string; name: string }): string {
@@ -110,7 +110,7 @@ export function MonteCarloTable({ data }: { data: MonteCarloData }) {
             <div className="grid gap-3 lg:grid-cols-[13rem_minmax(0,1fr)]">
               <div>
                 <div className="flex items-center gap-2">
-                  <TeamFlag teamId={team.team.id} size={20} />
+                  <TeamLogo teamId={team.team.id} size={20} />
                   <div className="min-w-0">
                     <div className="text-sm font-semibold sm:hidden">{team.team.shortCode}</div>
                     <div className="hidden text-sm font-semibold sm:block">

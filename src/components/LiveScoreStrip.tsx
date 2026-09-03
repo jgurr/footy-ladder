@@ -2,7 +2,7 @@
 
 import { Radio, RefreshCw } from "lucide-react";
 import { useEffect, useState } from "react";
-import { TeamFlag } from "./TeamFlag";
+import { TeamLogo } from "./TeamLogo";
 import { useTheme } from "./ThemeProvider";
 import type { LiveSummary } from "@/lib/live-summary";
 
@@ -114,7 +114,7 @@ export function LiveScoreStrip({
             <div className="min-w-0 flex-1">
               <div className="flex items-center justify-between gap-3">
                 <span className="flex items-center gap-1.5 font-medium">
-                  <TeamFlag teamId={game.homeTeam.id} size={16} />
+                  <TeamLogo teamId={game.homeTeam.id} size={16} />
                   {game.homeTeam.shortCode}
                 </span>
                 <span className="font-mono text-lg font-bold tabular-nums">
@@ -123,7 +123,7 @@ export function LiveScoreStrip({
               </div>
               <div className="mt-1 flex items-center justify-between gap-3">
                 <span className="flex items-center gap-1.5 font-medium">
-                  <TeamFlag teamId={game.awayTeam.id} size={16} />
+                  <TeamLogo teamId={game.awayTeam.id} size={16} />
                   {game.awayTeam.shortCode}
                 </span>
                 <span className="font-mono text-lg font-bold tabular-nums">

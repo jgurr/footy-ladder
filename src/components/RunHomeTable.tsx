@@ -1,7 +1,7 @@
 "use client";
 
 import type { RunHomeData } from "@/lib/run-home";
-import { TeamFlag } from "./TeamFlag";
+import { TeamLogo } from "./TeamLogo";
 import { useTheme } from "./ThemeProvider";
 
 function fullTeamName(team: { location: string; name: string }): string {
@@ -67,7 +67,7 @@ export function RunHomeTable({
                 </td>
                 <td className="px-1 py-3">
                   <div className="flex items-center gap-2">
-                    <TeamFlag teamId={summary.team.id} size={18} />
+                    <TeamLogo teamId={summary.team.id} size={18} />
                     <div className="min-w-0">
                       <div className="text-sm font-medium sm:hidden">{summary.team.shortCode}</div>
                       <div className="hidden text-sm font-medium sm:block">

@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { TeamLogo } from "./TeamLogo";
 import { useTheme } from "./ThemeProvider";
-import { TEAM_COLORS } from "@/lib/theme";
 
 interface Team {
   id: string;
@@ -148,8 +148,6 @@ export function LiveGames({ season = 2026, round }: LiveGamesProps) {
       {/* Games Grid */}
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {games.map((game) => {
-          const homeColors = TEAM_COLORS[game.homeTeam.id];
-          const awayColors = TEAM_COLORS[game.awayTeam.id];
           const isLive = game.status === "live";
           const isFinal = game.status === "final";
 
@@ -175,14 +173,7 @@ export function LiveGames({ season = 2026, round }: LiveGamesProps) {
                 {/* Home Team */}
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <div
-                      className="h-6 w-6 rounded-full"
-                      style={{
-                        background: homeColors
-                          ? `linear-gradient(135deg, ${homeColors.primary} 50%, ${homeColors.secondary} 50%)`
-                          : palette.accent,
-                      }}
-                    />
+                    <TeamLogo teamId={game.homeTeam.id} size={24} />
                     <span className="font-medium">{game.homeTeam.shortCode}</span>
                   </div>
                   <span
@@ -205,14 +196,7 @@ export function LiveGames({ season = 2026, round }: LiveGamesProps) {
                 {/* Away Team */}
                 <div className="mt-2 flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <div
-                      className="h-6 w-6 rounded-full"
-                      style={{
-                        background: awayColors
-                          ? `linear-gradient(135deg, ${awayColors.primary} 50%, ${awayColors.secondary} 50%)`
-                          : palette.accent,
-                      }}
-                    />
+                    <TeamLogo teamId={game.awayTeam.id} size={24} />
                     <span className="font-medium">{game.awayTeam.shortCode}</span>
                   </div>
                   <span

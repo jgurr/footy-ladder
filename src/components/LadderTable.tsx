@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, useMemo } from "react";
 import { useTheme } from "./ThemeProvider";
-import { TeamFlag } from "./TeamFlag";
+import { TeamLogo } from "./TeamLogo";
 import { FixtureDifficulty } from "./FixtureDifficulty";
 import { EloGraph, type EloHistoryData } from "./EloGraph";
 import { MonteCarloTable } from "./MonteCarloTable";
@@ -1054,7 +1054,7 @@ export function LadderTable({
                     onClick={() => handleTeamClick(game.homeTeam.id)}
                     className="flex items-center gap-2 hover:opacity-80 transition"
                   >
-                    <TeamFlag teamId={game.homeTeam.id} size={20} />
+                    <TeamLogo teamId={game.homeTeam.id} size={20} />
                     <span className={`font-medium ${homeWon ? "" : "opacity-70"}`}>
                       {game.homeTeam.shortCode}
                     </span>
@@ -1073,7 +1073,7 @@ export function LadderTable({
                     onClick={() => handleTeamClick(game.awayTeam.id)}
                     className="flex items-center gap-2 hover:opacity-80 transition"
                   >
-                    <TeamFlag teamId={game.awayTeam.id} size={20} />
+                    <TeamLogo teamId={game.awayTeam.id} size={20} />
                     <span className={`font-medium ${awayWon ? "" : "opacity-70"}`}>
                       {game.awayTeam.shortCode}
                     </span>
@@ -1119,7 +1119,7 @@ export function LadderTable({
           {/* Team Header with Picker */}
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-3">
-              <TeamFlag teamId={teamSchedule.team.id} size={32} />
+              <TeamLogo teamId={teamSchedule.team.id} size={32} />
               <select
                 value={selectedTeamId || ""}
                 onChange={(e) => {
@@ -1187,7 +1187,7 @@ export function LadderTable({
                         onClick={() => handleTeamClick(game.opponentId)}
                         className="flex items-center gap-2 hover:opacity-80 transition"
                       >
-                        <TeamFlag teamId={game.opponentId} size={20} />
+                        <TeamLogo teamId={game.opponentId} size={20} />
                         <span className="font-medium">{game.opponentCode}</span>
                       </button>
                     </div>
@@ -1339,7 +1339,7 @@ export function LadderTable({
                         onClick={() => handleTeamClick(entry.team.id)}
                         className="flex items-center gap-1.5 hover:opacity-80 transition"
                       >
-                        <TeamFlag teamId={entry.team.id} size={16} />
+                        <TeamLogo teamId={entry.team.id} size={16} />
                         <span className="font-medium text-sm sm:hidden">
                           {entry.team.shortCode}
                         </span>
@@ -1520,7 +1520,11 @@ export function LadderTable({
                         return (
                           <td key={idx} className="px-1 py-2 text-center">
                             <div className="flex flex-col items-center gap-0.5">
-                              <TeamFlag teamId={fixture.opponentId} size={14} />
+                              <TeamLogo
+                                teamId={fixture.opponentId}
+                                size={14}
+                                decorative={false}
+                              />
                               <span className="font-mono text-xs leading-tight">
                                 {fixture.opponentPosition}
                                 <span

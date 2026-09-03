@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { TeamFlag } from "./TeamFlag";
+import { TeamLogo } from "./TeamLogo";
 import { useTheme } from "./ThemeProvider";
 
 interface EloTeam {
@@ -232,7 +232,7 @@ export function EloGraph({ data }: { data: EloHistoryData }) {
                 }}
                 title={fullTeamName(team)}
               >
-                <TeamFlag teamId={team.id} size={14} />
+                <TeamLogo teamId={team.id} size={14} />
                 <span>{team.shortCode}</span>
                 <span className="font-mono" style={{ color: active ? color : palette.textMuted }}>
                   {team.currentElo}
