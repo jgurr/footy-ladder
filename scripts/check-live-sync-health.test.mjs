@@ -13,13 +13,37 @@ const baseGame = {
 
 test("passes when no game is inside the sync window", () => {
   const result = evaluateLiveSyncHealth({
-    games: [baseGame],
+    games: [{ ...baseGame, status: "scheduled" }],
     status: {},
     now: new Date("2026-06-25T09:54:59.999Z"),
   });
 
   assert.equal(result.healthy, true);
   assert.equal(result.active, false);
+});
+
+test("fails for a stale live game after its normal sync window", () => {
+  const result = evaluateLiveSyncHealth({
+    games: [baseGame],
+    status: { lastSyncedAt: "2026-06-25T12:00:00.000Z" },
+    now: new Date("2026-06-26T10:00:00.000Z"),
+  });
+
+  assert.equal(result.healthy, false);
+  assert.equal(result.active, true);
+  assert.match(result.message, /needs syncing/);
+});
+
+test("fails for a scheduled game missed for its entire sync window", () => {
+  const result = evaluateLiveSyncHealth({
+    games: [{ ...baseGame, status: "scheduled" }],
+    status: { lastSyncedAt: "2026-06-25T12:00:00.000Z" },
+    now: new Date("2026-06-26T10:00:00.000Z"),
+  });
+
+  assert.equal(result.healthy, false);
+  assert.equal(result.active, true);
+  assert.match(result.message, /needs syncing/);
 });
 
 test("passes during a live window when production recently synced", () => {

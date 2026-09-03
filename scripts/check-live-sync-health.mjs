@@ -1,4 +1,7 @@
-import { findActiveSyncWindow } from "./check-game-sync-window.mjs";
+import {
+  findActiveSyncWindow,
+  findSyncTargetRounds,
+} from "./check-game-sync-window.mjs";
 
 export const DEFAULT_MAX_SYNC_STALENESS_MINUTES = 15;
 export const DEFAULT_SCHEDULED_GRACE_MINUTES = 10;
@@ -21,12 +24,15 @@ export function evaluateLiveSyncHealth({
   scheduledGraceMinutes = DEFAULT_SCHEDULED_GRACE_MINUTES,
 }) {
   const activeGame = findActiveSyncWindow(games, now);
+  const targetRounds = findSyncTargetRounds(games, now);
+  const targetGame =
+    activeGame || games.find((game) => targetRounds.includes(game.round));
 
-  if (!activeGame) {
+  if (!targetGame) {
     return {
       healthy: true,
       active: false,
-      message: "No game is inside the live sync window.",
+      message: "No game needs live-score reconciliation.",
     };
   }
 
@@ -39,7 +45,7 @@ export function evaluateLiveSyncHealth({
     return {
       healthy: false,
       active: true,
-      message: `${gameLabel(activeGame)} is in a sync window, but production has no lastSyncedAt timestamp.`,
+      message: `${gameLabel(targetGame)} needs syncing, but production has no lastSyncedAt timestamp.`,
     };
   }
 
@@ -49,17 +55,17 @@ export function evaluateLiveSyncHealth({
       healthy: false,
       active: true,
       message:
-        `${gameLabel(activeGame)} is in a sync window, but production last synced ` +
+        `${gameLabel(targetGame)} needs syncing, but production last synced ` +
         `${syncAgeMinutes} minutes ago. Limit is ${maxStalenessMinutes} minutes.`,
     };
   }
 
-  const kickoffMs = activeGame.kickoff
+  const kickoffMs = activeGame?.kickoff
     ? new Date(activeGame.kickoff).getTime()
     : Number.NaN;
   const scheduledGraceMs = scheduledGraceMinutes * 60_000;
   const isStillScheduledAfterKickoff =
-    activeGame.status === "scheduled" &&
+    activeGame?.status === "scheduled" &&
     Number.isFinite(kickoffMs) &&
     nowMs >= kickoffMs + scheduledGraceMs;
 
@@ -77,7 +83,7 @@ export function evaluateLiveSyncHealth({
     healthy: true,
     active: true,
     message:
-      `${gameLabel(activeGame)} sync looks healthy. ` +
+      `${gameLabel(targetGame)} sync looks healthy. ` +
       `Last synced ${syncAgeMinutes} minutes ago.`,
   };
 }

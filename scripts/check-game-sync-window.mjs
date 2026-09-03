@@ -4,22 +4,48 @@ export const PRE_GAME_MINUTES = 5;
 export const GAME_DURATION_MINUTES = 120;
 export const POST_GAME_MINUTES = 60;
 
+function isInsideSyncWindow(game, nowMs) {
+  if (!game.kickoff) return false;
+
+  const kickoffMs = new Date(game.kickoff).getTime();
+  if (!Number.isFinite(kickoffMs)) return false;
+
+  const startsAt = kickoffMs - PRE_GAME_MINUTES * 60_000;
+  const endsAt =
+    kickoffMs +
+    (GAME_DURATION_MINUTES + POST_GAME_MINUTES) * 60_000;
+
+  return nowMs >= startsAt && nowMs <= endsAt;
+}
+
+function isOverdueScheduledGame(game, nowMs) {
+  if (game.status !== "scheduled" || !game.kickoff) return false;
+
+  const kickoffMs = new Date(game.kickoff).getTime();
+  return Number.isFinite(kickoffMs) && nowMs >= kickoffMs;
+}
+
 export function findActiveSyncWindow(games, now = new Date()) {
   const nowMs = now.getTime();
 
-  return games.find((game) => {
-    if (!game.kickoff) return false;
+  return games.find((game) => isInsideSyncWindow(game, nowMs));
+}
 
-    const kickoffMs = new Date(game.kickoff).getTime();
-    if (!Number.isFinite(kickoffMs)) return false;
+export function findSyncTargetRounds(games, now = new Date()) {
+  const nowMs = now.getTime();
+  const rounds = new Set();
 
-    const startsAt = kickoffMs - PRE_GAME_MINUTES * 60_000;
-    const endsAt =
-      kickoffMs +
-      (GAME_DURATION_MINUTES + POST_GAME_MINUTES) * 60_000;
+  for (const game of games) {
+    if (
+      game.status === "live" ||
+      isInsideSyncWindow(game, nowMs) ||
+      isOverdueScheduledGame(game, nowMs)
+    ) {
+      rounds.add(game.round);
+    }
+  }
 
-    return nowMs >= startsAt && nowMs <= endsAt;
-  });
+  return [...rounds].sort((a, b) => a - b);
 }
 
 async function writeOutputs(values) {
@@ -47,24 +73,27 @@ async function main() {
   }
 
   const games = await response.json();
-  const activeGame = findActiveSyncWindow(games);
-  const active = Boolean(activeGame);
+  const targetRounds = findSyncTargetRounds(games);
+  const targetGame = games.find((game) => targetRounds.includes(game.round));
+  const active = targetRounds.length > 0;
 
   await writeOutputs({
     active,
     season,
-    round: activeGame?.round || "",
-    game_id: activeGame?.id || "",
+    // Let the endpoint reconcile every target when more than one round is stale.
+    round: targetRounds.length === 1 ? targetRounds[0] : "",
+    game_id: targetGame?.id || "",
   });
 
-  if (activeGame) {
+  if (targetGame) {
     console.log(
-      `Sync window active for Round ${activeGame.round}: ` +
-        `${activeGame.awayTeam?.shortCode || activeGame.awayTeamId} at ` +
-        `${activeGame.homeTeam?.shortCode || activeGame.homeTeamId}`
+      `Sync required for round${targetRounds.length === 1 ? "" : "s"} ` +
+        `${targetRounds.join(", ")}: ` +
+        `${targetGame.awayTeam?.shortCode || targetGame.awayTeamId} at ` +
+        `${targetGame.homeTeam?.shortCode || targetGame.homeTeamId}`
     );
   } else {
-    console.log("Outside all game sync windows; no production sync required.");
+    console.log("No active or overdue games; no production sync required.");
   }
 }
 

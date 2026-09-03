@@ -230,10 +230,15 @@ export async function fetchOfficialDrawGames(
 
 export async function syncOfficialDrawGames(
   season: number = new Date().getFullYear(),
-  options: { allAvailableRounds?: boolean; round?: number } = {}
+  options: { allAvailableRounds?: boolean; round?: number; rounds?: number[] } = {}
 ): Promise<OfficialDrawSyncResult> {
-  const firstRound = await fetchOfficialDrawGames(season, options.round);
-  const roundsToSync = new Set<number>([firstRound.round]);
+  const requestedRounds = options.rounds?.length
+    ? [...new Set(options.rounds)].sort((a, b) => a - b)
+    : options.round
+      ? [options.round]
+      : [];
+  const firstRound = await fetchOfficialDrawGames(season, requestedRounds[0]);
+  const roundsToSync = new Set<number>([firstRound.round, ...requestedRounds]);
 
   if (options.allAvailableRounds && !options.round) {
     const data = await fetchOfficialDrawData(season);

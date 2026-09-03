@@ -11,7 +11,6 @@ import {
   TableProperties,
   Trophy,
   Users,
-  WalletCards,
 } from "lucide-react";
 import { useState } from "react";
 import { useTheme } from "./ThemeProvider";
@@ -24,8 +23,7 @@ export type AppView =
   | "runHome"
   | "monteCarlo"
   | "elo"
-  | "team"
-  | "salaryCap";
+  | "team";
 
 const NAV_ITEMS: Array<{
   view: AppView;
@@ -40,7 +38,6 @@ const NAV_ITEMS: Array<{
   { view: "monteCarlo", label: "Ladder Sim", Icon: BarChart3 },
   { view: "elo", label: "Elo Graph", Icon: LineChart },
   { view: "team", label: "Team", Icon: Users },
-  { view: "salaryCap", label: "Cap", Icon: WalletCards },
 ];
 
 function NavButton({

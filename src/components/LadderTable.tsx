@@ -7,7 +7,6 @@ import { FixtureDifficulty } from "./FixtureDifficulty";
 import { EloGraph, type EloHistoryData } from "./EloGraph";
 import { MonteCarloTable } from "./MonteCarloTable";
 import { RunHomeTable } from "./RunHomeTable";
-import { SalaryCapBoard } from "./SalaryCapBoard";
 import { ViewNavigation, type AppView } from "./ViewNavigation";
 import type { MonteCarloData } from "@/lib/monte-carlo";
 import type { RunHomeData } from "@/lib/run-home";
@@ -168,7 +167,7 @@ const FOR_AGAINST_SORT_OPTIONS: SortOption<ForAgainstSortKey>[] = [
   { key: "pdPerGame", label: "PD/GM", defaultDir: "desc" },
 ];
 
-const API_VERSION = "11";
+const API_VERSION = "12";
 const SCORES_NEXT_ROUND_LEAD_MS = 48 * 60 * 60 * 1000;
 const SEASON_STATUS_POLL_MS = 30_000;
 
@@ -291,6 +290,7 @@ export function LadderTable({
     hasInitialData ? `${initialSeason}:${initialRound}` : ""
   );
   const skippedInitialBootstrap = useRef(false);
+  const lastObservedDataSync = useRef<string | null>(null);
   const lastObservedMonteCarloSync = useRef<string | null>(null);
   const lastObservedEloSync = useRef<string | null>(null);
 
@@ -312,6 +312,7 @@ export function LadderTable({
   const [eloHistoryData, setEloHistoryData] = useState<EloHistoryData | null>(null);
   const [eloHistoryDataKey, setEloHistoryDataKey] = useState("");
   const [eloSyncedAt, setEloSyncedAt] = useState<string | null>(null);
+  const [liveDataVersion, setLiveDataVersion] = useState("");
   const [season, setSeason] = useState(initialSeason);
   const [round, setRound] = useState<number>(initialRound);
   const [availableRounds, setAvailableRounds] = useState<number[]>(initialRounds);
@@ -386,6 +387,7 @@ export function LadderTable({
         setMonteCarloData(null);
         setMonteCarloDataKey("");
         setMonteCarloSyncedAt(null);
+        lastObservedDataSync.current = null;
         lastObservedMonteCarloSync.current = null;
         setEloHistoryData(null);
         setEloHistoryDataKey("");
@@ -427,6 +429,7 @@ export function LadderTable({
         params.set("round", String(round));
 
         params.set("v", API_VERSION);
+        if (liveDataVersion) params.set("syncedAt", liveDataVersion);
         const res = await fetch(`/api/ladder?${params}`);
         const data = await res.json();
         setLadder(data);
@@ -438,7 +441,7 @@ export function LadderTable({
       }
     }
     fetchLadder();
-  }, [season, round, roundsLoading]);
+  }, [season, round, roundsLoading, liveDataVersion]);
 
   // Fetch next 5 data when in that view
   useEffect(() => {
@@ -451,6 +454,7 @@ export function LadderTable({
         params.set("round", String(round));
 
         params.set("v", API_VERSION);
+        if (liveDataVersion) params.set("syncedAt", liveDataVersion);
         const res = await fetch(`/api/schedule/next5?${params}`);
         const data = await res.json();
         setNext5Data(data);
@@ -461,7 +465,7 @@ export function LadderTable({
       }
     }
     fetchNext5();
-  }, [view, season, round, roundsLoading]);
+  }, [view, season, round, roundsLoading, liveDataVersion]);
 
   // Fetch every scheduled/played round for Scores. Unlike the ladder round
   // picker, Scores should be able to jump to future rounds.
@@ -471,7 +475,12 @@ export function LadderTable({
     async function fetchScoreRounds() {
       setScoreRoundsLoading(true);
       try {
-        const res = await fetch(`/api/games?season=${season}&v=${API_VERSION}`);
+        const params = new URLSearchParams({
+          season: String(season),
+          v: API_VERSION,
+        });
+        if (liveDataVersion) params.set("syncedAt", liveDataVersion);
+        const res = await fetch(`/api/games?${params}`);
         if (!res.ok) throw new Error(`Games returned ${res.status}`);
         const seasonGames = (await res.json()) as Game[];
         const rounds = [...new Set(seasonGames.map((game) => game.round))]
@@ -502,6 +511,7 @@ export function LadderTable({
     availableRounds,
     scoresRound,
     scoresRoundTouched,
+    liveDataVersion,
   ]);
 
   // Fetch games when in scores view
@@ -511,7 +521,13 @@ export function LadderTable({
     async function fetchGames() {
       setGamesLoading(true);
       try {
-        const res = await fetch(`/api/games?season=${season}&round=${scoresRound}&v=${API_VERSION}`);
+        const params = new URLSearchParams({
+          season: String(season),
+          round: String(scoresRound),
+          v: API_VERSION,
+        });
+        if (liveDataVersion) params.set("syncedAt", liveDataVersion);
+        const res = await fetch(`/api/games?${params}`);
         const data = await res.json();
         // API returns array directly
         setGames(Array.isArray(data) ? data : []);
@@ -522,16 +538,23 @@ export function LadderTable({
       }
     }
     fetchGames();
-  }, [view, season, scoresRound, roundsLoading, scoreRoundsLoading]);
+  }, [view, season, scoresRound, roundsLoading, scoreRoundsLoading, liveDataVersion]);
 
   // Fetch team schedule when in team view
   useEffect(() => {
     if (view !== "team" || !selectedTeamId) return;
+    const teamId = selectedTeamId;
 
     async function fetchTeamSchedule() {
       setTeamLoading(true);
       try {
-        const res = await fetch(`/api/schedule/team?season=${season}&teamId=${selectedTeamId}&v=${API_VERSION}`);
+        const params = new URLSearchParams({
+          season: String(season),
+          teamId,
+          v: API_VERSION,
+        });
+        if (liveDataVersion) params.set("syncedAt", liveDataVersion);
+        const res = await fetch(`/api/schedule/team?${params}`);
         const data = await res.json();
         setTeamSchedule(data);
         // Set selected round to latest round or current selection
@@ -545,7 +568,7 @@ export function LadderTable({
       }
     }
     fetchTeamSchedule();
-  }, [view, season, selectedTeamId, selectedRound, round]);
+  }, [view, season, selectedTeamId, selectedRound, round, liveDataVersion]);
 
   // Run Home powers both its summary tab and future-game detail on Team view.
   useEffect(() => {
@@ -554,7 +577,12 @@ export function LadderTable({
     async function fetchRunHome() {
       setRunHomeLoading(true);
       try {
-        const res = await fetch(`/api/run-home?season=${season}&v=${API_VERSION}`);
+        const params = new URLSearchParams({
+          season: String(season),
+          v: API_VERSION,
+        });
+        if (liveDataVersion) params.set("syncedAt", liveDataVersion);
+        const res = await fetch(`/api/run-home?${params}`);
         if (!res.ok) throw new Error(`Run Home returned ${res.status}`);
         setRunHomeData(await res.json());
       } catch (error) {
@@ -564,13 +592,11 @@ export function LadderTable({
       }
     }
     fetchRunHome();
-  }, [view, season, runHomeData]);
+  }, [view, season, runHomeData, liveDataVersion]);
 
-  // Poll lightweight sync status while model-driven views are open. A changed
-  // sync timestamp invalidates cached models so finished games are reflected.
+  // Poll lightweight sync status in every view. A changed timestamp refreshes
+  // scores, the current ladder, team schedules, and model-driven views.
   useEffect(() => {
-    if (view !== "monteCarlo" && view !== "elo") return;
-
     let cancelled = false;
 
     async function fetchSeasonStatus() {
@@ -586,6 +612,25 @@ export function LadderTable({
         if (cancelled) return;
 
         const nextSyncedAt = data.lastSyncedAt;
+        if (lastObservedDataSync.current !== nextSyncedAt) {
+          const latestKnownRound = Math.max(1, ...availableRounds);
+
+          lastObservedDataSync.current = nextSyncedAt;
+          loadedLadderKey.current = "";
+          setLiveDataVersion(nextSyncedAt || String(Date.now()));
+          setNext5Data(null);
+          setTeamSchedule(null);
+          setRunHomeData(null);
+
+          if (data.latestFinalRound > latestKnownRound) {
+            setAvailableRounds((current) =>
+              [...new Set([...current, data.latestFinalRound])].sort((a, b) => b - a)
+            );
+            if (round === latestKnownRound) {
+              setRound(data.latestFinalRound);
+            }
+          }
+        }
 
         if (view === "monteCarlo") {
           if (
@@ -625,7 +670,7 @@ export function LadderTable({
       cancelled = true;
       window.clearInterval(intervalId);
     };
-  }, [view, season]);
+  }, [view, season, round, availableRounds]);
 
   // Fetch ladder simulation when that view is opened or when sync status changes.
   useEffect(() => {
@@ -713,8 +758,7 @@ export function LadderTable({
       view === "scores" ||
       view === "runHome" ||
       view === "monteCarlo" ||
-      view === "elo" ||
-      view === "salaryCap"
+      view === "elo"
     ) {
       return [...ladder].sort((a, b) => a.position - b.position);
     }
@@ -937,9 +981,6 @@ export function LadderTable({
       {view === "elo" && !eloLoading && eloHistoryData && (
         <EloGraph data={eloHistoryData} />
       )}
-
-      {/* Salary Cap View */}
-      {view === "salaryCap" && <SalaryCapBoard />}
 
       {/* Sort Chips */}
       {(view === "ladder" || view === "forAgainst") && (
@@ -1214,7 +1255,7 @@ export function LadderTable({
       )}
 
       {/* Table (for ladder/forAgainst/next5 views) */}
-      {view !== "scores" && view !== "team" && view !== "runHome" && view !== "monteCarlo" && view !== "elo" && view !== "salaryCap" && !(view === "next5" && next5Loading) && (
+      {view !== "scores" && view !== "team" && view !== "runHome" && view !== "monteCarlo" && view !== "elo" && !(view === "next5" && next5Loading) && (
         <div
           className="overflow-hidden rounded-lg border"
           style={{ borderColor: palette.border }}

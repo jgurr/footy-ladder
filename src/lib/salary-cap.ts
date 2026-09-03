@@ -71,7 +71,7 @@ export function validateSalaryEstimateValue(input: {
   }
 }
 
-type DisplaySalaryEstimate = {
+export type DisplaySalaryEstimate = {
   season: number;
   estimateType: string;
   claimShape: string;

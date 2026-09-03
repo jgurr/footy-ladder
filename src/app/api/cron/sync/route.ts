@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { syncOfficialDrawGames } from "@/lib/nrl-draw";
+import { refreshOfficialGameRounds } from "@/lib/live-refresh";
 import { getGamesBySeason, initializeDatabase } from "@/lib/queries";
-import { findActiveSyncGame } from "@/lib/sync-window";
+import { findSyncTargetRounds } from "@/lib/sync-window";
 
 export const dynamic = "force-dynamic";
 
@@ -18,13 +18,13 @@ export async function GET(request: NextRequest) {
       request.nextUrl.searchParams.get("season") || new Date().getFullYear()
     );
     const requestedRound = request.nextUrl.searchParams.get("round");
-    let round = requestedRound ? Number(requestedRound) : undefined;
+    let rounds = requestedRound ? [Number(requestedRound)] : [];
 
-    if (!round) {
+    if (rounds.length === 0) {
       await initializeDatabase();
-      const activeGame = findActiveSyncGame(await getGamesBySeason(season));
+      rounds = findSyncTargetRounds(await getGamesBySeason(season));
 
-      if (!activeGame) {
+      if (rounds.length === 0) {
         return NextResponse.json({
           success: true,
           source: "nrl-official-draw",
@@ -34,19 +34,25 @@ export async function GET(request: NextRequest) {
         });
       }
 
-      round = activeGame.round;
     }
 
-    const result = await syncOfficialDrawGames(season, {
-      allAvailableRounds: false,
-      round,
-    });
+    const refresh = await refreshOfficialGameRounds(season, rounds);
+
+    if (!refresh.refreshed) {
+      return NextResponse.json({
+        success: true,
+        source: "nrl-official-draw",
+        mode: `skipped-${refresh.reason}`,
+        season,
+        syncedRounds: [],
+      });
+    }
 
     return NextResponse.json({
       success: true,
       source: "nrl-official-draw",
-      mode: round ? "requested-round" : "current-round",
-      ...result,
+      mode: requestedRound ? "requested-round" : "target-rounds",
+      ...refresh.sync,
     });
   } catch (error) {
     console.error("Cron sync error:", error);

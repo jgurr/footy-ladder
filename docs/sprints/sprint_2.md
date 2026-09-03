@@ -18,7 +18,7 @@
 
 **Branch:** `codex/salary-cap-roster-depth`
 
-**Status:** Active - Wests Tigers pilot complete; all-team scale-up is blocked on equal-depth research, verified contract terms, and player-specific salary-source review
+**Status:** Paused - removed from the product UI on 2026-09-03 because the league-wide evidence depth is not yet production quality. Research, datasets, tests, and tooling are preserved for a later restart.
 
 **Depends on:** Sprint 1 foundation data model and team metadata
 

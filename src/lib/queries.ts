@@ -1,4 +1,9 @@
-import { sql, generateId, initSchema } from "./database";
+import {
+  sql,
+  generateId,
+  initGameSyncStateSchema,
+  initSchema,
+} from "./database";
 import { NRL_TEAMS } from "./teams";
 import {
   calculateWinPercentage,
@@ -81,6 +86,52 @@ export async function getGamesBySeason(season: number): Promise<Game[]> {
     ORDER BY round, kickoff NULLS FIRST
   `;
   return rows as Game[];
+}
+
+/**
+ * Acquire a short database-backed lease for an official draw refresh.
+ * Returns false when another request already owns the current cooldown window.
+ */
+export async function tryAcquireGameSyncLease(
+  season: number,
+  leaseSeconds: number
+): Promise<boolean> {
+  await initGameSyncStateSchema();
+
+  const { rows } = await sql`
+    INSERT INTO game_sync_state (season, locked_until, last_attempt_at)
+    VALUES (
+      ${season},
+      CURRENT_TIMESTAMP + (${leaseSeconds} * INTERVAL '1 second'),
+      CURRENT_TIMESTAMP
+    )
+    ON CONFLICT (season) DO UPDATE SET
+      locked_until = EXCLUDED.locked_until,
+      last_attempt_at = EXCLUDED.last_attempt_at
+    WHERE game_sync_state.locked_until <= CURRENT_TIMESTAMP
+    RETURNING season
+  `;
+
+  return rows.length > 0;
+}
+
+export async function completeGameSyncLease(
+  season: number,
+  cooldownSeconds: number
+): Promise<void> {
+  await sql`
+    UPDATE game_sync_state
+    SET locked_until = CURRENT_TIMESTAMP + (${cooldownSeconds} * INTERVAL '1 second')
+    WHERE season = ${season}
+  `;
+}
+
+export async function releaseGameSyncLease(season: number): Promise<void> {
+  await sql`
+    UPDATE game_sync_state
+    SET locked_until = CURRENT_TIMESTAMP
+    WHERE season = ${season}
+  `;
 }
 
 /**

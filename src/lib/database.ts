@@ -1,6 +1,21 @@
 import { sql } from "@vercel/postgres";
 import { v4 as uuidv4 } from "uuid";
 
+let gameSyncStateInitialized = false;
+
+export async function initGameSyncStateSchema(): Promise<void> {
+  if (gameSyncStateInitialized) return;
+
+  await sql`
+    CREATE TABLE IF NOT EXISTS game_sync_state (
+      season INTEGER PRIMARY KEY,
+      locked_until TIMESTAMPTZ NOT NULL,
+      last_attempt_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+    )
+  `;
+  gameSyncStateInitialized = true;
+}
+
 /**
  * Initialize database schema
  */
@@ -65,6 +80,14 @@ export async function initSchema(): Promise<void> {
   await sql`CREATE INDEX IF NOT EXISTS idx_games_season_round ON games(season, round)`;
   await sql`CREATE INDEX IF NOT EXISTS idx_ladder_season_round ON ladder_snapshots(season, round)`;
   await sql`CREATE INDEX IF NOT EXISTS idx_games_status ON games(status)`;
+  await sql`
+    CREATE UNIQUE INDEX IF NOT EXISTS idx_games_match_unique
+    ON games(season, round, home_team_id, away_team_id)
+  `;
+
+  // Shared cooldown for visitor-triggered official game refreshes. The lease
+  // prevents concurrent clients from stampeding the upstream NRL draw page.
+  await initGameSyncStateSchema();
 
   // Salary cap rule facts by season and bucket.
   await sql`

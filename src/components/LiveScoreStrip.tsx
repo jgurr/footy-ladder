@@ -32,7 +32,7 @@ export function LiveScoreStrip({
 
     async function fetchSummary() {
       try {
-        const response = await fetch(`/api/live-summary?season=${season}`, {
+        const response = await fetch(`/api/live-summary?season=${season}&t=${Date.now()}`, {
           cache: "no-store",
         });
         const data = await response.json();
@@ -92,7 +92,7 @@ export function LiveScoreStrip({
         >
           <RefreshCw size={13} />
           <span>
-            Ladder refreshes after official sync, checked every 5 min
+            Official scores and ladder refresh automatically
           </span>
           <span className="hidden sm:inline">
             · Last sync {formatSyncTime(summary?.lastSyncedAt || null)}
