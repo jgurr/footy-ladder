@@ -206,7 +206,7 @@ function HorizontalBracket({ data }: { data: FinalsData }) {
 
   return (
     <svg
-      className="hidden h-auto w-full lg:block"
+      className="h-auto w-[900px] max-w-none lg:w-full"
       viewBox="0 0 900 640"
       role="img"
       aria-label="Horizontal NRL finals bracket"
@@ -222,12 +222,12 @@ function HorizontalBracket({ data }: { data: FinalsData }) {
       {/* Week 1 into semi finals: all routing stays inside the column gutter. */}
       <path d="M184 100 H212 V163 H244" {...route} />
       <path d="M184 240 H226 V187 H244" {...route} />
-      <path d="M184 400 H212 V463 H244" {...route} />
-      <path d="M184 540 H226 V487 H244" {...route} />
+      <path d="M184 540 H212 V463 H244" {...route} />
+      <path d="M184 400 H226 V487 H244" {...route} />
 
       {/* Qualifying-final winners bypass the semis via the empty outer gutters. */}
       <path d="M184 88 H202 V38 H452 V193 H478" {...direct} />
-      <path d="M184 388 H202 V616 H452 V483 H478" {...direct} />
+      <path d="M184 528 H202 V616 H452 V483 H478" {...direct} />
 
       {/* Semi-final winners cross only in the clear inter-column channel. */}
       <path d="M418 170 H438 V507 H478" {...route} />
@@ -239,8 +239,8 @@ function HorizontalBracket({ data }: { data: FinalsData }) {
 
       <SvgMatch match={m.qf1} x={10} y={50} width={174} />
       <SvgMatch match={m.ef1} x={10} y={190} width={174} />
-      <SvgMatch match={m.qf2} x={10} y={350} width={174} />
-      <SvgMatch match={m.ef2} x={10} y={490} width={174} />
+      <SvgMatch match={m.ef2} x={10} y={350} width={174} />
+      <SvgMatch match={m.qf2} x={10} y={490} width={174} />
       <SvgMatch match={m.sf1} x={244} y={120} width={174} />
       <SvgMatch match={m.sf2} x={244} y={420} width={174} />
       <SvgMatch match={m.pf1} x={478} y={150} width={174} />
@@ -264,78 +264,6 @@ function HorizontalBracket({ data }: { data: FinalsData }) {
   );
 }
 
-function VerticalBracket({ data }: { data: FinalsData }) {
-  const { palette } = useTheme();
-  const m = data.matches;
-  const route = {
-    fill: "none",
-    stroke: palette.textMuted,
-    strokeWidth: 1.35,
-    strokeLinejoin: "round" as const,
-    vectorEffect: "non-scaling-stroke" as const,
-  };
-  const direct = { ...route, stroke: FINALS_GOLD, strokeWidth: 1.6 };
-
-  return (
-    <svg
-      className="h-auto w-full lg:hidden"
-      viewBox="0 0 360 1140"
-      role="img"
-      aria-label="Vertical NRL finals bracket"
-    >
-      <title>Vertical NRL finals bracket</title>
-      <desc>Finals Week One progresses downward to the Grand Final. Every connector is routed through the empty gaps between match panels.</desc>
-
-      <StageLabel x={20} y={28}>FINALS WEEK 1</StageLabel>
-      <StageLabel x={180} y={402} anchor="middle">SEMI FINALS</StageLabel>
-      <StageLabel x={180} y={732} anchor="middle">PRELIMINARY FINALS</StageLabel>
-      <StageLabel x={20} y={932}>GRAND FINAL</StageLabel>
-
-      {/* Gold direct-qualification rails live outside the game columns. */}
-      <path d="M95 155 V174 H8 V708 H52 V760" {...direct} />
-      <path d="M265 155 V182 H352 V716 H308 V760" {...direct} />
-
-      {/* QF losers use the centre gutter while EF winners rise through open space. */}
-      <path d="M125 155 V174 H176 V378 H60 V430" {...route} />
-      <path d="M235 155 V182 H184 V386 H300 V430" {...route} />
-      <path d="M95 320 V354 H130 V430" {...route} />
-      <path d="M265 320 V362 H230 V430" {...route} />
-
-      {/* Semi-final crossover happens entirely inside this dedicated connector band. */}
-      <path d="M95 530 V566 H174 V676 H308 V760" {...route} />
-      <path d="M265 530 V590 H186 V652 H52 V760" {...route} />
-
-      {/* Preliminary-final winners meet in the clear space above the GF. */}
-      <path d="M95 860 V888 H138 V960" {...route} />
-      <path d="M265 860 V904 H222 V960" {...route} />
-
-      <SvgMatch match={m.qf1} x={20} y={55} width={150} mobile />
-      <SvgMatch match={m.qf2} x={190} y={55} width={150} mobile />
-      <SvgMatch match={m.ef1} x={20} y={220} width={150} mobile />
-      <SvgMatch match={m.ef2} x={190} y={220} width={150} mobile />
-      <SvgMatch match={m.sf1} x={20} y={430} width={150} mobile />
-      <SvgMatch match={m.sf2} x={190} y={430} width={150} mobile />
-      <SvgMatch match={m.pf1} x={20} y={760} width={150} mobile />
-      <SvgMatch match={m.pf2} x={190} y={760} width={150} mobile />
-      <SvgMatch match={m.gf} x={105} y={960} width={150} mobile />
-
-      <path d="M180 1060 V1090" {...direct} />
-      <text
-        x="180"
-        y="1118"
-        textAnchor="middle"
-        fill={FINALS_GOLD}
-        fontFamily="Georgia, serif"
-        fontSize="14"
-        fontWeight="700"
-        letterSpacing="1"
-      >
-        {data.season} PREMIERS
-      </text>
-    </svg>
-  );
-}
-
 export function FinalsBracket({ data }: { data: FinalsData }) {
   const { palette } = useTheme();
 
@@ -354,16 +282,26 @@ export function FinalsBracket({ data }: { data: FinalsData }) {
           </p>
         </div>
         <div className="font-mono text-[11px] uppercase tracking-wider" style={{ color: palette.textMuted }}>
-          Gold path = qualifying-final winner earns a week off
+          Gold line = straight to the prelims
         </div>
       </div>
 
       <div
-        className="overflow-hidden rounded-lg border px-1 py-3 sm:px-3"
+        className="mb-2 text-right font-mono text-[10px] uppercase tracking-[0.14em] lg:hidden"
+        style={{ color: palette.textMuted }}
+        aria-hidden="true"
+      >
+        Swipe to explore ↔
+      </div>
+
+      <div
+        className="overflow-x-auto overflow-y-hidden rounded-lg border px-1 py-3 sm:px-3"
         style={{ borderColor: palette.border, background: "rgba(255,255,255,0.02)" }}
+        role="region"
+        aria-label="Finals bracket. Scroll horizontally to follow the series."
+        tabIndex={0}
       >
         <HorizontalBracket data={data} />
-        <VerticalBracket data={data} />
       </div>
     </section>
   );
