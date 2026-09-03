@@ -7,7 +7,9 @@ import { FixtureDifficulty } from "./FixtureDifficulty";
 import { EloGraph, type EloHistoryData } from "./EloGraph";
 import { MonteCarloTable } from "./MonteCarloTable";
 import { RunHomeTable } from "./RunHomeTable";
+import { FinalsBracket } from "./FinalsBracket";
 import { ViewNavigation, type AppView } from "./ViewNavigation";
+import type { FinalsData } from "@/lib/finals";
 import type { MonteCarloData } from "@/lib/monte-carlo";
 import type { RunHomeData } from "@/lib/run-home";
 
@@ -95,6 +97,7 @@ interface LadderTableProps {
   initialRound?: number;
   initialRounds?: number[];
   initialLadder?: LadderEntry[];
+  initialView?: AppView;
 }
 
 interface BootstrapData {
@@ -110,6 +113,7 @@ interface SeasonStatusData {
   liveGames: number;
   latestFinalRound: number;
   nextScheduledRound: number | null;
+  regularSeasonComplete: boolean;
 }
 
 type ViewType = AppView;
@@ -201,7 +205,7 @@ function usesRoundSelector(view: ViewType): boolean {
 }
 
 function usesCurrentSeasonOnly(view: ViewType): boolean {
-  return view === "runHome" || view === "monteCarlo" || view === "elo";
+  return view === "runHome" || view === "monteCarlo" || view === "finals" || view === "elo";
 }
 
 function getKickoffMs(game: Game): number | null {
@@ -283,6 +287,7 @@ export function LadderTable({
   initialRound = 1,
   initialRounds = [],
   initialLadder = [],
+  initialView = "ladder",
 }: LadderTableProps) {
   const { palette } = useTheme();
   const hasInitialData = initialRounds.length > 0 && initialLadder.length > 0;
@@ -312,6 +317,9 @@ export function LadderTable({
   const [eloHistoryData, setEloHistoryData] = useState<EloHistoryData | null>(null);
   const [eloHistoryDataKey, setEloHistoryDataKey] = useState("");
   const [eloSyncedAt, setEloSyncedAt] = useState<string | null>(null);
+  const [finalsData, setFinalsData] = useState<FinalsData | null>(null);
+  const [finalsLoading, setFinalsLoading] = useState(false);
+  const [finalsDataKey, setFinalsDataKey] = useState("");
   const [liveDataVersion, setLiveDataVersion] = useState("");
   const [season, setSeason] = useState(initialSeason);
   const [round, setRound] = useState<number>(initialRound);
@@ -320,7 +328,7 @@ export function LadderTable({
   const [scoreRounds, setScoreRounds] = useState<number[]>(initialRounds);
   const [scoreRoundsLoading, setScoreRoundsLoading] = useState(false);
   const [scoresRoundTouched, setScoresRoundTouched] = useState(false);
-  const [view, setView] = useState<ViewType>("ladder");
+  const [view, setView] = useState<ViewType>(initialView);
   const [ladderSort, setLadderSort] = useState<LadderSortKey>("winPct");
   const [ladderSortDir, setLadderSortDir] = useState<SortDirection>("desc");
   const [forAgainstSort, setForAgainstSort] = useState<ForAgainstSortKey>("pfPerGame");
@@ -393,6 +401,8 @@ export function LadderTable({
         setEloHistoryDataKey("");
         setEloSyncedAt(null);
         lastObservedEloSync.current = null;
+        setFinalsData(null);
+        setFinalsDataKey("");
         const nextRound = data.latestRound || rounds[0] || 1;
         loadedLadderKey.current = `${season}:${nextRound}`;
         setRound(nextRound);
@@ -621,6 +631,8 @@ export function LadderTable({
           setNext5Data(null);
           setTeamSchedule(null);
           setRunHomeData(null);
+          setFinalsData(null);
+          setFinalsDataKey("");
 
           if (data.latestFinalRound > latestKnownRound) {
             setAvailableRounds((current) =>
@@ -728,6 +740,35 @@ export function LadderTable({
     fetchEloHistory();
   }, [view, season, eloHistoryData, eloHistoryDataKey, eloSyncedAt]);
 
+  // Build the finals bracket from the regular-season ladder and official finals games.
+  useEffect(() => {
+    if (view !== "finals") return;
+
+    const dataKey = `${season}:${liveDataVersion || "initial"}`;
+    if (finalsData && finalsDataKey === dataKey) return;
+
+    async function fetchFinals() {
+      setFinalsLoading(true);
+      try {
+        const params = new URLSearchParams({
+          season: String(season),
+          v: API_VERSION,
+          syncedAt: liveDataVersion || "initial",
+        });
+        const res = await fetch(`/api/finals?${params}`, { cache: "no-store" });
+        if (!res.ok) throw new Error(`Finals returned ${res.status}`);
+        setFinalsData(await res.json());
+        setFinalsDataKey(dataKey);
+      } catch (error) {
+        console.error("Failed to fetch finals bracket:", error);
+      } finally {
+        setFinalsLoading(false);
+      }
+    }
+
+    fetchFinals();
+  }, [view, season, liveDataVersion, finalsData, finalsDataKey]);
+
   // Handle team click - navigate to team view
   const handleTeamClick = (teamId: string) => {
     setSelectedTeamId(teamId);
@@ -758,6 +799,7 @@ export function LadderTable({
       view === "scores" ||
       view === "runHome" ||
       view === "monteCarlo" ||
+      view === "finals" ||
       view === "elo"
     ) {
       return [...ladder].sort((a, b) => a.position - b.position);
@@ -970,6 +1012,16 @@ export function LadderTable({
       )}
       {view === "monteCarlo" && !monteCarloLoading && monteCarloData && (
         <MonteCarloTable data={monteCarloData} />
+      )}
+
+      {/* Finals Bracket View */}
+      {view === "finals" && finalsLoading && (
+        <div className="flex h-64 items-center justify-center rounded-lg border" style={{ borderColor: palette.border }}>
+          <div className="font-mono" style={{ color: palette.accent }}>Building finals bracket...</div>
+        </div>
+      )}
+      {view === "finals" && !finalsLoading && finalsData && (
+        <FinalsBracket data={finalsData} />
       )}
 
       {/* Elo Graph View */}
@@ -1255,7 +1307,7 @@ export function LadderTable({
       )}
 
       {/* Table (for ladder/forAgainst/next5 views) */}
-      {view !== "scores" && view !== "team" && view !== "runHome" && view !== "monteCarlo" && view !== "elo" && !(view === "next5" && next5Loading) && (
+      {view !== "scores" && view !== "team" && view !== "runHome" && view !== "monteCarlo" && view !== "finals" && view !== "elo" && !(view === "next5" && next5Loading) && (
         <div
           className="overflow-hidden rounded-lg border"
           style={{ borderColor: palette.border }}

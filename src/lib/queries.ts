@@ -13,6 +13,7 @@ import {
   assignPositions,
 } from "./calculations";
 import type { Team, Game, LadderEntry, GameStatus } from "./types";
+import { REGULAR_SEASON_LAST_ROUND } from "./season";
 
 let schemaInitialized = false;
 
@@ -192,11 +193,12 @@ export async function calculateLadderFromGames(
   season: number,
   upToRound: number
 ): Promise<LadderEntry[]> {
+  const ladderRound = Math.min(upToRound, REGULAR_SEASON_LAST_ROUND);
   // Get all completed games up to the specified round
   const { rows: games } = await sql`
     SELECT home_team_id, away_team_id, home_score, away_score, round
     FROM games
-    WHERE season = ${season} AND round <= ${upToRound} AND status = 'final'
+    WHERE season = ${season} AND round <= ${ladderRound} AND status = 'final'
   `;
 
   // Initialize stats for all teams
@@ -277,7 +279,7 @@ export async function calculateLadderFromGames(
 
     // Calculate byes (rounds where team didn't play)
     let byesTaken = 0;
-    for (let r = 1; r <= upToRound; r++) {
+    for (let r = 1; r <= ladderRound; r++) {
       if (!teamStats.roundsPlayed.has(r)) {
         byesTaken++;
       }
@@ -286,7 +288,7 @@ export async function calculateLadderFromGames(
     entries.push({
       team,
       season,
-      round: upToRound,
+      round: ladderRound,
       played: teamStats.played,
       wins: teamStats.wins,
       losses: teamStats.losses,
@@ -313,9 +315,13 @@ export async function getLatestLadderRound(season: number): Promise<number> {
   const { rows } = await sql`
     SELECT MAX(round) as "maxRound"
     FROM (
-      SELECT round FROM ladder_snapshots WHERE season = ${season}
+      SELECT round FROM ladder_snapshots
+      WHERE season = ${season} AND round <= ${REGULAR_SEASON_LAST_ROUND}
       UNION ALL
-      SELECT round FROM games WHERE season = ${season} AND status = 'final'
+      SELECT round FROM games
+      WHERE season = ${season}
+        AND status = 'final'
+        AND round <= ${REGULAR_SEASON_LAST_ROUND}
     ) rounds
   `;
 
@@ -329,9 +335,13 @@ export async function getAvailableLadderRounds(season: number): Promise<number[]
   const { rows } = await sql`
     SELECT DISTINCT round
     FROM (
-      SELECT round FROM ladder_snapshots WHERE season = ${season}
+      SELECT round FROM ladder_snapshots
+      WHERE season = ${season} AND round <= ${REGULAR_SEASON_LAST_ROUND}
       UNION
-      SELECT round FROM games WHERE season = ${season} AND status = 'final'
+      SELECT round FROM games
+      WHERE season = ${season}
+        AND status = 'final'
+        AND round <= ${REGULAR_SEASON_LAST_ROUND}
     ) rounds
     ORDER BY round DESC
   `;
@@ -348,7 +358,7 @@ export async function getLadder(season: number, round?: number): Promise<LadderE
   if (!round) {
     currentRound = await getLatestLadderRound(season);
   } else {
-    currentRound = round;
+    currentRound = Math.min(round, REGULAR_SEASON_LAST_ROUND);
   }
 
   // Prefer precomputed snapshots. Draw sync writes these from canonical game

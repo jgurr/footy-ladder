@@ -28,6 +28,7 @@ export default async function Home() {
           initialRound={initialData.latestRound}
           initialRounds={initialData.rounds}
           initialSeason={initialData.season}
+          initialView={initialData.status.regularSeasonComplete ? "finals" : "ladder"}
         />
       </div>
       <Footer initialStatus={initialData.status} />

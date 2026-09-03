@@ -3,6 +3,8 @@ import { appendFile } from "node:fs/promises";
 export const PRE_GAME_MINUTES = 5;
 export const GAME_DURATION_MINUTES = 120;
 export const POST_GAME_MINUTES = 60;
+export const REGULAR_SEASON_LAST_ROUND = 27;
+export const FINALS_LAST_ROUND = 31;
 
 function isInsideSyncWindow(game, nowMs) {
   if (!game.kickoff) return false;
@@ -48,6 +50,35 @@ export function findSyncTargetRounds(games, now = new Date()) {
   return [...rounds].sort((a, b) => a - b);
 }
 
+/**
+ * Once a finals round is complete, probe the next official draw round until
+ * its fixtures are published. The sync endpoint safely returns an empty round
+ * when NRL.com has not exposed it yet.
+ */
+export function findFinalsDiscoveryRound(games) {
+  const lastRegularRound = games.filter(
+    (game) => game.round === REGULAR_SEASON_LAST_ROUND
+  );
+  if (
+    lastRegularRound.length === 0 ||
+    lastRegularRound.some((game) => game.status !== "final")
+  ) {
+    return null;
+  }
+
+  for (
+    let round = REGULAR_SEASON_LAST_ROUND + 1;
+    round <= FINALS_LAST_ROUND;
+    round++
+  ) {
+    const roundGames = games.filter((game) => game.round === round);
+    if (roundGames.length === 0) return round;
+    if (roundGames.some((game) => game.status !== "final")) return null;
+  }
+
+  return null;
+}
+
 async function writeOutputs(values) {
   if (!process.env.GITHUB_OUTPUT) return;
 
@@ -74,6 +105,9 @@ async function main() {
 
   const games = await response.json();
   const targetRounds = findSyncTargetRounds(games);
+  const discoveryRound =
+    targetRounds.length === 0 ? findFinalsDiscoveryRound(games) : null;
+  if (discoveryRound) targetRounds.push(discoveryRound);
   const targetGame = games.find((game) => targetRounds.includes(game.round));
   const active = targetRounds.length > 0;
 
@@ -82,7 +116,7 @@ async function main() {
     season,
     // Let the endpoint reconcile every target when more than one round is stale.
     round: targetRounds.length === 1 ? targetRounds[0] : "",
-    game_id: targetGame?.id || "",
+    game_id: targetGame?.id || (discoveryRound ? `discover-finals-${discoveryRound}` : ""),
   });
 
   if (targetGame) {
@@ -92,6 +126,8 @@ async function main() {
         `${targetGame.awayTeam?.shortCode || targetGame.awayTeamId} at ` +
         `${targetGame.homeTeam?.shortCode || targetGame.homeTeamId}`
     );
+  } else if (discoveryRound) {
+    console.log(`Checking NRL.com for Finals Round ${discoveryRound}.`);
   } else {
     console.log("No active or overdue games; no production sync required.");
   }

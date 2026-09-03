@@ -6,6 +6,7 @@ import {
 } from "./queries";
 import { NRL_TEAMS } from "./teams";
 import type { Game, GameStatus } from "./types";
+import { REGULAR_SEASON_LAST_ROUND } from "./season";
 
 const NRL_DRAW_URL = "https://www.nrl.com/draw/";
 const NRL_PREMIERSHIP_COMPETITION_ID = 111;
@@ -112,13 +113,24 @@ function extractDrawData(html: string): NrlDrawData {
   return JSON.parse(decodeHtmlAttribute(match[1])) as NrlDrawData;
 }
 
-function getRoundNumber(roundTitle: string): number {
+export function parseOfficialRoundNumber(roundTitle: string): number {
   const match = roundTitle.match(/Round\s+(\d+)/i);
-  if (!match) {
-    throw new Error(`Could not parse round title "${roundTitle}"`);
-  }
+  if (match) return Number(match[1]);
 
-  return Number(match[1]);
+  const normalized = roundTitle.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+  const finalsRound =
+    normalized === "finals week 1"
+      ? 28
+      : normalized === "finals week 2"
+        ? 29
+        : normalized === "finals week 3"
+          ? 30
+          : normalized === "grand final"
+            ? 31
+            : null;
+  if (finalsRound) return finalsRound;
+
+  throw new Error(`Could not parse round title "${roundTitle}"`);
 }
 
 function getTeamId(team: NrlFixtureTeam): string {
@@ -199,10 +211,11 @@ export async function fetchOfficialDrawGames(
   const snapshotSeason = Number(data.selectedSeasonId);
   const snapshotRound = Number(data.selectedRoundId);
 
+  const requestedRound = round || snapshotRound;
   const games = data.fixtures
     .filter((fixture) => fixture.type === "Match")
     .map((fixture) => {
-      const fixtureRound = getRoundNumber(fixture.roundTitle || `Round ${snapshotRound}`);
+      const fixtureRound = parseOfficialRoundNumber(fixture.roundTitle || `Round ${snapshotRound}`);
       const status = getGameStatus(fixture);
       const homeScore = fixture.homeTeam.score ?? null;
       const awayScore = fixture.awayTeam.score ?? null;
@@ -219,11 +232,12 @@ export async function fetchOfficialDrawGames(
         status,
         minute: status === "live" ? getGameMinute(fixture) : undefined,
       };
-    });
+    })
+    .filter((game) => game.round === requestedRound);
 
   return {
     season: snapshotSeason,
-    round: snapshotRound,
+    round: requestedRound,
     games,
   };
 }
@@ -270,7 +284,10 @@ export async function syncOfficialDrawGames(
     gamesPerRound[snapshot.round] = snapshot.games.length;
     totalGames += snapshot.games.length;
 
-    if (snapshot.games.some((game) => game.status === "final")) {
+    if (
+      snapshot.round <= REGULAR_SEASON_LAST_ROUND &&
+      snapshot.games.some((game) => game.status === "final")
+    ) {
       latestFinalRound = Math.max(latestFinalRound, snapshot.round);
       roundsToSnapshot.add(snapshot.round);
     }

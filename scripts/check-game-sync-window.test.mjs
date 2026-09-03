@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   findActiveSyncWindow,
+  findFinalsDiscoveryRound,
   findSyncTargetRounds,
 } from "./check-game-sync-window.mjs";
 
@@ -74,5 +75,42 @@ test("deduplicates rounds containing multiple active games", () => {
       new Date("2026-06-20T10:05:00.000Z")
     ),
     [16]
+  );
+});
+
+test("discovers finals week one after every Round 27 game is final", () => {
+  const regularSeason = Array.from({ length: 8 }, (_, index) => ({
+    id: `round-27-${index}`,
+    round: 27,
+    kickoff: "2026-09-06T06:05:00.000Z",
+    status: "final",
+  }));
+
+  assert.equal(findFinalsDiscoveryRound(regularSeason), 28);
+});
+
+test("waits for the last regular-season game before discovering finals", () => {
+  const regularSeason = [
+    { id: "finished", round: 27, kickoff: null, status: "final" },
+    { id: "scheduled", round: 27, kickoff: null, status: "scheduled" },
+  ];
+
+  assert.equal(findFinalsDiscoveryRound(regularSeason), null);
+});
+
+test("discovers the next finals round only after the previous one is final", () => {
+  const games = [
+    { id: "r27", round: 27, kickoff: null, status: "final" },
+    { id: "r28-a", round: 28, kickoff: null, status: "final" },
+    { id: "r28-b", round: 28, kickoff: null, status: "final" },
+  ];
+
+  assert.equal(findFinalsDiscoveryRound(games), 29);
+  assert.equal(
+    findFinalsDiscoveryRound([
+      ...games,
+      { id: "r29", round: 29, kickoff: null, status: "scheduled" },
+    ]),
+    null
   );
 });
