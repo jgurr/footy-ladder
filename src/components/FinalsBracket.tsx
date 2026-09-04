@@ -38,22 +38,25 @@ function SvgMatch({
   y,
   width,
   mobile = false,
+  reverseSlots = false,
 }: {
   match: FinalsMatch;
   x: number;
   y: number;
   width: number;
   mobile?: boolean;
+  reverseSlots?: boolean;
 }) {
   const { palette } = useTheme();
   const height = 100;
   const titleSize = mobile ? 11 : 12;
   const teamSize = mobile ? 12 : 13;
   const meta = formatMatchMeta(match);
+  const slotOrder = reverseSlots ? ([1, 0] as const) : ([0, 1] as const);
 
   return (
-    <g aria-label={`${match.title}: ${teamLabel(match, 0, false)} versus ${teamLabel(match, 1, false)}`}>
-      <title>{`${match.title}: ${teamLabel(match, 0, false)} versus ${teamLabel(match, 1, false)}`}</title>
+    <g aria-label={`${match.title}: ${teamLabel(match, slotOrder[0], false)} versus ${teamLabel(match, slotOrder[1], false)}`}>
+      <title>{`${match.title}: ${teamLabel(match, slotOrder[0], false)} versus ${teamLabel(match, slotOrder[1], false)}`}</title>
       <rect
         x={x}
         y={y}
@@ -90,14 +93,15 @@ function SvgMatch({
         {match.subtitle.toUpperCase()}
       </text>
 
-      {match.slots.map((slot, index) => {
-        const rowY = y + 53 + index * 23;
+      {slotOrder.map((slotIndex, displayIndex) => {
+        const slot = match.slots[slotIndex];
+        const rowY = y + 53 + displayIndex * 23;
         const logo = slot.team ? getTeamLogoSrc(slot.team.id, 24, "compact") : null;
         const score = slot.score === null ? "—" : String(slot.score);
         const isKnown = Boolean(slot.team);
 
         return (
-          <g key={`${match.id}-${index}`} opacity={isKnown ? 1 : 0.72}>
+          <g key={`${match.id}-${slotIndex}`} opacity={isKnown ? 1 : 0.72}>
             {logo ? (
               <image
                 href={logo}
@@ -135,7 +139,7 @@ function SvgMatch({
               fontSize={teamSize}
               fontWeight={slot.winner ? "700" : "500"}
             >
-              {teamLabel(match, index, mobile)}
+              {teamLabel(match, slotIndex, mobile)}
             </text>
             <text
               x={x + width - 9}
@@ -219,32 +223,32 @@ function HorizontalBracket({ data }: { data: FinalsData }) {
       <StageLabel x={478} y={24}>PRELIMINARY FINALS</StageLabel>
       <StageLabel x={716} y={24}>GRAND FINAL</StageLabel>
 
-      {/* Week 1 into semi finals: all routing stays inside the column gutter. */}
-      <path d="M184 100 H212 V163 H244" {...route} />
-      <path d="M184 240 H226 V187 H244" {...route} />
-      <path d="M184 540 H212 V463 H244" {...route} />
-      <path d="M184 400 H226 V487 H244" {...route} />
+      {/* Each Week 1 pair converges symmetrically into its semi final. */}
+      <path d="M184 100 H204 V163 H244" {...route} />
+      <path d="M184 240 H220 V187 H244" {...route} />
+      <path d="M184 400 H220 V453 H244" {...route} />
+      <path d="M184 540 H204 V477 H244" {...route} />
 
-      {/* Qualifying-final winners bypass the semis via the empty outer gutters. */}
-      <path d="M184 88 H202 V38 H452 V193 H478" {...direct} />
-      <path d="M184 528 H202 V616 H452 V483 H478" {...direct} />
+      {/* Qualifying-final winners mirror each other around the bracket centreline. */}
+      <path d="M204 100 V40 H452 V193 H478" {...direct} />
+      <path d="M204 540 V600 H452 V447 H478" {...direct} />
 
-      {/* Semi-final winners cross only in the clear inter-column channel. */}
-      <path d="M418 170 H438 V507 H478" {...route} />
-      <path d="M418 470 H458 V217 H478" {...route} />
+      {/* The semi-final winners make the bracket's one intentional crossing. */}
+      <path d="M418 170 L478 423" {...route} />
+      <path d="M418 470 L478 217" {...route} />
 
-      {/* Preliminary-final winners converge beside, not underneath, the GF node. */}
-      <path d="M652 200 H678 V313 H716" {...route} />
-      <path d="M652 490 H694 V337 H716" {...route} />
+      {/* Preliminary-final winners take equal mirrored routes into the GF. */}
+      <path d="M652 200 H684 V308 H716" {...route} />
+      <path d="M652 440 H684 V332 H716" {...route} />
 
       <SvgMatch match={m.qf1} x={10} y={50} width={174} />
       <SvgMatch match={m.ef1} x={10} y={190} width={174} />
       <SvgMatch match={m.ef2} x={10} y={350} width={174} />
       <SvgMatch match={m.qf2} x={10} y={490} width={174} />
       <SvgMatch match={m.sf1} x={244} y={120} width={174} />
-      <SvgMatch match={m.sf2} x={244} y={420} width={174} />
+      <SvgMatch match={m.sf2} x={244} y={420} width={174} reverseSlots />
       <SvgMatch match={m.pf1} x={478} y={150} width={174} />
-      <SvgMatch match={m.pf2} x={478} y={440} width={174} />
+      <SvgMatch match={m.pf2} x={478} y={390} width={174} reverseSlots />
       <SvgMatch match={m.gf} x={716} y={270} width={174} />
 
       <text
