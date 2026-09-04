@@ -5,9 +5,6 @@ import type { FinalsData, FinalsMatch } from "@/lib/finals";
 import { useTheme } from "./ThemeProvider";
 
 const FINALS_GOLD = "#d7b75b";
-// Official NRL.com photograph of the current Provan-Summons Trophy.
-const NRL_TROPHY_IMAGE =
-  "https://www.nrl.com/contentassets/169e5697350046adbc0997a23eba287b/67834306_trophy-2plp9742_20221022264.jpg?center=0.324%2C0.564&preset=hero-article-small";
 
 function matchCode(match: FinalsMatch): string {
   return match.id.toUpperCase();
@@ -188,18 +185,10 @@ function SvgPremier({
   const { palette } = useTheme();
   const winner = match.slots.find((slot) => slot.winner)?.team || null;
   const winnerLogo = winner ? getTeamLogoSrc(winner.id, 24, "full") : null;
-  const trophyX = x + 78;
-  const trophyWidth = width - 86;
-  const clipId = `premier-trophy-${season}`;
 
   return (
     <g aria-label={`${season} Premiers: ${winner?.name || "Winner of the Grand Final"}`}>
       <title>{`${season} Premiers: ${winner?.name || "Winner of the Grand Final"}`}</title>
-      <defs>
-        <clipPath id={clipId}>
-          <rect x={trophyX} y={y + 8} width={trophyWidth} height={84} rx={5} />
-        </clipPath>
-      </defs>
       <rect
         x={x}
         y={y}
@@ -210,39 +199,32 @@ function SvgPremier({
         stroke={FINALS_GOLD}
         strokeWidth={1.5}
       />
-      <image
-        href={NRL_TROPHY_IMAGE}
-        x={trophyX}
-        y={y + 8}
-        width={trophyWidth}
-        height={84}
-        preserveAspectRatio="xMidYMid slice"
-        clipPath={`url(#${clipId})`}
-      />
       <line
-        x1={x + 71}
-        y1={y + 8}
-        x2={x + 71}
-        y2={y + 92}
+        x1={x}
+        y1={y + 27}
+        x2={x + width}
+        y2={y + 27}
         stroke={palette.border}
       />
       <text
-        x={x + 8}
-        y={y + 17}
+        x={x + width / 2}
+        y={y + 18}
+        textAnchor="middle"
         fill={FINALS_GOLD}
         fontFamily="ui-monospace, SFMono-Regular, Menlo, monospace"
-        fontSize="10"
+        fontSize="11"
         fontWeight="700"
-        letterSpacing="0.8"
+        letterSpacing="1"
       >
         PREMIERS
       </text>
       <text
-        x={x + 8}
-        y={y + 35}
+        x={x + width / 2}
+        y={y + 52}
+        textAnchor="middle"
         fill={palette.text}
         fontFamily="Georgia, serif"
-        fontSize="15"
+        fontSize="21"
         fontWeight="700"
       >
         {season}
@@ -250,50 +232,41 @@ function SvgPremier({
       {winnerLogo ? (
         <image
           href={winnerLogo}
-          x={x + 8}
-          y={y + 44}
+          x={x + 15}
+          y={y + 63}
           width={18}
           height={18}
           preserveAspectRatio="xMidYMid meet"
         />
       ) : (
         <circle
-          cx={x + 14}
-          cy={y + 54}
+          cx={x + 25}
+          cy={y + 73}
           r={3}
           fill="none"
           stroke={palette.textMuted}
         />
       )}
       <text
-        x={x + (winnerLogo ? 30 : 22)}
-        y={y + 58}
+        x={x + (winnerLogo ? 39 : 36)}
+        y={y + 77}
         fill={winner ? FINALS_GOLD : palette.text}
         fontFamily="ui-monospace, SFMono-Regular, Menlo, monospace"
-        fontSize="9"
+        fontSize="10"
         fontWeight="700"
       >
         {winner?.name || "WINNER GF"}
       </text>
       <text
-        x={x + 8}
-        y={y + 80}
+        x={x + width / 2}
+        y={y + 92}
+        textAnchor="middle"
         fill={palette.textMuted}
         fontFamily="ui-monospace, SFMono-Regular, Menlo, monospace"
-        fontSize="6.5"
-        letterSpacing="0.35"
+        fontSize="7"
+        letterSpacing="0.55"
       >
-        PROVAN-SUMMONS
-      </text>
-      <text
-        x={x + 8}
-        y={y + 90}
-        fill={palette.textMuted}
-        fontFamily="ui-monospace, SFMono-Regular, Menlo, monospace"
-        fontSize="6.5"
-        letterSpacing="0.35"
-      >
-        TROPHY
+        NRL CHAMPIONS
       </text>
     </g>
   );
