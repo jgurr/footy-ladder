@@ -5,6 +5,9 @@ import type { FinalsData, FinalsMatch } from "@/lib/finals";
 import { useTheme } from "./ThemeProvider";
 
 const FINALS_GOLD = "#d7b75b";
+// Official NRL.com photograph of the current Provan-Summons Trophy.
+const NRL_TROPHY_IMAGE =
+  "https://www.nrl.com/contentassets/169e5697350046adbc0997a23eba287b/67834306_trophy-2plp9742_20221022264.jpg?center=0.324%2C0.564&preset=hero-article-small";
 
 function matchCode(match: FinalsMatch): string {
   return match.id.toUpperCase();
@@ -169,6 +172,133 @@ function SvgMatch({
   );
 }
 
+function SvgPremier({
+  match,
+  season,
+  x,
+  y,
+  width,
+}: {
+  match: FinalsMatch;
+  season: number;
+  x: number;
+  y: number;
+  width: number;
+}) {
+  const { palette } = useTheme();
+  const winner = match.slots.find((slot) => slot.winner)?.team || null;
+  const winnerLogo = winner ? getTeamLogoSrc(winner.id, 24, "full") : null;
+  const trophyX = x + 78;
+  const trophyWidth = width - 86;
+  const clipId = `premier-trophy-${season}`;
+
+  return (
+    <g aria-label={`${season} Premiers: ${winner?.name || "Winner of the Grand Final"}`}>
+      <title>{`${season} Premiers: ${winner?.name || "Winner of the Grand Final"}`}</title>
+      <defs>
+        <clipPath id={clipId}>
+          <rect x={trophyX} y={y + 8} width={trophyWidth} height={84} rx={5} />
+        </clipPath>
+      </defs>
+      <rect
+        x={x}
+        y={y}
+        width={width}
+        height={100}
+        rx={8}
+        fill={palette.bg}
+        stroke={FINALS_GOLD}
+        strokeWidth={1.5}
+      />
+      <image
+        href={NRL_TROPHY_IMAGE}
+        x={trophyX}
+        y={y + 8}
+        width={trophyWidth}
+        height={84}
+        preserveAspectRatio="xMidYMid slice"
+        clipPath={`url(#${clipId})`}
+      />
+      <line
+        x1={x + 71}
+        y1={y + 8}
+        x2={x + 71}
+        y2={y + 92}
+        stroke={palette.border}
+      />
+      <text
+        x={x + 8}
+        y={y + 17}
+        fill={FINALS_GOLD}
+        fontFamily="ui-monospace, SFMono-Regular, Menlo, monospace"
+        fontSize="10"
+        fontWeight="700"
+        letterSpacing="0.8"
+      >
+        PREMIERS
+      </text>
+      <text
+        x={x + 8}
+        y={y + 35}
+        fill={palette.text}
+        fontFamily="Georgia, serif"
+        fontSize="15"
+        fontWeight="700"
+      >
+        {season}
+      </text>
+      {winnerLogo ? (
+        <image
+          href={winnerLogo}
+          x={x + 8}
+          y={y + 44}
+          width={18}
+          height={18}
+          preserveAspectRatio="xMidYMid meet"
+        />
+      ) : (
+        <circle
+          cx={x + 14}
+          cy={y + 54}
+          r={3}
+          fill="none"
+          stroke={palette.textMuted}
+        />
+      )}
+      <text
+        x={x + (winnerLogo ? 30 : 22)}
+        y={y + 58}
+        fill={winner ? FINALS_GOLD : palette.text}
+        fontFamily="ui-monospace, SFMono-Regular, Menlo, monospace"
+        fontSize="9"
+        fontWeight="700"
+      >
+        {winner?.name || "WINNER GF"}
+      </text>
+      <text
+        x={x + 8}
+        y={y + 80}
+        fill={palette.textMuted}
+        fontFamily="ui-monospace, SFMono-Regular, Menlo, monospace"
+        fontSize="6.5"
+        letterSpacing="0.35"
+      >
+        PROVAN-SUMMONS
+      </text>
+      <text
+        x={x + 8}
+        y={y + 90}
+        fill={palette.textMuted}
+        fontFamily="ui-monospace, SFMono-Regular, Menlo, monospace"
+        fontSize="6.5"
+        letterSpacing="0.35"
+      >
+        TROPHY
+      </text>
+    </g>
+  );
+}
+
 function StageLabel({
   x,
   y,
@@ -216,54 +346,45 @@ function HorizontalBracket({ data }: { data: FinalsData }) {
       aria-label="Horizontal NRL finals bracket"
     >
       <title>Horizontal NRL finals bracket</title>
-      <desc>Finals Week One progresses from left to right through the Grand Final. Gold routes show qualifying-final winners advancing directly to preliminary finals.</desc>
+      <desc>Finals Week One progresses from left to right through the Grand Final and Premiers. Gold routes show qualifying-final winners advancing directly to preliminary finals.</desc>
 
       <StageLabel x={10} y={24}>FINALS WEEK 1</StageLabel>
-      <StageLabel x={244} y={24}>SEMI FINALS</StageLabel>
-      <StageLabel x={478} y={24}>PRELIMINARY FINALS</StageLabel>
-      <StageLabel x={716} y={24}>GRAND FINAL</StageLabel>
+      <StageLabel x={200} y={24}>SEMI FINALS</StageLabel>
+      <StageLabel x={390} y={24}>PRELIMINARY FINALS</StageLabel>
+      <StageLabel x={580} y={24}>GRAND FINAL</StageLabel>
+      <StageLabel x={760} y={24}>PREMIERS</StageLabel>
 
       {/* Each Week 1 pair converges symmetrically into its semi final. */}
-      <path d="M184 100 H204 V163 H244" {...route} />
-      <path d="M184 240 H220 V187 H244" {...route} />
-      <path d="M184 400 H220 V453 H244" {...route} />
-      <path d="M184 540 H204 V477 H244" {...route} />
+      <path d="M165 100 H183 V163 H200" {...route} />
+      <path d="M165 240 H183 V187 H200" {...route} />
+      <path d="M165 400 H183 V453 H200" {...route} />
+      <path d="M165 540 H183 V477 H200" {...route} />
 
       {/* Qualifying-final winners mirror each other around the bracket centreline. */}
-      <path d="M204 100 V40 H452 V193 H478" {...direct} />
-      <path d="M204 540 V600 H452 V447 H478" {...direct} />
+      <path d="M183 100 V40 H372 V193 H390" {...direct} />
+      <path d="M183 540 V600 H372 V447 H390" {...direct} />
 
       {/* The semi-final winners make the bracket's one intentional crossing. */}
-      <path d="M418 170 L478 423" {...route} />
-      <path d="M418 470 L478 217" {...route} />
+      <path d="M355 170 L390 423" {...route} />
+      <path d="M355 470 L390 217" {...route} />
 
       {/* Preliminary-final winners take equal mirrored routes into the GF. */}
-      <path d="M652 200 H684 V308 H716" {...route} />
-      <path d="M652 440 H684 V332 H716" {...route} />
+      <path d="M545 200 H562 V308 H580" {...route} />
+      <path d="M545 440 H562 V332 H580" {...route} />
 
-      <SvgMatch match={m.qf1} x={10} y={50} width={174} />
-      <SvgMatch match={m.ef1} x={10} y={190} width={174} />
-      <SvgMatch match={m.ef2} x={10} y={350} width={174} />
-      <SvgMatch match={m.qf2} x={10} y={490} width={174} />
-      <SvgMatch match={m.sf1} x={244} y={120} width={174} />
-      <SvgMatch match={m.sf2} x={244} y={420} width={174} reverseSlots />
-      <SvgMatch match={m.pf1} x={478} y={150} width={174} />
-      <SvgMatch match={m.pf2} x={478} y={390} width={174} reverseSlots />
-      <SvgMatch match={m.gf} x={716} y={270} width={174} />
+      {/* The Grand Final winner has one clear destination. */}
+      <path d="M735 320 H760" {...direct} />
 
-      <text
-        x="803"
-        y="398"
-        textAnchor="middle"
-        fill={FINALS_GOLD}
-        fontFamily="Georgia, serif"
-        fontSize="14"
-        fontWeight="700"
-        letterSpacing="1"
-      >
-        {data.season} PREMIERS
-      </text>
-      <path d="M803 370 V382" {...direct} />
+      <SvgMatch match={m.qf1} x={10} y={50} width={155} />
+      <SvgMatch match={m.ef1} x={10} y={190} width={155} />
+      <SvgMatch match={m.ef2} x={10} y={350} width={155} />
+      <SvgMatch match={m.qf2} x={10} y={490} width={155} />
+      <SvgMatch match={m.sf1} x={200} y={120} width={155} />
+      <SvgMatch match={m.sf2} x={200} y={420} width={155} reverseSlots />
+      <SvgMatch match={m.pf1} x={390} y={150} width={155} />
+      <SvgMatch match={m.pf2} x={390} y={390} width={155} reverseSlots />
+      <SvgMatch match={m.gf} x={580} y={270} width={155} />
+      <SvgPremier match={m.gf} season={data.season} x={760} y={270} width={130} />
     </svg>
   );
 }
